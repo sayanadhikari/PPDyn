@@ -1,6 +1,6 @@
 ##
 ## @file		makefile
-## @brief	MoDynPy makefile.
+## @brief	PPDyn makefile.
 ## @author	Dr. Sayan Adhikari <sayan.adhikari@fys.uio.no>
 ##		Dr. Rupak Mukherjee <rupakm@princeton.edu>
 ##
