@@ -20,7 +20,7 @@ all: venv
 $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
-#	mkdir $(FIG) $(DATA) 2> /dev/null
+	mkdir $(FIG) $(DATA) 2> /dev/null
 
 # venv is a shortcut target
 venv: $(VENV)/bin/activate
@@ -32,7 +32,7 @@ run: venv
 	@echo "::::::: Dr. Rupak Mukherjee, Associate Research Physicist @ PPPL, NJ"
 	@echo "Input: Edit input.ini file to change the parameters for simulation"
 	@echo "==================================================================="
-#	find . -type f -name '*.dat' -delete
+	find . -type f -name '*.dat' -delete
 	./$(VENV)/bin/python3 $(SRC)/main.py
 
 clean:
