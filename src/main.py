@@ -64,7 +64,7 @@ def main():
 
         #============ Diagnostics Write ===================
         if t%dumpPeriod==0:
-            diagn.configSpace(t,N,Nt,x,y,z,path)
+#             diagn.configSpace(t,N,Nt,x,y,z,path)
         #============  Thermostat =========================
         vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
     return 0
