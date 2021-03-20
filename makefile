@@ -5,15 +5,43 @@
 ##		Dr. Rupak Mukherjee <rupakm@princeton.edu>
 ##
 
+# # OS DETECTION
+BASHFILE	:=
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	BASHFILE = bashrc
+endif
+ifeq ($(UNAME_S),Darwin)
+	BASHFILE = zshrc
+endif
+
+
+
 # the virtual environment directory
 VENV := venv
 
 # Source directory
 SRC := src
 
+# Current directory
+# PATHS := $(shell pwd)
+# mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_DIR := $(shell pwd)
+
 # Figure directory
 FIG := figures
 DATA := data
+
+ifeq ($(UNAME_S),Darwin)
+all: venv
+	@echo "Creating virtual environment for running the code"
+$(VENV)/bin/activate: requirements.txt
+	python3 -m venv $(VENV)
+	./$(VENV)/bin/pip install -r requirements.txt
+	mkdir $(FIG) $(DATA) 2> /dev/null
+	@echo "\nalias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/."$(BASHFILE)"
+	source ~/.$(BASHFILE)
+else
 # default target, when make executed without arguments
 all: venv
 	@echo "Creating virtual environment for running the code"
@@ -21,7 +49,7 @@ $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
-
+endif
 # venv is a shortcut target
 venv: $(VENV)/bin/activate
 

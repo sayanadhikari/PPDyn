@@ -16,6 +16,8 @@ from numba import jit
 import time
 import os
 import ini
+import sys
+import argparse
 
 ## User defined functions
 from initial import initial
@@ -25,9 +27,15 @@ import diagn
 
 
 
-def main():
+
+def main(argv):
     """ PPDyn main() function """
-    params = ini.parse(open('input.ini').read())
+    parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
+    parser.add_argument('--i', default='input.ini', type=str, help='Input file name')
+    args        = parser.parse_args()
+    inputFile   = args.i
+
+    params = ini.parse(open(inputFile).read())
     #========== Input Parameters ===========
 
     Lx      = float(params['simbox']['Lx'])  # System length in X
@@ -67,12 +75,12 @@ def main():
             if t%dumpPeriod==0:
                 diagn.configSpace(t,N,Nt,x,y,z,path)
         #============  Thermostat =========================
-        vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)    
+        vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
     return 0
     #========== End of Time Loop ======
 
 if __name__== "__main__":
 	start = time.time()
-	main()
+	main(sys.argv[1:])
 	end = time.time()
 	print("Elapsed (after compilation) = %s"%(end - start)+" seconds")
