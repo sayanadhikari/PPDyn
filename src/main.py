@@ -67,8 +67,8 @@ def main():
         if dump:
 		if t%dumpPeriod==0:
 			diagn.configSpace(t,N,Nt,x,y,z,path)
-        #============  Thermostat =========================
-        vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
+			
+	vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)       #============  Thermostat =========================
     return 0
     #========== End of Time Loop ======
 
