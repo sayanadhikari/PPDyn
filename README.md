@@ -47,9 +47,6 @@ Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ 
 ;
 scope = default
 
-scope = default
-
-
 [simbox]
 Lx  = 10.0    ; System length in X
 Ly  = 10.0    ; System length in Y
