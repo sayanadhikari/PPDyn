@@ -61,7 +61,13 @@ def main():
 
     for t in range(len(time)):
         KE = 0.0   # Reset KE
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE)     
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE)
+        #============ Diagnostics Write ===================
+        if dump:
+            if t%dumpPeriod==0:
+                diagn.configSpace(t,N,Nt,x,y,z,path)
+        #============  Thermostat =========================
+        vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)    
     return 0
     #========== End of Time Loop ======
 
