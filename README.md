@@ -43,7 +43,7 @@ Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ 
 ```ini
 ;
 ; @file		input.ini
-; @brief	DSMCPy inputfile.
+; @brief	PPDyn inputfile.
 ;
 scope = default
 
