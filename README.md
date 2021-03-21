@@ -27,7 +27,7 @@ Then enter inside the *PPDyn* directory
 ```shell
 cd PPDyn
 ```
-Now complile and built the *DSMCPy* code
+Now complile and built the *PPDyn* code
 ```shell
 make all
 ``` 
