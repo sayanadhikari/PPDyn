@@ -13,6 +13,7 @@
 
 import numpy as np
 from numba import jit
+import h5py
 import time
 import os
 import ini
@@ -58,10 +59,10 @@ def main(argv):
     btype   = str(params['boundary']['btype']) # Type of boundary
 
     #========= Diagnostics =======
-    dumpPeriod = int(params['diagnostics']['dumpPeriod'])
-    path ="data/"  # DO NOT CHANGE THE PATH
-    dump = False
-
+    dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
+    path        = "data/"  # DO NOT CHANGE THE PATH
+    dump        = True
+    f           = h5py.File(path+"particle.hdf5","w")
     #========= Initialize ========
     x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,dumpPeriod)
 
@@ -73,7 +74,8 @@ def main(argv):
         #============ Diagnostics Write ===================
         if dump:
             if t%dumpPeriod==0:
-                diagn.configSpace(t,N,Nt,x,y,z,path)
+                diagn.configSpace(t,N,tmax,x,y,z,Lx,Ly,Lz,f,dt,dumpPeriod)
+                print('TimeSteps = %d'%int(t)+' of %d'%Nt)
         #============  Thermostat =========================
         vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
     return 0

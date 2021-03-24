@@ -72,5 +72,6 @@ clean:
 cleandata:
 	@echo "Cleaning data files..."
 	find . -type f -name '*.dat' -delete
+	find . -type f -name '*.hdf5' -delete
 
 .PHONY: all venv run clean
