@@ -68,9 +68,7 @@ dt    = 0.010   ; time step size
 
 [diagnostics]
 dumpPeriod  = 10    ; Data dump period
-useHDF5     = False ; Use HDF5 library to write data (Not implemented yet)
-
+dumpData    = False
 [options]
-plotFigure    = False  ;
-useNumba      = True  ;set to false to disable Numba
+parallelMode  = True  ;set to false to disable parallel
 ```
