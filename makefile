@@ -32,24 +32,24 @@ CURRENT_DIR := $(shell pwd)
 FIG := figures
 DATA := data
 
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(UNAME_S),Linux)
 all: venv
 	@echo "Creating virtual environment for running the code"
 $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
-	@echo "\nalias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/."$(BASHFILE)"
-	source ~/.$(BASHFILE)
-else ifeq ($(UNAME_S),Linux)
+	@echo "\nalias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/.bashrc
+	source ~/.bashrc
+else ifeq ($(UNAME_S),Darwin)
 all: venv
 	@echo "Creating virtual environment for running the code"
 $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
-	@echo "\nalias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/."$(BASHFILE)"
-	source ~/.$(BASHFILE)
+	@echo "\nalias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/.zshrc
+	source ~/.zshrc
 else
 # default target, when make executed without arguments
 all: venv
