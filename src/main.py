@@ -84,7 +84,7 @@ def main(argv):
         if dumpData:
             if t%dumpPeriod==0:
                 diagn.configSpace(t,N,tmax,x,y,z,Lx,Ly,Lz,f,dt,dumpPeriod)
-                print('TimeSteps = %d'%int(t)+' of %d'%Nt)
+                print('TimeSteps = %d'%int(t)+' of %d'%Nt+' Energy: %e'%KE)
         #============  Thermostat =========================
         vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
     return 0
