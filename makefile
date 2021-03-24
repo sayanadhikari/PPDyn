@@ -40,7 +40,7 @@ $(VENV)/bin/activate: requirements.txt
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
 	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> $${HOME}/.bashrc
-	source $${HOME}/.bashrc
+	. $${HOME}/.bashrc
 else ifeq ($(UNAME_S),Darwin)
 all: venv
 	@echo "Creating virtual environment for running the code"
@@ -49,7 +49,7 @@ $(VENV)/bin/activate: requirements.txt
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
 	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> $${HOME}/.zshrc
-	source $${HOME}/.zshrc
+	. $${HOME}/.zshrc
 else
 # default target, when make executed without arguments
 all: venv
