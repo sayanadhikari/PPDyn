@@ -8,12 +8,12 @@
 # # OS DETECTION
 BASHFILE	:=
 UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-	BASHFILE = bashrc
-endif
-ifeq ($(UNAME_S),Darwin)
-	BASHFILE = zshrc
-endif
+# ifeq ($(UNAME_S),Linux)
+# 	BASHFILE = bashrc
+# endif
+# ifeq ($(UNAME_S),Darwin)
+# 	BASHFILE = zshrc
+# endif
 
 
 
@@ -48,7 +48,7 @@ $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
-	@echo "\nalias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/.zshrc
+	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/.zshrc
 	source ~/.zshrc
 else
 # default target, when make executed without arguments
