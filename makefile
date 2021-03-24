@@ -6,7 +6,7 @@
 ##
 
 # # OS DETECTION
-BASHFILE	:=
+# BASHFILE	:=
 UNAME_S := $(shell uname -s)
 # ifeq ($(UNAME_S),Linux)
 # 	BASHFILE = bashrc
@@ -39,8 +39,8 @@ $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
-	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/.bashrc
-	source ~/.bashrc
+	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> $${HOME}/.bashrc
+	source $${HOME}/.bashrc
 else ifeq ($(UNAME_S),Darwin)
 all: venv
 	@echo "Creating virtual environment for running the code"
@@ -48,8 +48,8 @@ $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
-	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> ~/.zshrc
-	source ~/.zshrc
+	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> $${HOME}/.zshrc
+	source $${HOME}/.zshrc
 else
 # default target, when make executed without arguments
 all: venv
@@ -59,6 +59,7 @@ $(VENV)/bin/activate: requirements.txt
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
 endif
+
 # venv is a shortcut target
 venv: $(VENV)/bin/activate
 
