@@ -18,7 +18,7 @@ def verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE):
         ax[i] = 0.0
         ay[i] = 0.0
         az[i] = 0.0
-        for j in prange(N):
+        for j in range(N):
             if (i != j):
                 xdiff = ( x[i]-x[j] ) - round((x[i]-x[j])/(2.0*Lx)) * 2.0*Lx
                 ydiff = ( y[i]-y[j] ) - round((y[i]-y[j])/(2.0*Ly)) * 2.0*Ly
