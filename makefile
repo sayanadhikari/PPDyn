@@ -60,7 +60,6 @@ run: venv
 	@echo "::::::: Dr. Rupak Mukherjee, Associate Research Physicist @ PPPL, NJ"
 	@echo "Input: Edit input.ini file to change the parameters for simulation"
 	@echo "==================================================================="
-	find . -type f -name '*.dat' -delete
 	./$(VENV)/bin/python3 $(SRC)/main.py
 
 clean:
@@ -71,7 +70,6 @@ clean:
 
 cleandata:
 	@echo "Cleaning data files..."
-	find . -type f -name '*.dat' -delete
 	find . -type f -name '*.hdf5' -delete
 
 .PHONY: all venv run clean
