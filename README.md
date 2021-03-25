@@ -11,14 +11,13 @@ A python code to simulate plasma particles using Molecular Dynamics Algorithm. [
 - [Sayan Adhikari](https://github.com/sayanadhikari), UiO, Norway. [@sayanadhikari](https://twitter.com/sayanadhikari)
 - [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA.
 
-Installation
-------------
-#### Prerequisites
+## Installation
+### Prerequisites
 1. [GNU Make](https://www.gnu.org/software/make/)
 2. [python3 or higher](https://www.python.org/download/releases/3.0/)
 3. [git](https://git-scm.com/)
 
-#### Procedure
+### Procedure
 First make a clone of the master branch using the following command
 ```shell
 git clone https://github.com/sayanadhikari/PPDyn.git
@@ -31,14 +30,12 @@ Now complile and built the *PPDyn* code
 ```shell
 make all
 ``` 
-Usage
------
+## Usage
 Upon successful compilation, run the code using following command
 ```shell
 ppdyn --i input.ini
 ```
-Parameter Setup
-----------------------
+## Parameter Setup
 Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ is provided below,
 ```ini
 ;
@@ -72,3 +69,14 @@ dumpData    = False
 [options]
 parallelMode  = True  ;set to false to disable parallel
 ```
+## Contributing
+We welcome contributions to this project.
+
+1. Fork it.
+2. Create your feature branch (git checkout -b my-new-feature).
+3. Commit your changes (git commit -am 'Add some feature').
+4. Push to the branch (git push origin my-new-feature).
+5. Create new Pull Request.
+
+## License
+Released under the [MIT license](LICENSE).
