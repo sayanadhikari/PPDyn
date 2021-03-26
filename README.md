@@ -2,7 +2,7 @@
 [![CI](https://github.com/sayanadhikari/PPDyn/actions/workflows/main.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/main.yml)
 [![build](https://github.com/sayanadhikari/PPDyn/actions/workflows/make.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/make.yml)
 
-A python code to simulate plasma particles using Molecular Dynamics Algorithm. [Numba JIT compiler](https://numba.pydata.org/) for Python has been implemented for faster performance. 
+A python code to simulate plasma particles using Molecular Dynamics Algorithm. [Numba JIT compiler](https://numba.pydata.org/) for Python has been implemented for faster performance.
 
 ## Problem
 <!--Rayleigh Problem = gas between 2 plates ([Alexander & Garcia, 1997](https://doi.org/10.1063/1.168619)) -->
@@ -18,19 +18,38 @@ A python code to simulate plasma particles using Molecular Dynamics Algorithm. [
 3. [git](https://git-scm.com/)
 
 ### Procedure
+#### Using PyPI
+```console
+pip install PPDyn
+```
+*Usage*
+
+Download the input template to your working directory
+```shell
+wget https://raw.githubusercontent.com/sayanadhikari/PPDyn/main/input.ini
+```
+Now, either create a python script in your working directory or use your python console
+```python
+from  PPDyn import ppdyn
+from PPDyn.ppdplot import animate
+ppdyn(input)
+animate()
+```
+#### Using GNU Make
 First make a clone of the master branch using the following command
 ```shell
 git clone https://github.com/sayanadhikari/PPDyn.git
 ```
-Then enter inside the *PPDyn* directory 
+Then enter inside the *PPDyn* directory
 ```shell
 cd PPDyn
 ```
 Now complile and built the *PPDyn* code
 ```shell
 make all
-``` 
-## Usage
+```
+*Usage*
+
 Upon successful compilation, run the code using following command
 ```shell
 ppdyn --i input.ini

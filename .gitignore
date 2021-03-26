@@ -7,3 +7,11 @@ venv
 .bak
 *.mp4
 *.hdf5
+.pytest_cache
+.coverage
+**.pyc
+**.egg-info
+build
+dist
+docs/build
+.pypirc
