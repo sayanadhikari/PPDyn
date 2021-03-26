@@ -34,7 +34,12 @@ Now, either create a python script in your working directory or use your python 
 ```python
 from  PPDyn import ppdyn
 from PPDyn.ppdplot import animate
+import time
+
+start = time.time()
 ppdyn(input)
+end = time.time()
+print("Elapsed (after compilation) = %s"%(end - start)+" seconds")
 animate()
 ```
 #### Using GNU Make
