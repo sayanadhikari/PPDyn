@@ -32,7 +32,7 @@ wget https://raw.githubusercontent.com/sayanadhikari/PPDyn/main/input.ini
 ```
 Now, either create a python script in your working directory or use your python console
 ```python
-from  PPDyn import ppdyn
+from PPDyn import ppdyn
 from PPDyn.ppdplot import animate
 import time
 
