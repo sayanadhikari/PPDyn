@@ -7,9 +7,10 @@ Welcome to PPDyn's documentation!
 
    installation
    getting_started
-   .. examples
-   .. citation
-   .. bibliography
+   parameter_setup
+.. examples
+.. citation
+.. bibliography
 
 Indices and tables
 ==================

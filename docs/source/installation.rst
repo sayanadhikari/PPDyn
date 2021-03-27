@@ -24,12 +24,13 @@ First make a clone of the master branch using the following command
 
   git clone https://github.com/sayanadhikari/PPDyn.git
 
-Then enter inside the $project directory
+Then enter inside the *PPDyn* directory
 
 .. code-block:: shell
 
   cd PPDyn
-Now complile and built the $project code
+
+Now complile and built the *PPDyn* code
 
 .. code-block:: shell
 
