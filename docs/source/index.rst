@@ -8,6 +8,8 @@ Welcome to PPDyn's documentation!
    installation
    getting_started
    parameter_setup
+   contributing
+   physics_model
 .. examples
 .. citation
 .. bibliography
