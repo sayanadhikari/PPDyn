@@ -10,8 +10,8 @@ Procedure
 ---------
 *PPDyn* can be installed in two ways.
 
-#. `Using *pip* from PyPI <#id1>`_
-#. `Using *git clone* from GitHub <#id2>`_
+#. `Using pip from PyPI <#id1>`_
+#. `Using git clone from GitHub <#id2>`_
 
 Using *pip* from PyPI
 ^^^^^^^^^^^^^^^^^^^^^
