@@ -22,7 +22,7 @@ When you submit code changes, your submissions are understood to be under the sa
 
 Issues
 ------
-We use `GitHub issues <https://github.com/sayanadhikari/PPDyn/issues>`_\ to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
+We use `GitHub issues <https://github.com/sayanadhikari/PPDyn/issues>`_ to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
 
 Coding Style
 ------------
