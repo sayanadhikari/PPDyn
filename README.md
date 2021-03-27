@@ -6,6 +6,8 @@
 
 A python code to simulate plasma particles using Molecular Dynamics Algorithm. [Numba JIT compiler](https://numba.pydata.org/) for Python has been implemented for faster performance.
 
+A detailed documentation can be found at https://ppdyn.readthedocs.io/.
+
 ## Problem
 <!--Rayleigh Problem = gas between 2 plates ([Alexander & Garcia, 1997](https://doi.org/10.1063/1.168619)) -->
 
