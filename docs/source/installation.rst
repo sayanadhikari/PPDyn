@@ -2,6 +2,7 @@ Installation
 ============
 
 *PPDyn* can be installed in two ways.
+
 #. Using *pip* from PyPI
 #. Using *git clone* from GitHub
 
@@ -15,13 +16,13 @@ Procedure
 ---------
 
 .. Using *pip* from PyPI::
-^^^^^^^^^^
+
 .. code-block:: shell
 
   pip install PPDyn
 
 .. Using *git clone* from GitHub::
-^^^^^^^^^^^^^^
+
 First make a clone of the master branch using the following command
 
 .. code-block:: shell
