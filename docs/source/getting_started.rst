@@ -5,7 +5,7 @@ PyPI build
 ^^^^^^^^^^
 If you used PyPI to build the project, Download the input template to your working directory
 
-.. code-block:: shell
+.. code-block:: bash
 
   wget https://raw.githubusercontent.com/sayanadhikari/PPDyn/main/input.ini
 

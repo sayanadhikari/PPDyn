@@ -1,11 +1,5 @@
 Installation
 ============
-
-*PPDyn* can be installed in two ways.
-
-#. Using *pip* from PyPI
-#. Using *git clone* from GitHub
-
 Prerequisites
 -------------
 - `Python3 or higher <https://www.python.org/download/releases/3.0/>`_
@@ -14,29 +8,33 @@ Prerequisites
 
 Procedure
 ---------
+*PPDyn* can be installed in two ways.
 
-.. Using *pip* from PyPI::
+#. `Using *pip* from PyPI <#id1>`_
+#. `Using *git clone* from GitHub <#id2>`_
 
-.. code-block:: shell
+Using *pip* from PyPI
+^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: bash
 
   pip install PPDyn
 
-.. Using *git clone* from GitHub::
-
+Using *git clone* from GitHub
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 First make a clone of the master branch using the following command
 
-.. code-block:: shell
+.. code-block:: bash
 
   git clone https://github.com/sayanadhikari/PPDyn.git
 
 Then enter inside the *PPDyn* directory
 
-.. code-block:: shell
+.. code-block:: bash
 
   cd PPDyn
 
 Now complile and built the *PPDyn* code
 
-.. code-block:: shell
+.. code-block:: bash
 
   make all

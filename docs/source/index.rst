@@ -2,7 +2,8 @@ Welcome to PPDyn's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
+   :numbered:
+   :maxdepth: 3
    :caption: Contents:
 
    installation
