@@ -6,7 +6,7 @@ Welcome to PPDyn's documentation!
    :caption: Contents:
 
    installation
-   .. getting_started
+   getting_started
    .. examples
    .. citation
    .. bibliography
