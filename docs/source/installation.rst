@@ -1,5 +1,10 @@
 Installation
 ============
+
+*PPDyn* can be installed in two ways.
+#. Using *pip* from PyPI
+#. Using *git clone* from GitHub
+
 Prerequisites
 -------------
 - `Python3 or higher <https://www.python.org/download/releases/3.0/>`_
@@ -8,15 +13,14 @@ Prerequisites
 
 Procedure
 ---------
-Install the *PPDyn* using either PyPI or directly from GitHub
 
-Using PyPI
+.. Using *pip* from PyPI::
 ^^^^^^^^^^
 .. code-block:: shell
 
   pip install PPDyn
 
-Using GNU Make
+.. Using *git clone* from GitHub::
 ^^^^^^^^^^^^^^
 First make a clone of the master branch using the following command
 
