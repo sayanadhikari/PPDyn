@@ -23,7 +23,7 @@ A detailed documentation can be found at https://ppdyn.readthedocs.io/.
 
 ### Procedure
 #### Using PyPI
-```console
+```bash
 pip install PPDyn
 ```
 *Usage*
