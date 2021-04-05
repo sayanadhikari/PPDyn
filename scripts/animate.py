@@ -1,15 +1,16 @@
-#!/usr/bin/ python
+#!/usr/bin/env python3
 
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits import mplot3d
+
 # import plotly.graph_objects as go
 #========= Configuration ===========
 show_anim = True
-save_anim = True
-interval = 0.001#in seconds
+save_anim = False
+interval = 10 #in milliseconds
 
 DIR ="../data"
 
@@ -35,12 +36,13 @@ if (show_anim == True):
         dataz = h5["/%d"%data_num[i]+"/position/z"]
         ax1.cla()
         img1 = ax1.scatter(datax,datay,dataz,marker='o',color='b',alpha=1.0,s=10)
-        ax1.set_title('TimeSteps = %d'%i+'\n Phase Space')
+        ax1.set_title('TimeSteps = %d'%(i*dp)+'\n Phase Space')
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")
+        ax1.set_ylabel("$z$")
         ax1.set_xlim([-Lx, Lx])
         ax1.set_ylim([-Ly, Ly])
-        ax1.set_ylim([-Lz, Lz])
+        ax1.set_zlim([-Lz, Lz])
 
 
 
@@ -48,7 +50,7 @@ if (show_anim == True):
     # fig,ax1 = plt.subplots(1,1,1, projection='3d')
     fig = plt.figure(figsize=(6, 6))
     ax1 = plt.axes(projection ="3d")
-    ani = animation.FuncAnimation(fig,animate,frames=len(data_num),interval=interval*1e+3,blit=False)
+    ani = animation.FuncAnimation(fig,animate,frames=len(data_num),interval=interval,blit=False)
     # ani.save('phase_space.gif',writer='imagemagick')
     plt.show()
     if(save_anim == True):

@@ -61,7 +61,7 @@ make all
 
 Upon successful compilation, run the code using following command
 ```shell
-ppdyn --i input.ini
+ppdyn -i input.ini
 ```
 ## Parameter Setup
 Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ is provided below,
