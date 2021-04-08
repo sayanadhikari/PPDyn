@@ -36,7 +36,7 @@ ifeq ($(UNAME_S),Linux)
 all: venv
 	@echo "Creating virtual environment for running the code"
 $(VENV)/bin/activate: requirements.txt
-	python3 -m venv $(VENV)
+	python -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
 	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> $${HOME}/.bashrc
