@@ -32,9 +32,9 @@ import diagn
 def main(argv):
     """ PPDyn main() function """
     parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
-    parser.add_argument('-i', default='input.ini', type=str, help='Input file name')
+    parser.add_argument('-i','--input', default='input.ini', type=str, help='Input file name')
     args        = parser.parse_args()
-    inputFile   = args.i
+    inputFile   = args.input
 
     params = ini.parse(open(inputFile).read())
     #========== Input Parameters ===========
@@ -65,6 +65,7 @@ def main(argv):
     path        = "data/"  # DO NOT CHANGE THE PATH
     dumpData    = bool(params['diagnostics']['dumpData'])
     f           = h5py.File(path+"particle.hdf5","w")
+    vtkData     = bool(params['diagnostics']['vtkData'])
 
     #========== Options ============
     parallelMode    = bool(params['options']['parallelMode'])
@@ -101,6 +102,11 @@ def main(argv):
                 print('TimeSteps = %d'%int(t)+' of %d'%Nt+' Energy: %e'%KE)
         #============  Thermostat =========================
         vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
+
+    if vtkData:
+        from vtk_data import vtkwrite
+        print('Writing VTK files for Paraview visualization ...')
+        vtkwrite()
     return 0
     #========== End of Time Loop ======
 

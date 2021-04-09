@@ -4,3 +4,4 @@ ini-parser
 numba
 argparse
 h5py
+pyevtk
