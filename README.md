@@ -9,7 +9,7 @@ A python code to simulate plasma particles using Molecular Dynamics Algorithm. [
 
 A detailed documentation can be found at https://ppdyn.readthedocs.io/.
 
-<video src="assets/videos/ppdyn_sample.ogv" poster="assets/images/ppdyn_poster.png" width="320" height="200" controls preload></video>
+<video src="assets/videos/Plasma Particle Dynamics using Molecular Dynamics Method.mp4" poster="assets/images/ppdyn_poster.png" width="320" height="200" controls preload></video>
 
 ## Problem
 <!--Rayleigh Problem = gas between 2 plates ([Alexander & Garcia, 1997](https://doi.org/10.1063/1.168619)) -->
