@@ -39,7 +39,7 @@ if (show_anim == True):
         ax1.set_title('TimeSteps = %d'%(i*dp)+'\n Phase Space')
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")
-        ax1.set_ylabel("$z$")
+        ax1.set_zlabel("$z$")
         ax1.set_xlim([-Lx, Lx])
         ax1.set_ylim([-Ly, Ly])
         ax1.set_zlim([-Lz, Lz])

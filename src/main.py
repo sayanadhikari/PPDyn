@@ -65,8 +65,11 @@ def main(argv):
     path        = "data/"  # DO NOT CHANGE THE PATH
     dumpData    = bool(params['diagnostics']['dumpData'])
     f           = h5py.File(path+"particle.hdf5","w")
-    vtkData     = bool(params['diagnostics']['vtkData'])
+    if dumpData:
+        diagn.attributes(f,tmax,Lx,Ly,Lz,dt,dumpPeriod)
+        dset = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
+    vtkData     = bool(params['diagnostics']['vtkData'])
     #========== Options ============
     parallelMode    = bool(params['options']['parallelMode'])
     if parallelMode:
@@ -98,7 +101,7 @@ def main(argv):
         #============ Diagnostics Write ===================
         if dumpData:
             if t%dumpPeriod==0:
-                diagn.configSpace(t,N,tmax,x,y,z,Lx,Ly,Lz,f,dt,dumpPeriod)
+                diagn.configSpace(f,dset,t,x,y,z,KE)
                 print('TimeSteps = %d'%int(t)+' of %d'%Nt+' Energy: %e'%KE)
         #============  Thermostat =========================
         vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
