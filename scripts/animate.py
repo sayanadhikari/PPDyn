@@ -26,7 +26,7 @@ dp   = h5.attrs["dp"]
 Nt   = h5.attrs["Nt"]
 
 
-data_num = np.arange(start=0, stop=Nt, step=dp, dtype=int)
+data_num = np.arange(start=0, stop=Nt, step=1, dtype=int)
 
 if (show_anim == True):
     def animate(i):
