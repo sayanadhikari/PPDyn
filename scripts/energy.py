@@ -17,19 +17,21 @@ Lx = h5.attrs["Lx"]
 Ly = h5.attrs["Ly"]
 Lz = h5.attrs["Lz"]
 
+N = h5.attrs["N"]
+
 dp   = h5.attrs["dp"]
 Nt   = h5.attrs["Nt"]
 
 
 data_num = np.arange(start=0, stop=Nt, step=1, dtype=int)
 
-time = data_num
+time = data_num*dp
 energy = h5["/energy"]
-energy = np.array(energy[:-1])
+energy = 3*(np.array(energy[:-1]))/N
 
 fig,ax = plt.subplots(figsize=(6, 6))
-plt.plot(time[10:],energy[10:])
-ax.set_xlabel("$time [s]$")
+plt.plot(time[1:],energy[1:])
+ax.set_xlabel("$timestep$")
 ax.set_ylabel("$Energy$")
 
 

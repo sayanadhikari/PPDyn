@@ -66,7 +66,7 @@ def main(argv):
     dumpData    = bool(params['diagnostics']['dumpData'])
     f           = h5py.File(path+"particle.hdf5","w")
     if dumpData:
-        diagn.attributes(f,tmax,Lx,Ly,Lz,dt,dumpPeriod)
+        diagn.attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod)
         dset = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
     vtkData     = bool(params['diagnostics']['vtkData'])

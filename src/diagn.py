@@ -9,10 +9,11 @@ def configSpace(f,dset,t,x,y,z,KE):
     dset[-1:] = KE
     return 0
 
-def attributes(f,tmax,Lx,Ly,Lz,dt,dumpPeriod):
+def attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod):
     f.attrs["dp"] = dumpPeriod
     f.attrs["dt"] = dt
     f.attrs["Nt"] = int(tmax/(dt*dumpPeriod))
+    f.attrs["N"]  = N
     f.attrs["tmax"] = tmax
     f.attrs["Lx"] = Lx
     f.attrs["Ly"] = Ly
