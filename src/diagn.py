@@ -1,4 +1,4 @@
-# import h5py
+import numpy as np
 def configSpace(f,dset,t,x,y,z,KE):
 
     f["/%d"%int(t)+"/position/x"] = x
@@ -7,6 +7,10 @@ def configSpace(f,dset,t,x,y,z,KE):
     # f["/%d"%int(t)+"/energy"] = KE
     dset.resize(dset.shape[0]+1, axis=0)
     dset[-1:] = KE
+
+    with open("data/energy.txt","ab") as f:
+        np.savetxt(f, np.column_stack([t, KE]))
+
     return 0
 
 def attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod):

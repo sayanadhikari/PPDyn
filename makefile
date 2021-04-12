@@ -40,6 +40,7 @@ $(VENV)/bin/activate: requirements.txt
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
 	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> $${HOME}/.bashrc
+	@echo "alias realtime='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/realtime.py'" >> $${HOME}/.bashrc
 	. $${HOME}/.bashrc
 else ifeq ($(UNAME_S),Darwin)
 all: venv
@@ -48,7 +49,10 @@ $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	mkdir $(FIG) $(DATA) 2> /dev/null
+	sed -i '' '/alias ppdyn/d' $${HOME}/.zshrc
+	sed -i '' '/alias ppdenergy/d' $${HOME}/.zshrc
 	@echo "alias ppdyn='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/main.py'" >> $${HOME}/.zshrc
+	@echo "alias ppdenergy='$(CURRENT_DIR)/./$(VENV)/bin/python3 $(CURRENT_DIR)/$(SRC)/realtime.py'" >> $${HOME}/.zshrc
 	. $${HOME}/.zshrc
 else
 # default target, when make executed without arguments

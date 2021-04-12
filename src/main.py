@@ -16,6 +16,7 @@ from numba import jit
 import h5py
 import time
 import os
+from os.path import join as pjoin
 import ini
 import sys
 import argparse
@@ -27,7 +28,7 @@ from thermostat import berendsen
 import diagn
 
 
-
+path        = "data/"
 
 def main(argv):
     """ PPDyn main() function """
@@ -70,6 +71,7 @@ def main(argv):
         dset = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
     vtkData     = bool(params['diagnostics']['vtkData'])
+    realTime    = bool(params['diagnostics']['realTime'])
     #========== Options ============
     parallelMode    = bool(params['options']['parallelMode'])
     if parallelMode:
@@ -98,13 +100,14 @@ def main(argv):
     for t in range(len(time)):
         KE = 0.0   # Reset KE
         x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k)
+        #============  Thermostat =========================
+        vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
+
         #============ Diagnostics Write ===================
         if dumpData:
             if t%dumpPeriod==0:
                 diagn.configSpace(f,dset,t,x,y,z,KE)
                 print('TimeSteps = %d'%int(t)+' of %d'%Nt+' Energy: %e'%KE)
-        #============  Thermostat =========================
-        vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 
     if vtkData:
         from vtk_data import vtkwrite
@@ -118,3 +121,4 @@ if __name__== "__main__":
 	main(sys.argv[1:])
 	end = time.time()
 	print("Elapsed (after compilation) = %s"%(end - start)+" seconds")
+	os.remove(pjoin(path,'energy.txt'))
