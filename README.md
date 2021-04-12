@@ -12,7 +12,10 @@ A detailed documentation can be found at https://ppdyn.readthedocs.io/.
 <video src="assets/videos/Plasma Particle Dynamics using Molecular Dynamics Method.mp4" poster="assets/images/ppdyn_poster.png" width="320" height="200" controls preload></video>
 
 Example:
-https://user-images.githubusercontent.com/11753189/114286735-b5f26900-9a61-11eb-86ba-76ee295d6448.mp4
+<!--[![PPDyn Example]()](https://user-images.githubusercontent.com/11753189/114286735-b5f26900-9a61-11eb-86ba-76ee295d6448.mp4)-->
+
+
+[![PPDyn Example](http://img.youtube.com/vi/qvQRUX-rSrQ/0.jpg)](https://www.youtube.com/embed/qvQRUX-rSrQ)
 
 
 ## Problem
@@ -85,25 +88,34 @@ Ly  = 10.0    ; System length in Y
 Lz  = 10.0    ; System length in Z
 
 [particles]
-N     = 100     ; Number of particles
+N     = 700     ; Number of particles
 Vxmax = 1.0     ; Maximum velocity in X
 Vymax = 1.0     ; Maximum velocity in Y
 Vzmax = 1.0     ; Maximum velocity in Z
-Temp  = 0.010   ;
+Temp  = 0.01   ;
+
+[screening]
+k = 1.0
 
 [boundary]
-btype = periodic ; Type of boundary
+btype = reflecting ; Type of boundary Options: periodic, reflecting
 
 [time]
-tmax  = 50.0    ; Final time
+tmax  = 1000.0    ; Final time
 dt    = 0.010   ; time step size
 
 [diagnostics]
-dumpPeriod  = 10    ; Data dump period
-dumpData    = False
+dumpPeriod  = 50    ; Data dump period
+dumpData    = True
+vtkData     = False
+
 [options]
 parallelMode  = True  ;set to false to disable parallel
 ```
+## Visualization
+For visualization, user either can use the python scripts available inside ``scripts`` directory or can write their own. After successful run the data will be available under ``data`` directory. Two different data formats are available at present. The complete dataset will available under the name particle.hdf5. For vtk visualization users can use ``.vtu`` files inside ``data/vtkdata``. [Paraview](https://www.paraview.org/) can be used to animate particle dynamics very easily. A sample video can be found [here](https://www.youtube.com/embed/qvQRUX-rSrQ).
+
+
 ## Contributing
 We welcome contributions to this project.
 
