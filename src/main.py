@@ -22,9 +22,8 @@ import sys
 import argparse
 
 ## User defined functions
-# from initial import initial
+
 from thermostat import berendsen
-# from pusher_serial import verlet
 import diagn
 
 
