@@ -6,20 +6,27 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits import mplot3d
 import argparse
+import ini
 # import plotly.graph_objects as go
 #========= Configuration ===========
 
-def animate():
+def pyview(argv):
     path ="data/"
     print('Welcome to PPDyn Visualization Toolkit')
-    parser = argparse.ArgumentParser(description='PPDyn Visualization Toolkit')
-    parser.add_argument('--p', default='particle', type=str, help='data type particle')
-    parser.add_argument('--show', default='True', type=bool, help='Show Animation')
-    parser.add_argument('--save', default='False', type=bool, help='Save Animation')
-    args        = parser.parse_args()
-    data   = args.p
-    show_anim = args.show
-    save_anim = args.save
+    # parser = argparse.ArgumentParser(description='PPDyn Visualization Toolkit')
+    # parser.add_argument('-p','--part', default='particle', type=str, help='data type particle')
+    # parser.add_argument('-v','--view', action='store_true', help='Show Animation')
+    # parser.add_argument('-s','--save', action='store_false', help='Save Animation')
+    # args        = parser.parse_args()
+    # data   = args.part
+    # show_anim = args.view
+    # save_anim = args.save
+    inputFile   = argv
+
+    data    = 'particle'
+    params  = ini.parse(open(argv).read())
+    show_anim   = bool(params['animate']['show_anim'])
+    save_anim   = bool(params['animate']['save_anim'])
 
     interval = 0.001#in seconds
 
@@ -74,3 +81,6 @@ def animate():
         print("You have not opted for showing or saving animation.")
 
     print("End of animation")
+
+if __name__== "__pyview__":
+	pyview(sys.argv[1:])

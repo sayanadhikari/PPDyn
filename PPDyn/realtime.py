@@ -10,33 +10,40 @@ import argparse
 import os.path
 from os.path import join as pjoin
 
-#========= Configuration ===========
-def energy(N):
-    path ='data'
-    # N = 100
-    def animate(i):
-        if os.path.exists(pjoin(path,'energy.txt')):
-            time,energy = np.loadtxt(pjoin(path,'energy.txt'),unpack=True)
-            ax.clear()
-            ax.plot(time, energy/N)
-            ax.set_xlabel("$timestep$")
-            ax.set_ylabel("$Energy$")
-            ax.set_title("Timestep: %d"%time[-1])
+def eview(argv):
+#     parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
+#     parser.add_argument('-i','--input', default='input.ini', type=str, help='Input file name')
+#     parser.add_argument('-s','--show', action='store_true', help='Show Animation')
+#     args        = parser.parse_args()
+#     inputFile   = args.input
+#     show_anim = args.show
 
-    fig,ax = plt.subplots(figsize=(6, 6))
+    params  = ini.parse(open(argv).read())
+    N       = int(params['particles']['N'])    # Number of particles
+    tmax    = float(params['time']['tmax'])
+    realTime    = bool(params['diagnostics']['realTime'])
+    #========= Configuration ===========
+    def energy(N):
+        path ='data'
+        # N = 100
+        def animate(i):
+            if os.path.exists(pjoin(path,'energy.txt')):
+                time,energy = np.loadtxt(pjoin(path,'energy.txt'),unpack=True)
+                ax.clear()
+                ax.plot(time, energy/N)
+                ax.set_xlabel("$timestep$")
+                ax.set_ylabel("$Energy$")
+                ax.set_title("Timestep: %d"%time[-1])
 
-    ani = animation.FuncAnimation(fig, animate, interval=1000)
+        fig,ax = plt.subplots(figsize=(6, 6))
 
-    plt.show()
+        ani = animation.FuncAnimation(fig, animate, interval=1000)
 
+        plt.show()
 
-parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
-parser.add_argument('-i','--input', default='input.ini', type=str, help='Input file name')
-args        = parser.parse_args()
-inputFile   = args.input
+    if realTime:
+        energy(N)
+        plt.close()
 
-params = ini.parse(open(inputFile).read())
-N       = int(params['particles']['N'])    # Number of particles
-tmax    = float(params['time']['tmax'])
-
-energy(N)
+if __name__== "__pyview__":
+	eview(sys.argv[1:])

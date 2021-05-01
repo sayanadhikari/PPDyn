@@ -42,7 +42,7 @@ def ppdyn(argv):
     args        = parser.parse_args()
     inputFile   = args.input
 
-    params = ini.parse(open(inputFile).read())
+    params = ini.parse(open(argv).read())
     #========== Input Parameters ===========
 
     Lx      = float(params['simbox']['Lx'])  # System length in X
@@ -78,7 +78,7 @@ def ppdyn(argv):
     f           = h5py.File(path+"particle.hdf5","w")
 
     if dumpData:
-        diagn.attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod)
+        attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod)
         dset = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
     vtkData     = bool(params['diagnostics']['vtkData'])
@@ -125,11 +125,9 @@ def ppdyn(argv):
         from PPDyn.vtk_data import vtkwrite
         print('Writing VTK files for Paraview visualization ...')
         vtkwrite()
+    os.remove(pjoin(path,'energy.txt'))
     return "All done!!"
     #========== End of Time Loop ======
 
 if __name__== "__ppdyn__":
-	# start = time.time()
 	ppdyn(sys.argv[1:])
-	# end = time.time()
-	# print("Elapsed (after compilation) = %s"%(end - start)+" seconds")
