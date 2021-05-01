@@ -2,7 +2,7 @@ from numba import jit
 import numpy as np
 import random
 @jit(nopython=True)
-def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod):
+def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
     random.seed(99999999)
     x  = np.empty(N, dtype=np.float64)
     y  = np.empty(N, dtype=np.float64)
@@ -54,7 +54,7 @@ def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) +zdiff*g   # zdiff/(r*r*r)
                 ax[i] = ax[i] + fx
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz
@@ -62,7 +62,7 @@ def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod):
 
 
 @jit(nopython=True)
-def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod):
+def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
     random.seed(99999999)
     x  = np.empty(N, dtype=np.float64)
     y  = np.empty(N, dtype=np.float64)
@@ -114,7 +114,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)  + zdiff*g  # zdiff/(r*r*r)
                 ax[i] = ax[i] + fx
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz
