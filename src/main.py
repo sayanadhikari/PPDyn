@@ -22,7 +22,6 @@ import sys
 import argparse
 
 ## User defined functions
-
 from thermostat import berendsen
 import diagn
 
