@@ -54,7 +54,7 @@ def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) +zdiff*g +Lz*g  # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) + zdiff*g + Lz*g  # zdiff/(r*r*r)
                 ax[i] = ax[i] + fx
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz
@@ -114,7 +114,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)  + zdiff*g +Lz*g # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)  + zdiff*g + Lz*g # zdiff/(r*r*r)
                 ax[i] = ax[i] + fx
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz
