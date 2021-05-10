@@ -26,7 +26,7 @@ def verlet_periodic(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) +zdiff*g    # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) +zdiff*g  +Lz*g  # zdiff/(r*r*r)
                 ax[i] += fx
                 ay[i] += fy
                 az[i] += fz
@@ -70,7 +70,7 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)  +zdiff*g  # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)  +zdiff*g +Lz*g # zdiff/(r*r*r)
                 ax[i] += fx
                 ay[i] += fy
                 az[i] += fz
