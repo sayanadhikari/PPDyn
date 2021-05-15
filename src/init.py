@@ -54,7 +54,7 @@ def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) + zdiff*g + Lz*g  # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) #+ zdiff*g + Lz*g  # zdiff/(r*r*r)
                 ax[i] = ax[i] + fx
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz
@@ -88,7 +88,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
     for i in range(N):
         x[i] = (random.random())*2.0*Lx - Lx
         y[i] = (random.random())*2.0*Ly - Ly
-        z[i] = (random.random())*2.0*Lz - Lz
+        z[i] =  Lz #(random.random())*2.0*Lz - Lz
         vx[i] = (random.random())*Vxmax - Vxmax/2.0
         vy[i] = (random.random())*Vymax - Vymax/2.0
         vz[i] = (random.random())*Vzmax - Vzmax/2.0
@@ -105,7 +105,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
     for i in range(N):
         ax[i] = 0.0
         ay[i] = 0.0
-        az[i] = 0.0
+        az[i] = -(z[i]+Lz)*g
         for j in range(N):
             if (i != j):
                 xdiff = ( x[i]-x[j] )
@@ -114,7 +114,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)  + zdiff*g + Lz*g # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) # + zdiff*g + Lz*g # zdiff/(r*r*r)
                 ax[i] = ax[i] + fx
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz

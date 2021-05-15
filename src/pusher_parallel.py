@@ -26,7 +26,7 @@ def verlet_periodic(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) +zdiff*g  +Lz*g  # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) #+zdiff*g  +Lz*g  # zdiff/(r*r*r)
                 ax[i] += fx
                 ay[i] += fy
                 az[i] += fz
@@ -44,6 +44,11 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g):
         ux[i] = vx[i] + ax[i] * dt/2.0
         uy[i] = vy[i] + ay[i] * dt/2.0
         uz[i] = vz[i] + az[i] * dt/2.0
+        if (z[i] <= -Lz):
+            z[i] = -Lz
+            uz[i] = 0.0
+            ux[i] = 0.0
+            uy[i] = 0.0
         x[i] = x[i] + ux[i] * dt
         y[i] = y[i] + uy[i] * dt
         z[i] = z[i] + uz[i] * dt
@@ -54,14 +59,14 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g):
         if (y[i] > Ly or y[i] < -Ly):
             y[i] -= uy[i] * dt
             uy[i] = -uy[i]
-        if (z[i] > Lz or z[i] < -Lz):
+        if (z[i] > Lz):
             z[i] -= uz[i] * dt
             uz[i] = -uz[i]
 
     for i in prange(N):
         ax[i] = 0.0
         ay[i] = 0.0
-        az[i] = 0.0
+        az[i] = -(z[i]+Lz)*g
         for j in range(N):
             if (i != j):
                 xdiff = ( x[i]-x[j] )
@@ -70,7 +75,7 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) + zdiff*g + Lz*g # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) #+ zdiff*g + Lz*g # zdiff/(r*r*r)
                 ax[i] += fx
                 ay[i] += fy
                 az[i] += fz
