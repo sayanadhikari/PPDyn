@@ -80,7 +80,7 @@ Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ 
 ; @file		input.ini
 ; @brief	PPDyn inputfile.
 ;
-scope = default
+;scope = default
 
 [simbox]
 Lx  = 10.0    ; System length in X
@@ -88,7 +88,7 @@ Ly  = 10.0    ; System length in Y
 Lz  = 10.0    ; System length in Z
 
 [particles]
-N     = 700     ; Number of particles
+N     = 200     ; Number of particles
 Vxmax = 1.0     ; Maximum velocity in X
 Vymax = 1.0     ; Maximum velocity in Y
 Vzmax = 1.0     ; Maximum velocity in Z
@@ -101,13 +101,14 @@ k = 1.0
 btype = reflecting ; Type of boundary Options: periodic, reflecting
 
 [time]
-tmax  = 1000.0    ; Final time
+tmax  = 100.0    ; Final time
 dt    = 0.010   ; time step size
 
 [diagnostics]
 dumpPeriod  = 50    ; Data dump period
 dumpData    = True
-vtkData     = False
+vtkData     = True
+realTime    = True
 
 [options]
 parallelMode  = True  ;set to false to disable parallel
