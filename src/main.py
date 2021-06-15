@@ -51,6 +51,7 @@ def main(argv):
     k       = float(params['screening']['k'])
 
     g       = float(params['gravity']['g_0'])
+    #rc      = float(params['cutoff radius']['r_c'])
     Temp    = float(params['particles']['Temp'])
 
     tmax    = float(params['time']['tmax'])  # Final time

@@ -80,9 +80,30 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g):
                 ay[i] += fy
                 az[i] += fz
 
+    #for i in prange(N):
+        #vx[i] = ux[i] + ax[i] * dt / 2.0
+        #vy[i] = uy[i] + ay[i] * dt / 2.0
+        #vz[i] = uz[i] + az[i] * dt / 2.0
+
+
     for i in prange(N):
-        vx[i] = ux[i] + ax[i] * dt / 2.0
-        vy[i] = uy[i] + ay[i] * dt / 2.0
-        vz[i] = uz[i] + az[i] * dt / 2.0
-        KE += ((vx[i]*vx[i]) + (vy[i]*vy[i]) + (vz[i]*vz[i]) ) / 2.0
+        for j in range(N):
+            if (i != j):
+                xdiff = ( x[i]-x[j] )
+                ydiff = ( y[i]-y[j] )
+                zdiff = ( z[i]-z[j] )
+                vxdiff = ( vx[i]-vx[j] )
+                vydiff = ( vy[i]-vy[j] )
+                vzdiff = ( vz[i]-vz[j] )
+                r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
+                rc= 1e-5
+                if (r < 2*rc):
+                    vx[i] = vx[i] - (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r) + ax[i] * dt / 2.0
+                    vy[i] = vy[i] - (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r) + ax[i] * dt / 2.0
+                    vz[i] = vz[i] - (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r) + ax[i] * dt / 2.0
+                    vx[j] = vx[j] + (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r) + ax[i] * dt / 2.0
+                    vy[j] = vy[j] + (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r) + ax[i] * dt / 2.0
+                    vz[j] = vz[j] + (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r) + ax[i] * dt / 2.0
+
+        KE += ((vx[i]*vx[i]) + (vy[i]*vy[i]) + (vz[i]*vz[i]) + (vx[j]*vx[j]) + (vy[j]*vy[j])  + (vz[j]*vz[j])) / 2.0
     return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE
