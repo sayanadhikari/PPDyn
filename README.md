@@ -24,6 +24,8 @@ Example:
 ## Contributors
 - [Sayan Adhikari](https://github.com/sayanadhikari), UiO, Norway. [@sayanadhikari](https://twitter.com/sayanadhikari)
 - [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA.
+- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India
+- [Rupali Paul](https://github.com/rupali-paul), IPR, India
 
 ## Installation
 ### Prerequisites
