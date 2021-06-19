@@ -76,9 +76,9 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r) #+ zdiff*g + Lz*g # zdiff/(r*r*r)
-                ax[i] += fx
-                ay[i] += fy
-                az[i] += fz
+                ax[i] += fx/M[i]
+                ay[i] += fy/M[i]
+                az[i] += fz/M[i]
 
     for i in prange(N):
         vx[i] = ux[i] + ax[i] * dt / 2.0
