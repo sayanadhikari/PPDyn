@@ -63,7 +63,7 @@ def main(argv):
     #========= Charge and Mass distribution ========
     if dist:
         M  = np.random.normal(loc=1,scale=0.2,size=(N)) #mass of particles (Gaussian)
-        Q = M*1.1 # charge of particles
+        Q = M**(2/3) # charge of particles
     else:
         M = np.ones(N)
         Q = M
