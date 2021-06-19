@@ -2,7 +2,7 @@ from numba import jit, prange
 import numpy as np
 
 @jit(nopython=True, parallel=True)
-def verlet_periodic(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k):
+def verlet_periodic(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M):
     for i in prange(N):
         ux[i] = vx[i] + ax[i] * dt/2.0
         uy[i] = vy[i] + ay[i] * dt/2.0
@@ -26,7 +26,7 @@ def verlet_periodic(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k):
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # zdiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r) #+zdiff*g  +Lz*g  # zdiff/(r*r*r)
                 ax[i] += fx
                 ay[i] += fy
                 az[i] += fz
@@ -39,11 +39,16 @@ def verlet_periodic(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k):
     return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE
 
 @jit(nopython=True, parallel=True)
-def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k):
+def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M):
     for i in prange(N):
         ux[i] = vx[i] + ax[i] * dt/2.0
         uy[i] = vy[i] + ay[i] * dt/2.0
         uz[i] = vz[i] + az[i] * dt/2.0
+        if (z[i] <= -Lz):
+            z[i] = -Lz
+            uz[i] = 0.0
+            ux[i] = 0.0
+            uy[i] = 0.0
         x[i] = x[i] + ux[i] * dt
         y[i] = y[i] + uy[i] * dt
         z[i] = z[i] + uz[i] * dt
@@ -54,23 +59,23 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k):
         if (y[i] > Ly or y[i] < -Ly):
             y[i] -= uy[i] * dt
             uy[i] = -uy[i]
-        if (z[i] > Lz or z[i] < -Lz):
+        if (z[i] > Lz):
             z[i] -= uz[i] * dt
             uz[i] = -uz[i]
 
     for i in prange(N):
         ax[i] = 0.0
         ay[i] = 0.0
-        az[i] = 0.0
+        az[i] = -(z[i]+Lz)*g
         for j in range(N):
             if (i != j):
                 xdiff = ( x[i]-x[j] )
-                ydiff = ( y[i]-y[j] ) 
+                ydiff = ( y[i]-y[j] )
                 zdiff = ( z[i]-z[j] )
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
-                fx = xdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # xdiff/(r*r*r)
-                fy = ydiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+k*r)*np.exp(-k*r)/(r*r*r)    # zdiff/(r*r*r)
+                fx = xdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
+                fy = ydiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
+                fz = zdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r) #+ zdiff*g + Lz*g # zdiff/(r*r*r)
                 ax[i] += fx
                 ay[i] += fy
                 az[i] += fz
@@ -79,5 +84,28 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k):
         vx[i] = ux[i] + ax[i] * dt / 2.0
         vy[i] = uy[i] + ay[i] * dt / 2.0
         vz[i] = uz[i] + az[i] * dt / 2.0
+
+
+    for i in prange(N):
+        for j in range(N):
+            if (i != j):
+                xdiff = ( x[i]-x[j] )
+                ydiff = ( y[i]-y[j] )
+                zdiff = ( z[i]-z[j] )
+                vxdiff = ( vx[i]-vx[j] )
+                vydiff = ( vy[i]-vy[j] )
+                vzdiff = ( vz[i]-vz[j] )
+                r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
+                rc= 1e-5
+                if (r < 2*rc):
+                    vx[i] = vx[i] - ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r)
+                    vy[i] = vy[i] - ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r)
+                    vz[i] = vz[i] - ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r)
+                    vx[j] = vx[j] + ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r)
+                    vy[j] = vy[j] + ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r)
+                    vz[j] = vz[j] + ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r)
+
+    for i in prange(N):
         KE += ((vx[i]*vx[i]) + (vy[i]*vy[i]) + (vz[i]*vz[i]) ) / 2.0
+
     return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE

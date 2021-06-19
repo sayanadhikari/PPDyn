@@ -30,7 +30,7 @@ energy = h5["/energy"]
 energy = 3*(np.array(energy[:-1]))/N
 
 fig,ax = plt.subplots(figsize=(6, 6))
-plt.plot(time[1:],energy[1:])
+plt.plot(time[10:],energy[10:])
 ax.set_xlabel("$timestep$")
 ax.set_ylabel("$Energy$")
 

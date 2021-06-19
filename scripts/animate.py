@@ -2,10 +2,11 @@
 
 import numpy as np
 import h5py
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits import mplot3d
-
+#matplotlib.use('MacOSX')
 # import plotly.graph_objects as go
 #========= Configuration ===========
 show_anim = True

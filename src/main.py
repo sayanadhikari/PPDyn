@@ -22,7 +22,6 @@ import sys
 import argparse
 
 ## User defined functions
-
 from thermostat import berendsen
 import diagn
 
@@ -51,11 +50,23 @@ def main(argv):
 
     k       = float(params['screening']['k'])
 
+    g       = float(params['gravity']['g_0'])
+    #rc      = float(params['cutoff radius']['r_c'])
     Temp    = float(params['particles']['Temp'])
 
     tmax    = float(params['time']['tmax'])  # Final time
     dt      = float(params['time']['dt']) # time step size
     Nt      = round(tmax/dt) #number of time steps
+
+    dist    = bool(params['particles']['dist'])
+
+    #========= Charge and Mass distribution ========
+    if dist:
+        M  = np.random.normal(loc=1,scale=0.2,size=(N)) #mass of particles (Gaussian)
+        Q = M*1.1 # charge of particles
+    else:
+        M = np.ones(N)
+        Q = M
 
     #========= Boundary ==========
     btype   = str(params['boundary']['btype']) # Type of boundary
@@ -92,13 +103,13 @@ def main(argv):
             from init import initial_reflecting as initial
             print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
-    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod)
+    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q)
 
     #========= Time Loop =========
 
     for t in range(len(time)):
         KE = 0.0   # Reset KE
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k)
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
         #============  Thermostat =========================
         vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 
