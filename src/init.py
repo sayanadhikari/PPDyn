@@ -62,7 +62,7 @@ def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q):
 
 
 @jit(nopython=True)
-def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q):
+def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M):
     random.seed(99999999)
     x  = np.empty(N, dtype=np.float64)
     y  = np.empty(N, dtype=np.float64)
