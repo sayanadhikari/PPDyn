@@ -103,7 +103,7 @@ def main(argv):
             from init import initial_reflecting as initial
             print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
-    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q)
+    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M)
 
     #========= Time Loop =========
 
