@@ -115,7 +115,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q):
                 fx = xdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r) # + zdiff*g + Lz*g # zdiff/(r*r*r)
-                ax[i] = ax[i] + fx
-                ay[i] = ay[i] + fy
-                az[i] = az[i] + fz
+                ax[i] += fx/M[i]
+                ay[i] += fy/M[i]
+                az[i] += fz/M[i]
     return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num
