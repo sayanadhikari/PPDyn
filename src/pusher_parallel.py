@@ -76,9 +76,9 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
                 fx = xdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+k*r)*np.exp(-k*r)*(Q[i]*Q[j])/(r*r*r) #+ zdiff*g + Lz*g # zdiff/(r*r*r)
-                ax[i] += fx
-                ay[i] += fy
-                az[i] += fz
+                ax[i] += fx/M[i]
+                ay[i] += fy/M[i]
+                az[i] += fz/M[i]
 
     for i in prange(N):
         vx[i] = ux[i] + ax[i] * dt / 2.0
@@ -98,12 +98,12 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 rc= 1e-5
                 if (r < 2*rc):
-                    vx[i] = vx[i] - ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r)
-                    vy[i] = vy[i] - ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r)
-                    vz[i] = vz[i] - ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r)
-                    vx[j] = vx[j] + ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r)
-                    vy[j] = vy[j] + ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r)
-                    vz[j] = vz[j] + ( (2*M[i]*M[j]) / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r)
+                    vx[i] = vx[i] - ( 2*M[j] / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r)
+                    vy[i] = vy[i] - ( 2*M[j] / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r)
+                    vz[i] = vz[i] - ( 2*M[j] / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r)
+                    vx[j] = vx[j] + ( 2*M[i] / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * xdiff / (r*r)
+                    vy[j] = vy[j] + ( 2*M[i] / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * ydiff / (r*r)
+                    vz[j] = vz[j] + ( 2*M[i] / (M[i]+M[j]) ) * (vxdiff*xdiff + vydiff*ydiff + vzdiff*zdiff) * zdiff / (r*r)
 
     for i in prange(N):
         KE += ((vx[i]*vx[i]) + (vy[i]*vy[i]) + (vz[i]*vz[i]) ) / 2.0

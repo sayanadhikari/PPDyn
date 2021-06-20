@@ -63,7 +63,7 @@ def main(argv):
     #========= Charge and Mass distribution ========
     if dist:
         M  = np.random.normal(loc=1,scale=0.2,size=(N)) #mass of particles (Gaussian)
-        Q = M*1.1 # charge of particles
+        Q = M**(2/3) # charge of particles
     else:
         M = np.ones(N)
         Q = M
@@ -103,7 +103,7 @@ def main(argv):
             from init import initial_reflecting as initial
             print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
-    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q)
+    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M)
 
     #========= Time Loop =========
 
