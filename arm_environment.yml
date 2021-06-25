@@ -1,4 +1,4 @@
-name: ppdyn
+name: ppdyn_arm
 channels:
   - conda-forge
 dependencies:
