@@ -1,4 +1,4 @@
-#!/usr/bin/ python
+#!/usr/env/ python
 
 """
 ** Plasma Particle Dynamics (PPDyn) **
@@ -64,7 +64,7 @@ def main(argv):
     dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
     path        = "data/"  # DO NOT CHANGE THE PATH
     os.makedirs(path, exist_ok=True)
-        
+
     dumpData    = bool(params['diagnostics']['dumpData'])
     f           = h5py.File(path+"particle.hdf5","w")
     if dumpData:
