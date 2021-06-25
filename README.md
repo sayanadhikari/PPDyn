@@ -35,6 +35,29 @@ Example:
 3. [git](https://git-scm.com/)
 
 ### Procedure
+#### Using Anaconda/Miniconda
+First make a clone of the master branch using the following command
+```shell
+git clone https://github.com/sayanadhikari/PPDyn.git
+```
+Then enter inside the *PPDyn* directory
+```shell
+cd PPDyn
+```
+Now create a conda environment using the given *environment.yml* file
+```shell
+conda env create -f environment.yml
+```
+Activate the conda environment
+```shell
+conda activate ppdyn
+```
+*Usage*
+
+Upon successful compilation, run the code using following command
+```shell
+python ppdyn.py -i input.ini
+```
 #### Using PyPI
 ```bash
 pip install PPDyn
