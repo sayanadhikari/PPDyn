@@ -4,6 +4,7 @@
 [![DOI](https://zenodo.org/badge/349242730.svg)](https://zenodo.org/badge/latestdoi/349242730)
 [![Documentation Status](https://readthedocs.org/projects/ppdyn/badge/?version=latest)](https://ppdyn.readthedocs.io/en/latest/?badge=latest)
 [![PyPI Version](https://img.shields.io/pypi/v/ppdyn.svg)](https://pypi.org/project/PPDyn/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sayanadhikari/PPDyn/main)
 
 A python code to simulate plasma particles using Molecular Dynamics Algorithm. [Numba JIT compiler](https://numba.pydata.org/) for Python has been implemented for faster performance.
 
@@ -24,6 +25,8 @@ Example:
 ## Contributors
 - [Sayan Adhikari](https://github.com/sayanadhikari), UiO, Norway. [@sayanadhikari](https://twitter.com/sayanadhikari)
 - [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA.
+- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India
+- [Rupali Paul](https://github.com/rupali-paul), IPR, India
 
 ## Installation
 ### Prerequisites
@@ -80,7 +83,7 @@ Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ 
 ; @file		input.ini
 ; @brief	PPDyn inputfile.
 ;
-scope = default
+;scope = default
 
 [simbox]
 Lx  = 10.0    ; System length in X
@@ -88,7 +91,7 @@ Ly  = 10.0    ; System length in Y
 Lz  = 10.0    ; System length in Z
 
 [particles]
-N     = 700     ; Number of particles
+N     = 200     ; Number of particles
 Vxmax = 1.0     ; Maximum velocity in X
 Vymax = 1.0     ; Maximum velocity in Y
 Vzmax = 1.0     ; Maximum velocity in Z
@@ -101,13 +104,14 @@ k = 1.0
 btype = reflecting ; Type of boundary Options: periodic, reflecting
 
 [time]
-tmax  = 1000.0    ; Final time
+tmax  = 100.0    ; Final time
 dt    = 0.010   ; time step size
 
 [diagnostics]
 dumpPeriod  = 50    ; Data dump period
 dumpData    = True
-vtkData     = False
+vtkData     = True
+realTime    = True
 
 [options]
 parallelMode  = True  ;set to false to disable parallel
