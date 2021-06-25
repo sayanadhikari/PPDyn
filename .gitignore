@@ -17,3 +17,4 @@ docs/build
 .pypirc
 tests/*
 tests*
+data/*
