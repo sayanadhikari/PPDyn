@@ -181,4 +181,3 @@ dependencies:
     - sklearn==0.0
     - tensorflow==2.4.0rc0
     - tensorflow-addons==0.11.2
-prefix: /Users/sayan/miniforge3/envs/apple_tensorflow
