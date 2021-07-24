@@ -97,7 +97,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,T
     #     svz = svz + vz[i]
     x = np.random.random(N)*2.0*Lx - Lx
     y = np.random.random(N)*2.0*Ly - Ly
-    z = np.random.random(N)*2.0*Lz - Lz
+    z = np.ones(N)*Lz #np.random.random(N)*2.0*Lz - Lz
 
     # Random velocity
     # vx = np.random.random(N)*Vxmax - Vxmax/2.0
