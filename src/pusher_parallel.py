@@ -49,6 +49,7 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
             uz[i] = 0.0
             ux[i] = 0.0
             uy[i] = 0.0
+            Q[i]  = 0.0      #Make charges zero as they hit the ground
         x[i] = x[i] + ux[i] * dt
         y[i] = y[i] + uy[i] * dt
         z[i] = z[i] + uz[i] * dt
@@ -108,4 +109,4 @@ def verlet_reflecting(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
     for i in prange(N):
         KE += ((vx[i]*vx[i]) + (vy[i]*vy[i]) + (vz[i]*vz[i]) ) / 2.0
 
-    return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE
+    return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q

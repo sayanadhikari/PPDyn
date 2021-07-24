@@ -62,7 +62,7 @@ def initial_periodic(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q):
 
 
 @jit(nopython=True)
-def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M):
+def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp):
     random.seed(99999999)
     x  = np.empty(N, dtype=np.float64)
     y  = np.empty(N, dtype=np.float64)
@@ -85,21 +85,41 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M):
     time  = np.linspace(0,tmax,Nt)
     data_num = np.arange(start=0, stop=Nt, step=dumpPeriod, dtype=np.int64)
 
-    for i in range(N):
-        x[i] = (random.random())*2.0*Lx - Lx
-        y[i] = (random.random())*2.0*Ly - Ly
-        z[i] =  Lz #(random.random())*2.0*Lz - Lz
-        vx[i] = (random.random())*Vxmax - Vxmax/2.0
-        vy[i] = (random.random())*Vymax - Vymax/2.0
-        vz[i] = (random.random())*Vzmax - Vzmax/2.0
-        svx = svx + vx[i]
-        svy = svy + vy[i]
-        svz = svz + vz[i]
+    # for i in range(N):
+    #     x[i] = (random.random())*2.0*Lx - Lx
+    #     y[i] = (random.random())*2.0*Ly - Ly
+    #     z[i] =  Lz #(random.random())*2.0*Lz - Lz
+    #     vx[i] = (random.random())*Vxmax - Vxmax/2.0
+    #     vy[i] = (random.random())*Vymax - Vymax/2.0
+    #     vz[i] = (random.random())*Vzmax - Vzmax/2.0
+    #     svx = svx + vx[i]
+    #     svy = svy + vy[i]
+    #     svz = svz + vz[i]
+    x = np.random.random(N)*2.0*Lx - Lx
+    y = np.random.random(N)*2.0*Ly - Ly
+    z = np.random.random(N)*2.0*Lz - Lz
 
-    for i in range(N):
-        vx[i] = vx[i] - svx/N
-        vy[i] = vy[i] - svy/N
-        vz[i] = vz[i] - svz/N
+    # Random velocity
+    # vx = np.random.random(N)*Vxmax - Vxmax/2.0
+    # vy = np.random.random(N)*Vymax - Vymax/2.0
+    # vz = np.random.random(N)*Vzmax - Vzmax/2.0
+
+    # Maxwellian
+    vx = np.random.normal(0, Temp, N)
+    vy = np.random.normal(0, Temp, N)
+    vz = np.random.normal(0, Temp, N)
+
+    svx = svx + np.sum(vx)
+    svy = svy + np.sum(vy)
+    svz = svz + np.sum(vz)
+
+    vx = vx - svx/N
+    vy = vy - svy/N
+    vz = vz - svz/N
+
+
+
+
 
 
     for i in range(N):

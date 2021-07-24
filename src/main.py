@@ -103,15 +103,15 @@ def main(argv):
             from init import initial_reflecting as initial
             print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
-    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M)
+    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp)
 
     #========= Time Loop =========
 
     for t in range(len(time)):
         KE = 0.0   # Reset KE
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
         #============  Thermostat =========================
-        vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
+        # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 
         #============ Diagnostics Write ===================
         if dumpData:
