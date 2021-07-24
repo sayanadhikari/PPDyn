@@ -1,12 +1,16 @@
 import numpy as np
-def configSpace(f,dset,t,x,y,z,KE):
+def configSpace(f,dsetE,dsetQ,t,x,y,z,KE,Qcollect):
 
     f["/%d"%int(t)+"/position/x"] = x
     f["/%d"%int(t)+"/position/y"] = y
     f["/%d"%int(t)+"/position/z"] = z
     # f["/%d"%int(t)+"/energy"] = KE
-    dset.resize(dset.shape[0]+1, axis=0)
-    dset[-1:] = KE
+
+    dsetE.resize(dsetE.shape[0]+1, axis=0)
+    dsetE[-1:] = KE
+
+    dsetQ.resize(dsetQ.shape[0]+1, axis=0)
+    dsetQ[-1:] = Qcollect
 
     with open("data/energy.txt","ab") as f:
         np.savetxt(f, np.column_stack([t, KE]))
@@ -22,4 +26,10 @@ def attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod):
     f.attrs["Lx"] = Lx
     f.attrs["Ly"] = Ly
     f.attrs["Lz"] = Lz
+    return 0
+
+def dustDiagn(f,fduration):
+
+    f["/fall_duration"] = fduration
+    # f["/%d"%int(t)+"/energy"] = KE
     return 0

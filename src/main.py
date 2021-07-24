@@ -78,7 +78,8 @@ def main(argv):
     f           = h5py.File(path+"particle.hdf5","w")
     if dumpData:
         diagn.attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod)
-        dset = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
+        dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
+        dsetQ = f.create_dataset('Qcollect', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
     vtkData     = bool(params['diagnostics']['vtkData'])
     realTime    = bool(params['diagnostics']['realTime'])
@@ -103,22 +104,24 @@ def main(argv):
             from init import initial_reflecting as initial
             print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
-    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp)
+    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp)
 
     #========= Time Loop =========
 
     for t in range(len(time)):
         KE = 0.0   # Reset KE
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M)
+        Qcollect = 0.0 # Initialize Q_collect
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,fduration,t,Qcollect)
         #============  Thermostat =========================
         # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 
         #============ Diagnostics Write ===================
         if dumpData:
             if t%dumpPeriod==0:
-                diagn.configSpace(f,dset,t,x,y,z,KE)
+                diagn.configSpace(f,dsetE,dsetQ,t,x,y,z,KE,Qcollect)
                 print('TimeSteps = %d'%int(t)+' of %d'%Nt+' Energy: %e'%KE)
 
+    diagn.dustDiagn(f,fduration)
     if vtkData:
         from vtk_data import vtkwrite
         print('Writing VTK files for Paraview visualization ...')

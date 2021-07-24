@@ -29,10 +29,14 @@ time = data_num*dp
 energy = h5["/energy"]
 energy = 3*(np.array(energy[:-1]))/N
 
-fig,ax = plt.subplots(figsize=(6, 6))
-plt.plot(time[10:],energy[10:])
-ax.set_xlabel("$timestep$")
-ax.set_ylabel("$Energy$")
+fig,(ax1,ax2) = plt.subplots(2,1,figsize=(8, 6))
+ax1.plot(time[10:],energy[10:])
+ax1.set_xlabel("$timestep$")
+ax1.set_ylabel("$Energy$")
+
+# ax2.plot(N,energy[10:])
+# ax2.set_xlabel("$timestep$")
+# ax2.set_ylabel("$Energy$")
 
 
 

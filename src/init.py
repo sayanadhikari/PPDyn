@@ -76,6 +76,7 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,T
     ax = np.empty(N, dtype=np.float64)
     ay = np.empty(N, dtype=np.float64)
     az = np.empty(N, dtype=np.float64)
+    fduration = np.zeros(N, dtype=np.float64)
 
     svx  = 0.0  # velocity sum correction term in X
     svy  = 0.0  # velocity sum correction term in Y
@@ -138,4 +139,4 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,T
                 ax[i] += fx/M[i]
                 ay[i] += fy/M[i]
                 az[i] += fz/M[i]
-    return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num
+    return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration
