@@ -1,0 +1,15 @@
+name: ppdyn
+channels:
+  - default
+dependencies:
+  - python>=3.8
+  - pip
+  - numpy=1.20.2
+  - pip:
+    - pyevtk
+    - ini-parser
+    - matplotlib
+    - h5py
+    - numba
+    - argparse
+    - scipy
