@@ -110,13 +110,13 @@ def initial_reflecting(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,T
     vy = np.random.normal(0, Temp, N)
     vz = np.random.normal(0, Temp, N)
 
-    svx = svx + np.sum(vx)
-    svy = svy + np.sum(vy)
-    svz = svz + np.sum(vz)
-
-    vx = vx - svx/N
-    vy = vy - svy/N
-    vz = vz - svz/N
+    # svx = svx + np.sum(vx)
+    # svy = svy + np.sum(vy)
+    # svz = svz + np.sum(vz)
+    #
+    # vx = vx - svx/N
+    # vy = vy - svy/N
+    # vz = vz - svz/N
 
 
 

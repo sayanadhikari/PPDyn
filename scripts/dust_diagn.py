@@ -52,9 +52,9 @@ mp.rc('legend', fontsize=14)
 
 fig,ax1 = plt.subplots(figsize=figsize/25.4,constrained_layout=True,dpi=ppi)
 
-sns.distplot(fduration, hist=False, kde=True, color = 'darkblue',
-             hist_kws={'edgecolor':'black'},
-             kde_kws={'shade': True, 'linewidth': 1},ax=ax1)
+sns.kdeplot(fduration,fill=True,linewidth=1, ax=ax1)
+# sns.kdeplot(fduration,fill=True,common_norm=False, palette="crest",
+#    alpha=.5, linewidth=0, ax=ax1)
 
 ax1.set_xlabel("$Fall~time \mathrm[steps]$")
 ax1.set_ylabel("A.U.")
