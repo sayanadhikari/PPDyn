@@ -20,8 +20,14 @@
 
 # LOAD A MODULE BASED ON APPLICATION/CODE REQUIREMENT
 module load anaconda/3
+conda init
+# REMEMBER TO REPLACE user.name WITH YOUR OWN USERNAME
+# OR SIMPLY REPLACE THE .BASHRC PATH
+source /home/user.name/.bashrc
 conda deactivate &>/dev/null
-conda activate /home/rinku.mishra/.conda/envs/ppdyn
+# REMEMBER TO CHANGE IT TO YOUR OWN ENVIRONMENT PATH
+# TO FIND THE PATH USE: conda info --envs
+conda activate /home/user.name/.conda/envs/ppdyn
 module list
 export HDF5_USE_FILE_LOCKING='FALSE'
 
