@@ -74,6 +74,8 @@ def main(argv):
     #========= Diagnostics =======
     dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
     path        = "data/"  # DO NOT CHANGE THE PATH
+    if  os.path.exists(path)== False:
+        os.mkdir(path)
     dumpData    = bool(params['diagnostics']['dumpData'])
     f           = h5py.File(path+"particle.hdf5","w")
     if dumpData:
