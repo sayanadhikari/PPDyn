@@ -15,7 +15,7 @@
 #EMAIL IS SENT WHEN THE JOB STARTS, TERMINATES AND ABORTS
 #PBS -m bea
 ## SPECIFY EMAIL ADDRESS FOR NOTIFICATIONS
-#PBS -M rinku.mishra@cppipr.res.in
+#PBS -M user.name@domain.org
 
 
 # LOAD A MODULE BASED ON APPLICATION/CODE REQUIREMENT
@@ -32,13 +32,8 @@ module list
 export HDF5_USE_FILE_LOCKING='FALSE'
 
 # WORKING DIRECTORY OF CODE/APPLICATION
-#cd /scratch/scratch_run/deepakagg/queue_testing
 # ENVIRONMENT VARIABLE FOR ACCESSING THE WORKING DIRECTORY WITH PBS VARIABLE
 cd $PBS_O_WORKDIR
 
-# WRITE IN NODES.TXT FILE, THE NODES ON WHICH THE RUN HAS BEEN LAUNCHED
-#cat ${PBS_NODEFILE} > /scratch/scratch_data/deepakagg/queue_testing/nodes.txt
-
 # RUN COMMAND BASED ON CODE/APPLICATION
 time python ppdyn.py -i input.ini
-#time mpirun -np 40 --machinefile $PBS_NODEFILE hostname > /scratch/scratch_data/deepakagg/queue_testing/output.txt
