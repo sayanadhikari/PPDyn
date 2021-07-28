@@ -13,3 +13,4 @@ dependencies:
     - numba
     - argparse
     - scipy
+    - seaborn
