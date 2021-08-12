@@ -73,11 +73,13 @@ def main(argv):
 
     #========= Diagnostics =======
     dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
-    path        = "data/"  # DO NOT CHANGE THE PATH
+    pathName    = str(params['directory']['path'])
+    path        = pjoin(pathName)
+    # path        = "data/"  # DO NOT CHANGE THE PATH
     if  os.path.exists(path)== False:
         os.mkdir(path)
     dumpData    = bool(params['diagnostics']['dumpData'])
-    f           = h5py.File(path+"particle.hdf5","w")
+    f           = h5py.File(pjoin(path,"particle.hdf5"),"w")
     if dumpData:
         diagn.attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod)
         dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
@@ -120,14 +122,15 @@ def main(argv):
         #============ Diagnostics Write ===================
         if dumpData:
             if t%dumpPeriod==0:
-                diagn.configSpace(f,dsetE,dsetQ,t,x,y,z,KE,Qcollect)
+                diagn.configSpace(f,dsetE,dsetQ,t,x,y,z,vx,vy,vz,KE,Qcollect,path)
                 print('TimeSteps = %d'%int(t)+' of %d'%Nt+' Energy: %e'%KE)
 
     diagn.dustDiagn(f,fduration)
     if vtkData:
         from vtk_data import vtkwrite
         print('Writing VTK files for Paraview visualization ...')
-        vtkwrite()
+        vtkwrite(path)
+    os.remove(pjoin(path,'energy.txt'))
     return 0
     #========== End of Time Loop ======
 
@@ -136,4 +139,3 @@ if __name__== "__main__":
 	main(sys.argv[1:])
 	end = time.time()
 	print("Elapsed (after compilation) = %s"%(end - start)+" seconds")
-	os.remove(pjoin(path,'energy.txt'))

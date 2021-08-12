@@ -5,16 +5,21 @@ import h5py
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib as mp
+from os.path import join as pjoin
+import sys
 # import pandas as pd
 
 # import plotly.graph_objects as go
 #========= Configuration ===========
 
-DIR ="../data"
+try:
+    DIR =sys.argv[1]
+except:
+    print('ERROR: Provide the data directory path')
 
 file_name = "particle"#"rhoNeutral" #"P"
 
-h5 = h5py.File('../data/'+file_name+'.hdf5','r')
+h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
 
 Lx = h5.attrs["Lx"]
 Ly = h5.attrs["Ly"]

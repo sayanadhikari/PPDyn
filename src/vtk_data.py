@@ -4,11 +4,11 @@ from os.path import join as pjoin
 import h5py
 import os
 
-def vtkwrite():
+def vtkwrite(path):
     file_name = "particle"#"rhoNeutral" #"P"
-    if os.path.exists(pjoin('data','vtkdata')) == False:
-        os.mkdir(pjoin('data','vtkdata'))
-    h5 = h5py.File(pjoin('data',file_name+'.hdf5'),'r')
+    if os.path.exists(pjoin(path,'vtkdata')) == False:
+        os.mkdir(pjoin(path,'vtkdata'))
+    h5 = h5py.File(pjoin(path,file_name+'.hdf5'),'r')
 
     Lx = h5.attrs["Lx"]
     Ly = h5.attrs["Ly"]
@@ -26,4 +26,4 @@ def vtkwrite():
         datax = np.array(datax)
         datay = np.array(datay)
         dataz = np.array(dataz)
-        pointsToVTK(pjoin('data','vtkdata','points_%d'%i), datax, datay, dataz)
+        pointsToVTK(pjoin(path,'vtkdata','points_%d'%i), datax, datay, dataz)

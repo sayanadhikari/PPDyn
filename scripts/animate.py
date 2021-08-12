@@ -6,18 +6,23 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits import mplot3d
+from os.path import join as pjoin
+import sys
 #matplotlib.use('MacOSX')
 # import plotly.graph_objects as go
 #========= Configuration ===========
 show_anim = True
 save_anim = False
 interval = 10 #in milliseconds
-
-DIR ="../data"
+try:
+    DIR =sys.argv[1]
+except:
+    print('ERROR: Provide the data directory path')
+# folder = sys.argv[1]
 
 file_name = "particle"#"rhoNeutral" #"P"
 
-h5 = h5py.File('../data/'+file_name+'.hdf5','r')
+h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
 
 Lx = h5.attrs["Lx"]
 Ly = h5.attrs["Ly"]
