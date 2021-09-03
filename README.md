@@ -35,7 +35,7 @@ Example:
 3. [git](https://git-scm.com/)
 
 ### Procedure
-#### Using Anaconda/Miniconda
+#### Using Anaconda/Miniconda (Preferred)
 First make a clone of the master branch using the following command
 ```shell
 git clone https://github.com/sayanadhikari/PPDyn.git
