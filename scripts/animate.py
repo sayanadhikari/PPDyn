@@ -20,7 +20,7 @@ except:
     print('ERROR: Provide the data directory path')
 # folder = sys.argv[1]
 
-file_name = "particle"#"rhoNeutral" #"P"
+file_name = "particle"#"2D1000p"#"rhoNeutral" #"P"
 
 h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
 
@@ -30,6 +30,11 @@ Lz = h5.attrs["Lz"]
 
 dp   = h5.attrs["dp"]
 Nt   = h5.attrs["Nt"]
+
+M = h5["/particle/M"]
+min_M=min(M); max_M=max(M)
+col = (M[:]-min_M)/(max_M-min_M)
+colors = [['black','red'][int(c)] for c in col]
 
 
 data_num = np.arange(start=0, stop=Nt, step=dp, dtype=int)
@@ -41,7 +46,7 @@ if (show_anim == True):
         datay = h5["/%d"%data_num[i]+"/position/y"]
         dataz = h5["/%d"%data_num[i]+"/position/z"]
         ax1.cla()
-        img1 = ax1.scatter(datax,datay,dataz,marker='o',color='b',alpha=1.0,s=10)
+        img1 = ax1.scatter(datax,datay,dataz,marker='o',color=colors,alpha=1.0,s=10)
         ax1.set_title('TimeSteps = %d'%(i*dp)+'\n Phase Space')
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")

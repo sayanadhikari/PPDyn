@@ -8,6 +8,7 @@ def configSpace(f,dsetE,dsetQ,t,x,y,z,vx,vy,vz,KE,Qcollect,path):
     f["/%d"%int(t)+"/velocity/vx"] = vx
     f["/%d"%int(t)+"/velocity/vy"] = vy
     f["/%d"%int(t)+"/velocity/vz"] = vz
+
     # f["/%d"%int(t)+"/energy"] = KE
 
     dsetE.resize(dsetE.shape[0]+1, axis=0)
@@ -21,7 +22,7 @@ def configSpace(f,dsetE,dsetQ,t,x,y,z,vx,vy,vz,KE,Qcollect,path):
 
     return 0
 
-def attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod):
+def attributes(f,tmax,Lx,Ly,Lz,a,Q,M,N,dt,dumpPeriod):
     f.attrs["dp"] = dumpPeriod
     f.attrs["dt"] = dt
     f.attrs["Nt"] = int(tmax/(dt*dumpPeriod))
@@ -30,6 +31,9 @@ def attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod):
     f.attrs["Lx"] = Lx
     f.attrs["Ly"] = Ly
     f.attrs["Lz"] = Lz
+    f["/particle/a"] = a
+    f["/particle/Q"] = Q
+    f["/particle/M"] = M
     return 0
 
 def dustDiagn(f,fduration):

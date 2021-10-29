@@ -70,8 +70,36 @@ def main(argv):
         M = np.ones(N)
         Q = M
 
+    e = 1.602e-19
+    kb = 1.3808e-23
+
+    density = float(params['particles']['density'])*np.ones(N)
+    a_set = str(params['particles']['a']).split(',')
+    a_set = [float(a) for a in a_set]
+    a = np.random.choice(a_set,(N,))
+    Ti = float(params['plasma']['Ti'])
+    Te = float(params['plasma']['Te'])
+    V_flperp = float(params['plasma']['V_flperp'])
+    #V_fl = - Te*V_flperp*kb/e
+    Q = float(params['particles']['Q'])*a[:]/np.mean(a_set)
+    M = a[:]*a[:]*a[:]*density
+    E = float(params['plasma']['E'])
+    drag = float(params['plasma']['drag'])
+
+    #========= Force Field =======
+    Fpath = str(params['plasma']['Ffield'])
+    Ffield = np.load(Fpath)
+    if Ffield['arr_0'][-1] != Lx: Ff_rmax = Ffield["arr_0"][-1]; raise ValueError(f'Force field npz must have same range in r {Ff_rmax} as Lx {Lx}')
+    Fr = Ffield['arr_0']
+    Fel = Ffield['arr_1']
+    Fel[:] = Fel[:]*E
+    Fdrag = Ffield['arr_2']
+    Fdrag[:] = Fdrag[:]*drag
+
+
     #========= Boundary ==========
     btype   = str(params['boundary']['btype']) # Type of boundary
+    geometry = str(params['boundary']['geometry'])
 
     #========= Diagnostics =======
     dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
@@ -83,7 +111,7 @@ def main(argv):
     dumpData    = bool(params['diagnostics']['dumpData'])
     f           = h5py.File(pjoin(path,"particle.hdf5"),"w")
     if dumpData:
-        diagn.attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod)
+        diagn.attributes(f,tmax,Lx,Ly,Lz,a,Q,M,N,dt,dumpPeriod)
         dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
         dsetQ = f.create_dataset('Qcollect', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
@@ -92,20 +120,24 @@ def main(argv):
     #========== Options ============
     parallelMode    = bool(params['options']['parallelMode'])
     if parallelMode:
-        if btype == 'periodic':
+        if btype == 'periodic' and geometry == 'radial':
+            from pusher_parallel import verlet_periodic_radial as verlet
+            from init import initial_periodic_radial as initial
+            print("Running in Parallel Mode (Periodic boundary, radial geometry)")
+        elif btype == 'periodic' and geometry == 'box':
             from pusher_parallel import verlet_periodic as verlet
             from init import initial_periodic as initial
             print("Running in Parallel Mode (Periodic boundary)")
-        elif btype == 'reflecting':
+        elif btype == 'reflecting' and geometry == 'box':
             from pusher_parallel import verlet_reflecting as verlet
             from init import initial_reflecting as initial
             print("Running in Parallel Mode (Reflecting boundary)")
     else:
-        if btype == 'periodic':
+        if btype == 'periodic' and geometry == 'box':
             from pusher_serial import verlet_periodic as verlet
             from init import initial_periodic as initial
             print("Running in Serial Mode (Periodic boundary)")
-        elif btype == 'reflecting':
+        elif btype == 'reflecting' and geometry == 'box':
             from pusher_serial import verlet_reflecting as verlet
             from init import initial_reflecting as initial
             print("Running in Serial Mode (Reflecting boundary)")
@@ -117,7 +149,7 @@ def main(argv):
     for t in range(len(time)):
         KE = 0.0   # Reset KE
         Qcollect = 0.0 # Initialize Q_collect
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,fduration,t,Qcollect)
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,Fr,Fel,Fdrag,fduration,t,Qcollect)
         #============  Thermostat =========================
         # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 
