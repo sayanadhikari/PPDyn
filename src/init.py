@@ -55,6 +55,7 @@ def initial_periodic_radial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,
         ax[i] = 0.0
         ay[i] = 0.0
         az[i] = 0.0
+        """
         for j in range(N):
             if (i != j):
                 xdiff = ( x[i]-x[j] ) - round((x[i]-x[j])/(2.0*Lx)) * 2.0*Lx
@@ -67,7 +68,11 @@ def initial_periodic_radial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,
                 ax[i] = ax[i] + fx
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz
-    return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration
+        """
+    
+    z = np.zeros(len(x))   #For 2D
+    #return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration
+    return x,y,z,vx,vy,z,ux,uy,uz,ax,ay,z,time,data_num,fduration
 
 
 @jit(nopython=True)

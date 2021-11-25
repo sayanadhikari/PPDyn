@@ -1,0 +1,13 @@
+initialize 
+    -crystal structure
+    -with only some forces
+
+Implement distribution of sizes
+    -more ways to initialize particle size
+
+Distribution of sizes
+
+Interpolation of F(pos,a)
+
+notes:
+    changed the r term to not be cubed, much greater stability

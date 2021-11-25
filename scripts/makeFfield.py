@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-savefile = False
+savefile = True
 doplot = True
 
 DIR = '../staticfields/'
@@ -11,16 +11,18 @@ fEl_max = 1
 fdrag_max = 1
 
 r_max = 150
+x_scale = 50e-3
 r = np.linspace(-r_max,r_max,r_max*2+1)
-a = 0.001
+a = 0.0007
 b = 0.01
 
 fEl = -np.sign(r[:]) / (0.0+np.exp(3.0-a*r[:]*r[:])+a*0.1*r[:]*r[:])
-fdrag = np.sign(r[:]) / (0.2+np.exp(3.0-b*r[:]*r[:])+b*0.2*r[:]*r[:]) 
+fdrag = np.sign(r[:]) / (0.2+0.1*np.exp(5.0-b*r[:]*r[:])+b*0.1*r[:]*r[:]) 
 fdrag[:] = fdrag[:]+  0.5*np.sign(r[:])/(r[:]*10+(np.sign(r[:])*0.01+0.001))
 fEl = fEl_max*fEl[:]/np.max(fEl)
 fdrag = fdrag_max*fdrag[:]/np.max(fdrag)
 ftot = fdrag[:] + fEl[:]
+r[:] *= x_scale/r_max
 
 if doplot:
     fig,ax = plt.subplots()

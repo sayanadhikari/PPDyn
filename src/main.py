@@ -72,30 +72,42 @@ def main(argv):
 
     e = 1.602e-19
     kb = 1.3808e-23
+    epsilon0 = 8.8541878128e-12
 
     density = float(params['particles']['density'])*np.ones(N)
+
+    #========= a scaling =========
     a_set = str(params['particles']['a']).split(',')
     a_set = [float(a) for a in a_set]
     a = np.random.choice(a_set,(N,))
+    a_scale = a[:]/np.mean(a_set)
+
+
     Ti = float(params['plasma']['Ti'])
     Te = float(params['plasma']['Te'])
     V_flperp = float(params['plasma']['V_flperp'])
     #V_fl = - Te*V_flperp*kb/e
-    Q = float(params['particles']['Q'])*a[:]/np.mean(a_set)
+
+    
+
     M = a[:]*a[:]*a[:]*density
     E = float(params['plasma']['E'])
     drag = float(params['plasma']['drag'])
 
+    #===== Particle charge =======
+    Zn = float(params['particles']['Zn'])
+    Q = a_scale[:]*Zn*e*(-1)
+
     #========= Force Field =======
     Fpath = str(params['plasma']['Ffield'])
     Ffield = np.load(Fpath)
-    if Ffield['arr_0'][-1] != Lx: Ff_rmax = Ffield["arr_0"][-1]; raise ValueError(f'Force field npz must have same range in r {Ff_rmax} as Lx {Lx}')
+    if Ffield['arr_0'][-1] - Lx > 0.00001: 
+        Ff_rmax = Ffield["arr_0"][-1]; raise ValueError(f'Force field npz must have same range in r {Ff_rmax} as Lx {Lx}')
     Fr = Ffield['arr_0']
     Fel = Ffield['arr_1']
     Fel[:] = Fel[:]*E
     Fdrag = Ffield['arr_2']
     Fdrag[:] = Fdrag[:]*drag
-
 
     #========= Boundary ==========
     btype   = str(params['boundary']['btype']) # Type of boundary
@@ -149,7 +161,7 @@ def main(argv):
     for t in range(len(time)):
         KE = 0.0   # Reset KE
         Qcollect = 0.0 # Initialize Q_collect
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,Fr,Fel,Fdrag,fduration,t,Qcollect)
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a_scale,Fr,Fel,Fdrag,fduration,t,Qcollect)
         #============  Thermostat =========================
         # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 
