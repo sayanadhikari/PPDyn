@@ -25,6 +25,9 @@ import argparse
 from thermostat import berendsen
 import diagn
 
+## User defined constants
+from constants import K_zd, q_e, u
+
 
 path        = "data/"
 
@@ -70,9 +73,6 @@ def main(argv):
         M = np.ones(N)
         Q = M
 
-    e = 1.602e-19
-    kb = 1.3808e-23
-    epsilon0 = 8.8541878128e-12
 
     density = float(params['particles']['density'])*np.ones(N)
 
@@ -92,11 +92,29 @@ def main(argv):
 
     M = a[:]*a[:]*a[:]*density
     E = float(params['plasma']['E'])
-    drag = float(params['plasma']['drag'])
+
+    #===== Neutral drag  =========
+    R = 8.31446261815324 #Gas const
+    k_b = 1.38064852e-23 #BOltzman const
+    delta = float(params['neutrals']['delta'])
+    mn = float(params['neutrals']['mn']) * u
+    Tn = float(params['neutrals']['Tn'])
+    P = float(params['neutrals']['pressure'])
+    V = Lx*Ly*Lz
+    v_th_neutrals = np.sqrt((8*k_b*Tn)/(np.pi*mn))
+    N_neutrals = (P*V*6.02214076e23)/(R*Tn)
+    print('N neutrals: ', N_neutrals)
+    Kn_drag = delta*0.75*np.pi*N_neutrals*v_th_neutrals*mn
+    print('Kn_drag: ', Kn_drag)
+
+
+    drag = float(params['plasma']['drag']) #Maybe delete
 
     #===== Particle charge =======
-    Zn = float(params['particles']['Zn'])
-    Q = a_scale[:]*Zn*e*(-1)
+    Te = float(params['plasma']['Te'])
+    phi_hat = float(params['plasma']['phi_hat'])
+    Zd = a[:]*Te*K_zd*phi_hat
+    Q = Zd[:]*q_e
 
     #========= Force Field =======
     Fpath = str(params['plasma']['Ffield'])
@@ -161,7 +179,7 @@ def main(argv):
     for t in range(len(time)):
         KE = 0.0   # Reset KE
         Qcollect = 0.0 # Initialize Q_collect
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a_scale,Fr,Fel,Fdrag,fduration,t,Qcollect)
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fdrag,Kn_drag,fduration,t,Qcollect)
         #============  Thermostat =========================
         # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 

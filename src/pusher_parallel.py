@@ -2,7 +2,7 @@ from numba import jit, prange
 import numpy as np
 
 @jit(nopython=True, parallel=True)
-def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a_scale,Fr,Fel,Fdrag,fduration,t,Qcollect):
+def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fdrag,Kn_drag,fduration,t,Qcollect):
     for i in prange(N):
         ux[i] = vx[i] + ax[i] * dt/2.0
         uy[i] = vy[i] + ay[i] * dt/2.0
@@ -31,15 +31,15 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
                 ydiff = ( y[i]-y[j] ) - round((y[i]-y[j])/(2.0*Ly)) * 2.0*Ly
                 zdiff = ( z[i]-z[j] ) - round((z[i]-z[j])/(2.0*Lz)) * 2.0*Lz
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
-                r_inv = 1/r
-                QQr3e0 = (Q[i]*Q[j])*r_inv*1e12     #r or r^3 ?
+                r_inv = 1e-12/(8.8541878128*r*r*r)
+                QQr3e0 = (Q[i]*Q[j])*r_inv     #r or r^3 ?
                 fx += xdiff*(1+k*r)*np.exp(-k*r)*QQr3e0   # xdiff/(r*r*r)
                 fy += ydiff*(1+k*r)*np.exp(-k*r)*QQr3e0    # ydiff/(r*r*r)
                 fz += zdiff*(1+k*r)*np.exp(-k*r)*QQr3e0 #+ zdiff*g + Lz*g # zdiff/(r*r*r)
                 #az[i] += fcy/M[i]
         
-        xdiff = x[i] # diff to origin
-        ydiff = y[i] #- Ly/2.0
+        xdiff = x[i]
+        ydiff = y[i]
         zdiff = z[i]
         r = np.sqrt(xdiff*xdiff + ydiff*ydiff +zdiff*zdiff)
 
@@ -48,6 +48,7 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
         fx += a_scale[i]*fel * xdiff/r
         fy += a_scale[i]*fel * ydiff/r
         fz += a_scale[i]*fel * zdiff/r
+
         #Ion drag 
         fdrag = np.interp(r,Fr,Fdrag)
         fx += a_scale[i]*a_scale[i]*fdrag * xdiff/r
@@ -55,11 +56,9 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
         fz += a_scale[i]*a_scale[i]*fdrag * zdiff/r
 
         #Neutral drag
-
-        ndrag = a_scale[i]*a_scale[i] * 4e-15
-        fx -= ux[i]*np.abs(ux[i])*ndrag
-        fy -= uy[i]*np.abs(uy[i])*ndrag
-        fz -= uz[i]*np.abs(uz[i])*ndrag
+        fx += -ux[i]*a[i]*a[i]*Kn_drag
+        fy += -uy[i]*a[i]*a[i]*Kn_drag
+        fz += -uz[i]*a[i]*a[i]*Kn_drag
 
 
         
