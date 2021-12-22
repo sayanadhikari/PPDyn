@@ -83,13 +83,6 @@ def main(argv):
     a_scale = a[:]/np.mean(a_set)
 
 
-    Ti = float(params['plasma']['Ti'])
-    Te = float(params['plasma']['Te'])
-    V_flperp = float(params['plasma']['V_flperp'])
-    #V_fl = - Te*V_flperp*kb/e
-
-    
-
     M = a[:]*a[:]*a[:]*density
     E = float(params['plasma']['E'])
 
@@ -104,7 +97,7 @@ def main(argv):
     v_th_neutrals = np.sqrt((8*k_b*Tn)/(np.pi*mn))
     N_neutrals = (P*V*6.02214076e23)/(R*Tn)
     print('N neutrals: ', N_neutrals)
-    Kn_drag = delta*0.75*np.pi*N_neutrals*v_th_neutrals*mn
+    Kn_drag = delta*1.33*np.pi*N_neutrals*v_th_neutrals*mn
     print('Kn_drag: ', Kn_drag)
 
 
@@ -123,9 +116,10 @@ def main(argv):
         Ff_rmax = Ffield["arr_0"][-1]; raise ValueError(f'Force field npz must have same range in r {Ff_rmax} as Lx {Lx}')
     Fr = Ffield['arr_0']
     Fel = Ffield['arr_1']
-    Fel[:] = Fel[:]*E
-    Fdrag = Ffield['arr_2']
-    Fdrag[:] = Fdrag[:]*drag
+    Fion = Ffield['arr_2']
+    Ftot = Ffield['arr_3']
+    #Fel[:] = Fel[:]*E
+    #Fdrag[:] = Fdrag[:]*drag
 
     #========= Boundary ==========
     btype   = str(params['boundary']['btype']) # Type of boundary
@@ -179,7 +173,7 @@ def main(argv):
     for t in range(len(time)):
         KE = 0.0   # Reset KE
         Qcollect = 0.0 # Initialize Q_collect
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fdrag,Kn_drag,fduration,t,Qcollect)
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fion,Kn_drag,fduration,t,Qcollect)
         #============  Thermostat =========================
         # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 

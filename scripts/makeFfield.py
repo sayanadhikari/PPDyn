@@ -28,7 +28,7 @@ fdrag = fdrag_max*fdrag[:]/np.max(fdrag)
 zero_radius = 25
 #fdrag[r_max-zero_radius:r_max+zero_radius]=linspace(fdrag[r_max-zero_radius],fdrag[r_max+zero_radius],2*zero_radius)
 fEl[r_max-zero_radius:r_max+zero_radius]=linspace(fEl[r_max-zero_radius],fEl[r_max+zero_radius],2*zero_radius)
-
+fdrag[:]=fdrag[:]*0.1
 ftot = fdrag[:] + fEl[:]
 r[:] *= x_scale/r_max
 

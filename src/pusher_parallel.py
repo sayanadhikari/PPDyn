@@ -2,7 +2,7 @@ from numba import jit, prange
 import numpy as np
 
 @jit(nopython=True, parallel=True)
-def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fdrag,Kn_drag,fduration,t,Qcollect):
+def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fion,Kn_drag,fduration,t,Qcollect):
     for i in prange(N):
         ux[i] = vx[i] + ax[i] * dt/2.0
         uy[i] = vy[i] + ay[i] * dt/2.0
@@ -43,6 +43,7 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
         zdiff = z[i]
         r = np.sqrt(xdiff*xdiff + ydiff*ydiff +zdiff*zdiff)
 
+        
         #Electric field
         fel = np.interp(r,Fr,Fel)
         fx += a_scale[i]*fel * xdiff/r
@@ -50,10 +51,10 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
         fz += a_scale[i]*fel * zdiff/r
 
         #Ion drag 
-        fdrag = np.interp(r,Fr,Fdrag)
-        fx += a_scale[i]*a_scale[i]*fdrag * xdiff/r
-        fy += a_scale[i]*a_scale[i]*fdrag * ydiff/r
-        fz += a_scale[i]*a_scale[i]*fdrag * zdiff/r
+        fion = np.interp(r,Fr,Fion)
+        fx += a_scale[i]*a_scale[i]*fion * xdiff/r
+        fy += a_scale[i]*a_scale[i]*fion * ydiff/r
+        fz += a_scale[i]*a_scale[i]*fion * zdiff/r
 
         #Neutral drag
         fx += -ux[i]*a[i]*a[i]*Kn_drag

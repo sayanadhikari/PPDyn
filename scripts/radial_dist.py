@@ -64,6 +64,24 @@ def avg_particle_dist(x,y,z):
                 zdiff = z[i]-z[j]
                 r += np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
     return r/((N-1)*(N-1))
+
+@jit(nopython=True, parallel=True)
+def closest_neigbour(x,y,z):
+    N = len(x)
+    r_min = np.zeros(N)
+    for i in prange(N):
+        r=np.zeros(N)
+        for j in range(N):
+            if j!=i:
+                xdiff = x[i]-x[j]
+                ydiff = y[i]-y[j]
+                zdiff = z[i]-z[j]
+                r[j]= np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
+        r = np.delete(r,[i])
+        r_min[i] = r.min()
+    return np.mean(r_min)
+
+
                 
 
 
@@ -172,18 +190,25 @@ if do_b:
 
 print("processing avg particle distance and making plot...")
 r_avg=[]
+r_min=[]
 
 b_step = 50
 for t in range(0,tmax-b_step,b_step):
     x,y,z = get_xyz(h5,t)
     r_avg.append(avg_particle_dist(x,y,z))
+    r_min.append(closest_neigbour(x,y,z))
 
-fig_ravg,ax_ravg = plt.subplots()
+
+fig_ravg,ax_ravg = plt.subplots(1,2)
 fig_ravg.suptitle('avg interparticle distance')
-ax_ravg.plot(r_avg, color='black', label='raw')
+ax_ravg[0].plot(r_avg, color='black', label='raw')
+ax_ravg[1].plot(r_min, color='black', label='raw')
 #ax_b.plot(moving_avg(b,len(b)//40), color='red', label='mean')
-ax_ravg.set_xlabel('time')
-ax_ravg.set_ylabel('$\hat{r}$')
+ax_ravg[0].set_xlabel('time')
+ax_ravg[0].set_ylabel('$\hat{r}$')
+ax_ravg[1].set_xlabel('time')
+ax_ravg[1].set_ylabel('$\hat{r_{min}}$')
+plt.tight_layout()
 fig_ravg.legend()
 
 plt.show()
