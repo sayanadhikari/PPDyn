@@ -3,7 +3,7 @@ import numpy as np
 import random
 
 @jit(nopython=True)
-def initial_periodic_radial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp):
+def initial_periodic_radial(Lx,Ly,Lz,r_min,r_max,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp):
     random.seed(99999999)
     x  = np.empty(N, dtype=np.float64)
     y  = np.empty(N, dtype=np.float64)
@@ -28,14 +28,14 @@ def initial_periodic_radial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,
     data_num = np.arange(start=0, stop=Nt, step=dumpPeriod, dtype=np.int64)
 
     for i in range(N):
-        x[i] = (random.random())*2.0*Lx - Lx
-        y[i] = (random.random())*2.0*Ly - Ly
-        z[i] = (random.random())*2.0*Lz - Lz
+        x[i] = (random.random())*2.0*r_max - r_max
+        y[i] = (random.random())*2.0*r_max - r_max
+        z[i] = 0#(random.random())*2.0*r_max - r_max
         r = np.sqrt(x[i]*x[i] + y[i]*y[i]+z[i]*z[i])
-        while r>Lx:
-            x[i] = (random.random())*2.0*Lx - Lx
-            y[i] = (random.random())*2.0*Ly - Ly
-            z[i] = (random.random())*2.0*Lz - Lz
+        while r<r_min or r> r_max:
+            x[i] = (random.random())*2.0*r_max - r_max
+            y[i] = (random.random())*2.0*r_max - r_max
+            z[i] = 0#(random.random())*2.0*r_max - r_max
             r = np.sqrt(x[i]*x[i] + y[i]*y[i]+z[i]*z[i])
 
         vx[i] = (random.random())*Vxmax - Vxmax/2.0

@@ -44,6 +44,8 @@ def main(argv):
     Lx      = float(params['simbox']['Lx'])  # System length in X
     Ly      = float(params['simbox']['Ly'])   # System length in Y
     Lz      = float(params['simbox']['Lz'])   # System length in Z
+    r_min = float(params['simbox']['r_min']) 
+    r_max = float(params['simbox']['r_max']) 
 
     N       = int(params['particles']['N'])    # Number of particles
 
@@ -166,7 +168,7 @@ def main(argv):
             from init import initial_reflecting as initial
             print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
-    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp)
+    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration = initial(Lx,Ly,Lz,r_min,r_max,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp)
 
     #========= Time Loop =========
 

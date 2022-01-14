@@ -20,7 +20,7 @@ except:
     print('ERROR: Provide the data directory path')
 # folder = sys.argv[1]
 
-file_name = "particle"#"2D1000p"#"rhoNeutral" #"P"
+file_name = "particle"#"saga12"#"2D1000p"#"rhoNeutral" #"P"
 
 h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
 

@@ -31,7 +31,7 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
                 ydiff = ( y[i]-y[j] ) - round((y[i]-y[j])/(2.0*Ly)) * 2.0*Ly
                 zdiff = ( z[i]-z[j] ) - round((z[i]-z[j])/(2.0*Lz)) * 2.0*Lz
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
-                r_inv = 1e-12/(8.8541878128*r*r*r)
+                r_inv = 1/(r*r*r)
                 QQr3e0 = (Q[i]*Q[j])*r_inv     #r or r^3 ?
                 fx += xdiff*(1+k*r)*np.exp(-k*r)*QQr3e0   # xdiff/(r*r*r)
                 fy += ydiff*(1+k*r)*np.exp(-k*r)*QQr3e0    # ydiff/(r*r*r)

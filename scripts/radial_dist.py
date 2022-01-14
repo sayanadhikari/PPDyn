@@ -97,7 +97,7 @@ try:
 except:
     print('ERROR: Provide the data directory path')
 
-file_name = "particle"#"2D1000p"#"particle"#"rhoNeutral" #"P"
+file_name = "particle"#"saga12"#"2D1000p"#"particle"#"rhoNeutral" #"P"
 
 h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
 
