@@ -2,7 +2,7 @@ from numba import jit, prange
 import numpy as np
 
 @jit(nopython=True, parallel=True)
-def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fion,Kn_drag,fduration,t,Qcollect):
+def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fion,k_drag,fduration,t,Qcollect):
     for i in prange(N):
         ux[i] = vx[i] + ax[i] * dt/2.0
         uy[i] = vy[i] + ay[i] * dt/2.0
@@ -32,10 +32,10 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
                 zdiff = ( z[i]-z[j] ) - round((z[i]-z[j])/(2.0*Lz)) * 2.0*Lz
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
                 r_inv = 1/(r*r*r)
-                QQr3e0 = (Q[i]*Q[j])*r_inv     #r or r^3 ?
-                fx += xdiff*(1+k*r)*np.exp(-k*r)*QQr3e0   # xdiff/(r*r*r)
-                fy += ydiff*(1+k*r)*np.exp(-k*r)*QQr3e0    # ydiff/(r*r*r)
-                fz += zdiff*(1+k*r)*np.exp(-k*r)*QQr3e0 #+ zdiff*g + Lz*g # zdiff/(r*r*r)
+                QQr3 = (Q[i]*Q[j])*r_inv     #r or r^3 ?
+                fx += xdiff*(1+k*r)*np.exp(-k*r)*QQr3   # xdiff/(r*r*r)
+                fy += ydiff*(1+k*r)*np.exp(-k*r)*QQr3    # ydiff/(r*r*r)
+                fz += zdiff*(1+k*r)*np.exp(-k*r)*QQr3 #+ zdiff*g + Lz*g # zdiff/(r*r*r)
                 #az[i] += fcy/M[i]
         
         xdiff = x[i]
@@ -57,9 +57,9 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
         fz += a_scale[i]*a_scale[i]*fion * zdiff/r
 
         #Neutral drag
-        fx += -ux[i]*a[i]*a[i]*Kn_drag
-        fy += -uy[i]*a[i]*a[i]*Kn_drag
-        fz += -uz[i]*a[i]*a[i]*Kn_drag
+        fx += -ux[i]*a[i]*a[i]*k_drag
+        fy += -uy[i]*a[i]*a[i]*k_drag
+        fz += -uz[i]*a[i]*a[i]*k_drag
 
 
         

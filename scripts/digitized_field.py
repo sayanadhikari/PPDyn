@@ -32,6 +32,8 @@ df_Fion = pd.read_csv('../staticfields/digitized/Fion.csv', header=None)
 radius = 70 #mm
 r = linspace(-radius,radius,6*radius+1)
 scale = 1e-12
+resize_r = 9.6
+
 
 fEl = np.interp(r,df_fEl[0].to_list(),df_fEl[1].to_list())
 fIon = np.interp(r,df_Fion[0].to_list(),df_Fion[1].to_list())
@@ -43,6 +45,7 @@ fEl[:] = fEl[:]*scale
 fIon[:] = fIon[:]*scale*2
 r[:] = 1e-3*r[:]
 ftot = fEl[:] + fIon[:]
+r[:] = r[:]*(resize_r/r[-1])
 
 if doplot:
     fig,ax = plt.subplots()

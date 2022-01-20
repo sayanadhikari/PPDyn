@@ -88,28 +88,16 @@ def main(argv):
     M = a[:]*a[:]*a[:]*density
     E = float(params['plasma']['E'])
 
-    #===== Neutral drag  =========
-    R = 8.31446261815324 #Gas const
-    k_b = 1.38064852e-23 #BOltzman const
-    delta = float(params['neutrals']['delta'])
-    mn = float(params['neutrals']['mn']) * u
-    Tn = float(params['neutrals']['Tn'])
-    P = float(params['neutrals']['pressure'])
-    V = Lx*Ly*Lz
-    v_th_neutrals = np.sqrt((8*k_b*Tn)/(np.pi*mn))
-    N_neutrals = (P*V*6.02214076e23)/(R*Tn)
-    print('N neutrals: ', N_neutrals)
-    Kn_drag = delta*1.33*np.pi*N_neutrals*v_th_neutrals*mn
-    print('Kn_drag: ', Kn_drag)
 
-
-    drag = float(params['plasma']['drag']) #Maybe delete
+    #===== Neutral drag =======
+    k_drag = float(params['neutrals']['k_drag']) 
 
     #===== Particle charge =======
-    Te = float(params['plasma']['Te'])
-    phi_hat = float(params['plasma']['phi_hat'])
-    Zd = a[:]*Te*K_zd*phi_hat
-    Q = Zd[:]*q_e
+    #Te = float(params['plasma']['Te'])
+    #phi_hat = float(params['plasma']['phi_hat'])
+    #Zd = a[:]*Te*K_zd*phi_hat
+    Q = float(params['particles']['Q'])*np.ones(N)
+    Q[:] = Q[:]*a_scale[:]
 
     #========= Force Field =======
     Fpath = str(params['plasma']['Ffield'])
@@ -117,8 +105,12 @@ def main(argv):
     if Ffield['arr_0'][-1] - Lx > 0.00001: 
         Ff_rmax = Ffield["arr_0"][-1]; raise ValueError(f'Force field npz must have same range in r {Ff_rmax} as Lx {Lx}')
     Fr = Ffield['arr_0']
-    Fel = Ffield['arr_1']
-    Fion = Ffield['arr_2']
+
+    k_fion = float(params['plasma']['k_fion'])
+    k_fel = float(params['plasma']['k_fel'])
+
+    Fel = Ffield['arr_1']*k_fel
+    Fion = Ffield['arr_2']*k_fion
     Ftot = Ffield['arr_3']
     #Fel[:] = Fel[:]*E
     #Fdrag[:] = Fdrag[:]*drag
@@ -175,7 +167,7 @@ def main(argv):
     for t in range(len(time)):
         KE = 0.0   # Reset KE
         Qcollect = 0.0 # Initialize Q_collect
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fion,Kn_drag,fduration,t,Qcollect)
+        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,a,a_scale,Fr,Fel,Fion,k_drag,fduration,t,Qcollect)
         #============  Thermostat =========================
         # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
 
