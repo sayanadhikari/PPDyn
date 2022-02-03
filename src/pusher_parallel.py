@@ -57,9 +57,9 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
         fz += a_scale[i]*a_scale[i]*fion * zdiff/r
 
         #Neutral drag
-        fx += -ux[i]*a[i]*a[i]*k_drag
-        fy += -uy[i]*a[i]*a[i]*k_drag
-        fz += -uz[i]*a[i]*a[i]*k_drag
+        fx += -vx[i]*a[i]*a[i]*k_drag
+        fy += -vy[i]*a[i]*a[i]*k_drag
+        fz += -vz[i]*a[i]*a[i]*k_drag
 
 
         

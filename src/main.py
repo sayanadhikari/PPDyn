@@ -77,6 +77,7 @@ def main(argv):
 
 
     density = float(params['particles']['density'])*np.ones(N)
+    mass = float(params['particles']['mass'])*np.ones(N)
 
     #========= a scaling =========
     a_set = str(params['particles']['a']).split(',')
@@ -84,8 +85,7 @@ def main(argv):
     a = np.random.choice(a_set,(N,))
     a_scale = a[:]/np.mean(a_set)
 
-
-    M = a[:]*a[:]*a[:]*density
+    M = mass[:]*a_scale[:]*a_scale[:]*a_scale[:]
     E = float(params['plasma']['E'])
 
 
