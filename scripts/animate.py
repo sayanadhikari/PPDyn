@@ -4,6 +4,7 @@ import numpy as np
 import h5py
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.animation as animation
 from mpl_toolkits import mplot3d
 from os.path import join as pjoin
@@ -32,9 +33,13 @@ dp   = h5.attrs["dp"]
 Nt   = h5.attrs["Nt"]
 
 M = h5["/particle/M"]
-min_M=min(M); max_M=max(M)
-col = (M[:]-min_M)/(max_M-min_M)
-colors = [['black','red'][int(c)] for c in col]
+a = h5["/particle/a"]
+min_a=min(a); max_a=max(a)
+col = (a[:]-min_a)/(max_a-min_a)
+colors = [(0, 0, 0), (1, 0, 0)] # first color is black, last is red
+cm = LinearSegmentedColormap.from_list(
+        "Custom", colors, N=100)
+#colors = [['black','red'][int(c)] for c in col]
 
 
 data_num = np.arange(start=0, stop=Nt, step=dp, dtype=int)
@@ -46,7 +51,7 @@ if (show_anim == True):
         datay = h5["/%d"%data_num[i]+"/position/y"]
         dataz = h5["/%d"%data_num[i]+"/position/z"]
         ax1.cla()
-        img1 = ax1.scatter(datax,datay,dataz,marker='o',color=colors,alpha=1.0,s=10)
+        img1 = ax1.scatter(datax,datay,dataz,marker='o',c=col,cmap=cm,alpha=1.0,s=1)
         ax1.set_title('TimeSteps = %d'%(i*dp)+'\n Phase Space')
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")

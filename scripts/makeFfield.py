@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy.core.function_base import linspace, logspace
 
-savefile = True
+savefile = False
 doplot = True
+saveplot = True
 
 DIR = '../staticfields/'
 filename = 'Ftot'
@@ -14,7 +15,7 @@ fdrag_max = 1
 r_max = 150
 x_scale = 50e-3
 r = np.linspace(-r_max,r_max,r_max*2+1)
-a = 0.0007
+a = 8.10e-03
 b = 0.01
 
 fEl = -np.sign(r[:]) / (0.0+np.exp(3.0-a*r[:]*r[:])+a*0.1*r[:]*r[:])
@@ -35,13 +36,16 @@ r[:] *= x_scale/r_max
 if doplot:
     fig,ax = plt.subplots()
     ax.plot(r,fEl,label='$F_{EL}$',color='blue')
-    ax.plot(r,fdrag,label='$F_{drag}$',color='r')
+    ax.plot(r,fdrag,label='$F_{ion}$',color='r')
     ax.plot(r,ftot,label='$F_{total}$',color='orange')
     ax.set_xlabel('r')
     ax.set_ylabel('F')
     fig.legend()
     plt.grid()
+    if saveplot:
+        plt.savefig( DIR + "static_fields.png")
     plt.show()
+
 
 if savefile:
     np.savez(DIR+filename,r,fEl,fdrag)

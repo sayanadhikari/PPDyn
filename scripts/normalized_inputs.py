@@ -14,10 +14,10 @@ u = 1.660539e-27
 Tn = 300 #Temperature Kelvin
 mn = 39.95 * u #atomic mass
 delta = 1.44
-pressure = 30 #Pa
+pressure = 40 #Pa
 
 #Box dimensions
-L = 70e-3
+L = 15e-3
 
 #Dust params
 Zd = 1e4
@@ -29,7 +29,7 @@ n = 6e5
 lmd = 300e-6
 Q = Zd * q_e
 Td = 300
-particle_radius = [3.25e-6,3.75e-6]
+particle_radius = [3.0e-6,4.0e-6]
 m = density*np.mean(particle_radius)**3
 
 
@@ -141,5 +141,11 @@ out_str += f"\nParticle mass = {m_out:.2e}"
 out_str += f"\nLx = {Lx:.2e}"
 out_str += f"\nParticle radius = {p_r}"
 out_str += f"\nK_drag = {F_drag:.2e}"
+
+writefile = False
+if writefile:
+    inFile = open('data/normalization.txt','w')
+    inFile.write(out_str)
+    inFile.close()
 
 print(out_str)

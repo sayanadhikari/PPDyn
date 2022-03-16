@@ -21,18 +21,18 @@ def mirror(arr):
     return new_arr
 
 
-savefile = True
+savefile = False
 doplot = True
 
 DIR = '../staticfields/'
 filename = 'F_digitized'
 
-df_fEl = pd.read_csv('../staticfields/digitized/Fel.csv', header=None)
-df_Fion = pd.read_csv('../staticfields/digitized/Fion.csv', header=None)
-radius = 70 #mm
+df_fEl = pd.read_csv('../staticfields/digitized/FelZ.csv', header=None)
+df_Fion = pd.read_csv('../staticfields/digitized/FionZ.csv', header=None)
+radius = 13 #mm
 r = linspace(-radius,radius,6*radius+1)
-scale = 1e-12
-resize_r = 8.6
+scale = 1e-11
+resize_r = 1.85
 
 
 fEl = np.interp(r,df_fEl[0].to_list(),df_fEl[1].to_list())
@@ -46,13 +46,14 @@ fIon[:] = fIon[:]*scale*2
 r[:] = 1e-3*r[:]
 ftot = fEl[:] + fIon[:]
 r[:] = r[:]*(resize_r/r[-1])
+r_mm= 10*r[:]
 
 if doplot:
     fig,ax = plt.subplots()
-    ax.plot(r,fEl,label='$F_{EL}$',color='blue')
-    ax.plot(r,fIon,label='$F_{ion}$',color='r')
-    ax.plot(r,ftot,label='$F_{total}$',color='orange')
-    ax.set_xlabel('r')
+    ax.plot(r_mm,fEl,label='$F_{EL}$',color='blue')
+    ax.plot(r_mm,fIon,label='$F_{ion}$',color='r')
+    ax.plot(r_mm,ftot,label='$F_{total}$',color='orange')
+    ax.set_xlabel('r [mm]')
     ax.set_ylabel('F')
     fig.legend()
     plt.grid()

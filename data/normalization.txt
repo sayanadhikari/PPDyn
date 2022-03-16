@@ -1,0 +1,28 @@
+Normalized quantities
+
+---- INPUTS -----
+
+dust radius = [3.35e-06, 3.65e-06]
+density = 1.00e+03 
+n = 6.00e+05
+lmd = 3.00e-04
+Temperature = 3.00e+02
+dt = 2.00e-04
+t_max = 1.00e+00
+
+ ---- OUTPUTS ----
+
+a = 8.10e-03
+k = 2.70e+01
+dt = 1.45e-02
+t_max = 1.25e+02
+n = 3.18e-01
+wd = 1.25e+02
+Q = 2.63e-10
+Temperature = 1.45e-03
+Force coefficient = 3.16e-02
+Mass coefficient = 1.00e+00
+Particle mass = 4.29e-14
+Lx = 1.85e+00
+Particle radius = [0.0004138203541672872, 0.00045087889334644726]
+K_drag = 1.64e-07

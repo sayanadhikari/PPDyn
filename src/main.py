@@ -63,17 +63,9 @@ def main(argv):
     dt      = float(params['time']['dt']) # time step size
     Nt      = round(tmax/dt) #number of time steps
 
-    dist    = bool(params['particles']['dist'])
+    dist    = str(params['particles']['dist']) #type of dist (binary, mean1)
 
-    #========= Charge and Mass distribution ========
-    if dist:
-        mean = float(params['particles']['mean'])
-        stdDev = float(params['particles']['stdDev'])
-        M  = np.random.normal(loc=mean,scale=stdDev,size=(N)) #mass of particles (Gaussian)
-        Q = M**(2/3) # charge of particles
-    else:
-        M = np.ones(N)
-        Q = M
+
 
 
     density = float(params['particles']['density'])*np.ones(N)
@@ -82,7 +74,24 @@ def main(argv):
     #========= a scaling =========
     a_set = str(params['particles']['a']).split(',')
     a_set = [float(a) for a in a_set]
-    a = np.random.choice(a_set,(N,))
+
+    if dist == "mean1":
+        stdDev = float(params['particles']['stdDev'])
+        a = np.random.normal(loc=a_set[0],scale=stdDev,size=(N))
+
+    elif dist == "mean2":
+        stdDev = float(params['particles']['stdDev'])
+        a = np.ones(N)
+        N2 = int(N/2)
+        a[0:N2] = np.random.normal(loc=a_set[0],scale=stdDev,size=(N2))
+        a[N2:N] = np.random.normal(loc=a_set[1],scale=stdDev,size=(N2))
+
+    elif dist == "uniform":
+        a = np.random.uniform(low=a_set[0], high=a_set[1], size=N)
+
+    elif dist == "binary":
+        a = np.random.choice(a_set,(N,))
+
     a_scale = a[:]/np.mean(a_set)
 
     M = mass[:]*a_scale[:]*a_scale[:]*a_scale[:]
@@ -91,11 +100,6 @@ def main(argv):
 
     #===== Neutral drag =======
     k_drag = float(params['neutrals']['k_drag']) 
-
-    #===== Particle charge =======
-    #Te = float(params['plasma']['Te'])
-    #phi_hat = float(params['plasma']['phi_hat'])
-    #Zd = a[:]*Te*K_zd*phi_hat
     Q = float(params['particles']['Q'])*np.ones(N)
     Q[:] = Q[:]*a_scale[:]
 
@@ -112,8 +116,6 @@ def main(argv):
     Fel = Ffield['arr_1']*k_fel
     Fion = Ffield['arr_2']*k_fion
     Ftot = Ffield['arr_3']
-    #Fel[:] = Fel[:]*E
-    #Fdrag[:] = Fdrag[:]*drag
 
     #========= Boundary ==========
     btype   = str(params['boundary']['btype']) # Type of boundary
