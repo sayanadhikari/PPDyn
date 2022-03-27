@@ -36,7 +36,7 @@ M = h5["/particle/M"]
 a = h5["/particle/a"]
 min_a=min(a); max_a=max(a)
 col = (a[:]-min_a)/(max_a-min_a)
-colors = [(0, 0, 0), (1, 0, 0)] # first color is black, last is red
+colors = [(0, 0, 0), (0,0,1),(1, 0, 0)] # first color is black, last is red
 cm = LinearSegmentedColormap.from_list(
         "Custom", colors, N=100)
 #colors = [['black','red'][int(c)] for c in col]
@@ -51,7 +51,7 @@ if (show_anim == True):
         datay = h5["/%d"%data_num[i]+"/position/y"]
         dataz = h5["/%d"%data_num[i]+"/position/z"]
         ax1.cla()
-        img1 = ax1.scatter(datax,datay,dataz,marker='o',c=col,cmap=cm,alpha=1.0,s=1)
+        img1 = ax1.scatter(datax,datay,dataz,marker='o',c=col,cmap='jet',alpha=1.0,s=1)
         ax1.set_title('TimeSteps = %d'%(i*dp)+'\n Phase Space')
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")

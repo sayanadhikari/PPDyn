@@ -2,7 +2,7 @@ Normalized quantities
 
 ---- INPUTS -----
 
-dust radius = [3.35e-06, 3.65e-06]
+dust radius = [3.45e-06, 3.55e-06]
 density = 1.00e+03 
 n = 6.00e+05
 lmd = 3.00e-04
@@ -24,5 +24,6 @@ Force coefficient = 3.16e-02
 Mass coefficient = 1.00e+00
 Particle mass = 4.29e-14
 Lx = 1.85e+00
-Particle radius = [0.0004138203541672872, 0.00045087889334644726]
+Particle radius = [0.00042617320056034054, 0.0004385260469533939]
+Particle radius std = [2.557039203362043e-05, 2.6311562817203632e-05]
 K_drag = 1.64e-07

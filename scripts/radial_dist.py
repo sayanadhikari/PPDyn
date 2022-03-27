@@ -128,13 +128,16 @@ fig_pos, ax_pos = plt.subplots(1,2)
 fig_pos.suptitle('Position of species 1 and species 2')
 
 if dist:
-    colors = [(0, 0, 0), (1, 0, 0)] # first color is black, last is red
+    colors = [(0, 0, 0),(0,0,1), (1, 0, 0)] # first color is black, last is red
     cm = LinearSegmentedColormap.from_list(
         "Custom", colors, N=100)
+    cm = 'jet'
     min_a=min(a); max_a=max(a)
     col = (a[:]-min_a)/(max_a-min_a)
-    ax_pos[0].scatter(x0,y0,c=col,cmap=cm,marker='.', s = 10)
-    ax_pos[1].scatter(xn,yn,c=col,cmap=cm,marker='.', s = 10)
+    plot = ax_pos[0].scatter(x0,y0,c=col,cmap=cm,marker='.', s = 1)
+    ax_pos[1].scatter(xn,yn,c=col,cmap=cm,marker='.', s = 1)
+    cb = plt.colorbar(plot, ax=ax_pos,ticks=[0, 1])
+    cb.ax.set_yticklabels([min(a),max(a)])
 else:
     x01,y01,x02,y02 = sort_xy_by_m(x0,y0,M)
     ax_pos[0].scatter(x01,y01,color='black',label='species 1',marker='.', s = 1)
@@ -149,13 +152,25 @@ ax_pos[0].set_title('initial')
 ax_pos[1].set_xlabel('x')
 ax_pos[1].set_ylabel('y')
 ax_pos[1].set_title('final')
+
+
 fig_pos.legend()
-
-
-
 fig_dist, ax_dist = plt.subplots()
 fig_pos.suptitle('distribution of sizes')
 ax_dist.hist(a,histtype = 'step', color='black',bins=50)
+
+
+if dim == 3:
+    r0 = np.sqrt(x0[:]*x0[:] + y0[:]*y0[:] + z0[:]*z0[:])
+    rn = np.sqrt(xn[:]*xn[:] + yn[:]*yn[:] + zn[:]*zn[:])
+elif dim == 2:
+    r0 = np.sqrt(x0[:]*x0[:] + y0[:]*y0[:])
+    rn = np.sqrt(xn[:]*xn[:] + yn[:]*yn[:])
+
+fig_ar,ax_ar = plt.subplots()
+ax_ar.scatter(r0,a,color='red',s=1, alpha=0.2)
+ax_ar.scatter(rn,a,color='black',s=1)
+ax_ar.set_xlim(1,1.55)
 
 
 

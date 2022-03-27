@@ -71,7 +71,7 @@ def main(argv):
     density = float(params['particles']['density'])*np.ones(N)
     mass = float(params['particles']['mass'])*np.ones(N)
 
-    #========= a scaling =========
+    #========= a scaling and dist =========
     a_set = str(params['particles']['a']).split(',')
     a_set = [float(a) for a in a_set]
 
@@ -80,11 +80,12 @@ def main(argv):
         a = np.random.normal(loc=a_set[0],scale=stdDev,size=(N))
 
     elif dist == "mean2":
-        stdDev = float(params['particles']['stdDev'])
+        stdDev = str(params['particles']['stdDev']).split(',')
+        stdDev = [float(std) for std in stdDev]
         a = np.ones(N)
         N2 = int(N/2)
-        a[0:N2] = np.random.normal(loc=a_set[0],scale=stdDev,size=(N2))
-        a[N2:N] = np.random.normal(loc=a_set[1],scale=stdDev,size=(N2))
+        a[0:N2] = np.random.normal(loc=a_set[0],scale=stdDev[0],size=(N2))
+        a[N2:N] = np.random.normal(loc=a_set[1],scale=stdDev[1],size=(N2))
 
     elif dist == "uniform":
         a = np.random.uniform(low=a_set[0], high=a_set[1], size=N)

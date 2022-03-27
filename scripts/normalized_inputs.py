@@ -29,7 +29,8 @@ n = 6e5
 lmd = 300e-6
 Q = Zd * q_e
 Td = 300
-particle_radius = [3.0e-6,4.0e-6]
+particle_radius = [3.45e-6,3.55e-6]
+std_percentage = 0.06
 m = density*np.mean(particle_radius)**3
 
 
@@ -47,6 +48,7 @@ a = (1/(np.pi*n))**(1/3)
 Lx = L/a
 k = a/lmd
 p_r = [r/a for r in particle_radius]
+r_std = [r * std_percentage for r in p_r]
 
 # ========================================
 #   Time:
@@ -140,9 +142,10 @@ out_str += f"\nMass coefficient = {K_m:.2e}"
 out_str += f"\nParticle mass = {m_out:.2e}"
 out_str += f"\nLx = {Lx:.2e}"
 out_str += f"\nParticle radius = {p_r}"
+out_str += f"\nParticle radius std = {r_std}"
 out_str += f"\nK_drag = {F_drag:.2e}"
 
-writefile = False
+writefile = True
 if writefile:
     inFile = open('data/normalization.txt','w')
     inFile.write(out_str)
