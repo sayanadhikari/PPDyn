@@ -72,10 +72,11 @@ def verlet_periodic_radial(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g
         vy[i] = uy[i] + ay[i] * dt / 2.0
         vz[i] = uz[i] + az[i] * dt / 2.0
         KE += ((vx[i]*vx[i]) + (vy[i]*vy[i]) + (vz[i]*vz[i]) ) / 2.0
+
+    return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect
     
-    z = np.zeros(len(x))   #For 2D
-    #return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect
-    return x,y,z,vx,vy,z,ux,uy,z,ax,ay,z,KE,Q,fduration,Qcollect
+    #z = np.zeros(len(x))   #For 2D
+    #return x,y,z,vx,vy,z,ux,uy,z,ax,ay,z,KE,Q,fduration,Qcollect   #for 2D
 
 
 

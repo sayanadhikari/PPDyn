@@ -30,12 +30,12 @@ def initial_periodic_radial(Lx,Ly,Lz,r_min,r_max,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,d
     for i in range(N):
         x[i] = (random.random())*2.0*r_max - r_max
         y[i] = (random.random())*2.0*r_max - r_max
-        z[i] = 0#(random.random())*2.0*r_max - r_max
+        z[i] = (random.random())*2.0*r_max - r_max    #For 3D
         r = np.sqrt(x[i]*x[i] + y[i]*y[i]+z[i]*z[i])
         while r<r_min or r> r_max:
             x[i] = (random.random())*2.0*r_max - r_max
             y[i] = (random.random())*2.0*r_max - r_max
-            z[i] = 0#(random.random())*2.0*r_max - r_max
+            z[i] = (random.random())*2.0*r_max - r_max      #For 3D
             r = np.sqrt(x[i]*x[i] + y[i]*y[i]+z[i]*z[i])
 
         vx[i] = (random.random())*Vxmax - Vxmax/2.0
@@ -69,10 +69,10 @@ def initial_periodic_radial(Lx,Ly,Lz,r_min,r_max,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,d
                 ay[i] = ay[i] + fy
                 az[i] = az[i] + fz
         """
-    
-    z = np.zeros(len(x))   #For 2D
-    #return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration
-    return x,y,z,vx,vy,z,ux,uy,uz,ax,ay,z,time,data_num,fduration
+
+    return x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration
+    #z = np.zeros(len(x))   #For 2D
+    #return x,y,z,vx,vy,z,ux,uy,uz,ax,ay,z,time,data_num,fduration
 
 
 @jit(nopython=True)
