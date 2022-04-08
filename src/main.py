@@ -123,6 +123,7 @@ def main(argv):
     geometry = str(params['boundary']['geometry'])
 
     #========= Diagnostics =======
+    filename    = str(params['diagnostics']['filename'])
     dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
     pathName    = str(params['directory']['path'])
     path        = pjoin(pathName)
@@ -130,7 +131,7 @@ def main(argv):
     if  os.path.exists(path)== False:
         os.mkdir(path)
     dumpData    = bool(params['diagnostics']['dumpData'])
-    f           = h5py.File(pjoin(path,"particle.hdf5"),"w")
+    f           = h5py.File(pjoin(path,filename+".hdf5"),"w")
     if dumpData:
         diagn.attributes(f,tmax,Lx,Ly,Lz,a,Q,M,N,dt,dumpPeriod)
         dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))

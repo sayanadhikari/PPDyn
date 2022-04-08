@@ -4,7 +4,7 @@
 # Script example for a normal MPI job on Fram #
 ###############################################
 
-#SBATCH --job-name=ppdyndust01
+#SBATCH --job-name=ppdyndustbin01
 #SBATCH --account=nn9299k
 #SBATCH --time=14-00:00:00
 #SBATCH --partition=bigmem
@@ -25,4 +25,4 @@ module list
 
 export HDF5_USE_FILE_LOCKING='FALSE'
 
-python ppdyn.py -i input.ini
+python ppdyn.py -i 3D_mean2_3.ini
