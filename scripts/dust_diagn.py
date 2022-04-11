@@ -65,8 +65,7 @@ ax1.set_xlabel("$Fall~time \mathrm[steps]$")
 ax1.set_ylabel("A.U.")
 
 fig,ax2 = plt.subplots(figsize=figsize/25.4,constrained_layout=True,dpi=ppi)
-
-ax2.plot(time,Qcurrent[:-1],'.')
+ax2.plot(time,Qcurrent[:-1],'.-')
 
 ax2.set_xlabel("$\mathrm[timesteps]$")
 ax2.set_ylabel("Dust Current")

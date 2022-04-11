@@ -20,124 +20,137 @@ from os.path import join as pjoin
 import ini
 import sys
 import argparse
+from tasktimer import TaskTimer
 
 ## User defined functions
 from thermostat import berendsen
 import diagn
+import config
 
 
 path        = "data/"
 
-def main(argv):
+def main():
     """ PPDyn main() function """
-    parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
-    parser.add_argument('-i','--input', default='input.ini', type=str, help='Input file name')
-    args        = parser.parse_args()
-    inputFile   = args.input
+    timer = TaskTimer()
+    timer.task('Step: Reading Variables')
 
-    params = ini.parse(open(inputFile).read())
-    #========== Input Parameters ===========
-
-    Lx      = float(params['simbox']['Lx'])  # System length in X
-    Ly      = float(params['simbox']['Ly'])   # System length in Y
-    Lz      = float(params['simbox']['Lz'])   # System length in Z
-
-    N       = int(params['particles']['N'])    # Number of particles
-
-    Vxmax   = float(params['particles']['Vxmax']) # Maximum velocity in X
-    Vymax   = float(params['particles']['Vymax']) # Maximum velocity in Y
-    Vzmax   = float(params['particles']['Vzmax']) # Maximum velocity in Z
-
-    k       = float(params['screening']['k'])
-
-    g       = float(params['gravity']['g_0'])
-    #rc      = float(params['cutoff radius']['r_c'])
-    Temp    = float(params['particles']['Temp'])
-
-    tmax    = float(params['time']['tmax'])  # Final time
-    dt      = float(params['time']['dt']) # time step size
-    Nt      = round(tmax/dt) #number of time steps
-
-    dist    = bool(params['particles']['dist'])
+    # parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
+    # parser.add_argument('-i','--input', default='input.ini', type=str, help='Input file name')
+    # args        = parser.parse_args()
+    # inputFile   = args.input
+    #
+    # params = ini.parse(open(inputFile).read())
+    # #========== Input Parameters ===========
+    #
+    # Lx      = float(params['simbox']['Lx'])  # System length in X
+    # Ly      = float(params['simbox']['Ly'])   # System length in Y
+    # Lz      = float(params['simbox']['Lz'])   # System length in Z
+    #
+    # N       = int(params['particles']['N'])    # Number of particles
+    #
+    # Vxmax   = float(params['particles']['Vxmax']) # Maximum velocity in X
+    # Vymax   = float(params['particles']['Vymax']) # Maximum velocity in Y
+    # Vzmax   = float(params['particles']['Vzmax']) # Maximum velocity in Z
+    #
+    # k       = float(params['screening']['k'])
+    #
+    # g       = float(params['gravity']['g_0'])
+    # #rc      = float(params['cutoff radius']['r_c'])
+    # Temp    = float(params['particles']['Temp'])
+    #
+    # tmax    = float(params['time']['tmax'])  # Final time
+    # dt      = float(params['time']['dt']) # time step size
+    # Nt      = round(tmax/dt) #number of time steps
+    #
+    # dist    = bool(params['particles']['dist'])
 
     #========= Charge and Mass distribution ========
-    if dist:
-        mean = float(params['particles']['mean'])
-        stdDev = float(params['particles']['stdDev'])
-        M  = np.random.normal(loc=mean,scale=stdDev,size=(N)) #mass of particles (Gaussian)
+    if config.dist:
+        mean = config.mean
+        stdDev = config.stdDev
+        M  = np.random.normal(loc=mean,scale=stdDev,size=config.N) #mass of particles (Gaussian)
         Q = M**(2/3) # charge of particles
     else:
         M = np.ones(N)
         Q = M
 
-    #========= Boundary ==========
-    btype   = str(params['boundary']['btype']) # Type of boundary
-
-    #========= Diagnostics =======
-    dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
-    pathName    = str(params['directory']['path'])
-    path        = pjoin(pathName)
+    # #========= Boundary ==========
+    # btype   = str(params['boundary']['btype']) # Type of boundary
+    #
+    # #========= Diagnostics =======
+    # dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
+    # pathName    = str(params['directory']['path'])
+    # path = pjoin(config.dataDir)
     # path        = "data/"  # DO NOT CHANGE THE PATH
-    if  os.path.exists(path)== False:
-        os.mkdir(path)
-    dumpData    = bool(params['diagnostics']['dumpData'])
-    f           = h5py.File(pjoin(path,"particle.hdf5"),"w")
-    if dumpData:
-        diagn.attributes(f,tmax,Lx,Ly,Lz,N,dt,dumpPeriod)
+    if  os.path.exists(config.dataDir)== False:
+        os.mkdir(config.dataDir)
+    # dumpData    = bool(params['diagnostics']['dumpData'])
+    f  = h5py.File(pjoin(config.dataDir,"particle.hdf5"),"w")
+    if config.dumpData:
+        diagn.attributes(f)
         dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
         dsetQ = f.create_dataset('Qcollect', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
-    vtkData     = bool(params['diagnostics']['vtkData'])
-    realTime    = bool(params['diagnostics']['realTime'])
-    #========== Options ============
-    parallelMode    = bool(params['options']['parallelMode'])
-    if parallelMode:
-        if btype == 'periodic':
+    # vtkData     = bool(params['diagnostics']['vtkData'])
+    # realTime    = bool(params['diagnostics']['realTime'])
+    # #========== Options ============
+    # parallelMode    = bool(params['options']['parallelMode'])
+    if config.parallelMode:
+        if config.btype == 'periodic':
             from pusher_parallel import verlet_periodic as verlet
             from init import initial_periodic as initial
-            print("Running in Parallel Mode (Periodic boundary)")
-        elif btype == 'reflecting':
+            print("Running in Parallel Mode (Periodic boundary)\nWarning!! Make sure gravity is zero. Otherwise may lead to unexpected result.")
+        elif config.btype == 'reflecting':
             from pusher_parallel import verlet_reflecting as verlet
             from init import initial_reflecting as initial
             print("Running in Parallel Mode (Reflecting boundary)")
-    else:
-        if btype == 'periodic':
-            from pusher_serial import verlet_periodic as verlet
-            from init import initial_periodic as initial
-            print("Running in Serial Mode (Periodic boundary)")
-        elif btype == 'reflecting':
-            from pusher_serial import verlet_reflecting as verlet
+        elif config.btype == 'mixed':
+            from pusher_parallel import verlet_mixed as verlet
             from init import initial_reflecting as initial
-            print("Running in Serial Mode (Reflecting boundary)")
+            print("Running in Parallel Mode (Mixed boundary)")
+    else:
+        print("Serial version not supported anymore!!\nChange parallelMode  = True")
+        exit()
+        # if config.btype == 'periodic':
+        #     from pusher_serial import verlet_periodic as verlet
+        #     from init import initial_periodic as initial
+        #     print("Running in Serial Mode (Periodic boundary)")
+        # elif config.btype == 'reflecting':
+        #     from pusher_serial import verlet_reflecting as verlet
+        #     from init import initial_reflecting as initial
+        #     print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
-    x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,time,data_num,fduration = initial(Lx,Ly,Lz,Vxmax,Vymax,Vzmax,N,tmax,Nt,k,dumpPeriod,g,Q,M,Temp)
-
+    timer.task('Step: Initialization')
+    pos,vvel,uvel,acc,time,data_num,fduration = initial(Q,M)
     #========= Time Loop =========
-
+    timer.task('Step: Time Solution')
     for t in range(len(time)):
         KE = 0.0   # Reset KE
         Qcollect = 0.0 # Initialize Q_collect
-        x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,KE,Q,fduration,Qcollect = verlet(x,y,z,vx,vy,vz,ux,uy,uz,ax,ay,az,dt,Lx,Ly,Lz,N,KE,k,g,Q,M,fduration,t,Qcollect)
+        pos,vvel,uvel,acc,Q,KE,fduration,Qcollect = verlet(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect)
         #============  Thermostat =========================
         # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
-
         #============ Diagnostics Write ===================
-        if dumpData:
-            if t%dumpPeriod==0:
-                diagn.configSpace(f,dsetE,dsetQ,t,x,y,z,vx,vy,vz,KE,Qcollect,path)
-                print('TimeSteps = %d'%int(t)+' of %d'%Nt+' Energy: %e'%KE)
+        if config.dumpData:
+            if t%config.dumpPeriod==0:
+                diagn.configSpace(f,dsetE,dsetQ,t,pos,vvel,KE,Qcollect)
+                print('TimeSteps = %d'%int(t)+' of %d'%config.Nt+' Energy: %e'%KE)
 
+    timer.task('Step: Diagnostics')
     diagn.dustDiagn(f,fduration)
-    if vtkData:
+    if config.vtkData:
         from vtk_data import vtkwrite
         print('Writing VTK files for Paraview visualization ...')
-        vtkwrite(path)
-    os.remove(pjoin(path,'energy.txt'))
-    return 0
+        vtkwrite(config.dataDir)
+    os.remove(pjoin(config.dataDir,'energy.txt'))
+
+    timer.task(None)
+    print(timer)
     #========== End of Time Loop ======
 
 if __name__== "__main__":
 	start = time.time()
-	main(sys.argv[1:])
+	main()
 	end = time.time()
 	print("Elapsed (after compilation) = %s"%(end - start)+" seconds")
