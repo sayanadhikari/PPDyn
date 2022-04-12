@@ -7,10 +7,10 @@
 #SBATCH --job-name=ppdyn01
 #SBATCH --account=nn9299k
 #SBATCH --time=0-00:30:00
-# #SBATCH --qos=devel
+#SBATCH --qos=devel
 #SBATCH --nodes=1
 #SBATCH --ntasks=16
-#SBATCH --mem-per-cpu=4G
+# #SBATCH --mem-per-cpu=4G
 
 # set -o errexit # Exit the script on any error
 # set -o nounset # Treat any unset variables as an error
@@ -30,4 +30,4 @@ export HDF5_USE_FILE_LOCKING='FALSE'
 
 # pip install -r requirements.txt --user
 
-srun python ppdyn.py -i input.ini
+python ppdyn.py -i input.ini
