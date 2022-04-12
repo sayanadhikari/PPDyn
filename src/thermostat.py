@@ -3,7 +3,7 @@ import numpy as np
 @jit(nopython=True)
 def berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax):
     tau = 10.0*dt
-    scl = np.sqrt(1.0 + (dt/tau) * ((Temp/(2.0*KE/(3.0*float(N)) )) -1.0))
+    scl = 1.0 #np.sqrt(1.0 + (dt/tau) * ((Temp/(2.0*KE/(3.0*float(N)) )) -1.0))
 
     if (t <= tmax/2.0):
         for i in range(N):

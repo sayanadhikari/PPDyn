@@ -3,9 +3,12 @@
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib as mp
 from os.path import join as pjoin
 import sys
-import matplotlib as mp
+# import pandas as pd
+
 # import plotly.graph_objects as go
 #========= Configuration ===========
 
@@ -31,8 +34,13 @@ Nt   = h5.attrs["Nt"]
 data_num = np.arange(start=0, stop=Nt, step=1, dtype=int)
 
 time = data_num*dp
-energy = h5["/energy"]
-energy = 3*(np.array(energy[:-1]))/N
+fduration = h5["/fall_duration"]
+Qcollect = h5["/Qcollect"]
+
+Qcurrent = np.zeros(Qcollect.shape)
+Qcurrent[:] = Qcollect[:]
+Qcurrent[Qcurrent == 0.0] = np.nan
+
 
 #### FIG SIZE CALC ############
 figsize = np.array([77,77/1.618]) #Figure size in mm
@@ -47,14 +55,20 @@ mp.rc('xtick', labelsize=14)
 mp.rc('ytick', labelsize=14)
 mp.rc('legend', fontsize=14)
 
-fig,ax1 = plt.subplots(1,1,figsize=figsize/25.4,constrained_layout=True,dpi=ppi)
-ax1.plot(time[10:],energy[10:])
-ax1.set_xlabel("$timestep$")
-ax1.set_ylabel("$Energy$")
+fig,ax1 = plt.subplots(figsize=figsize/25.4,constrained_layout=True,dpi=ppi)
 
-# ax2.plot(N,energy[10:])
-# ax2.set_xlabel("$timestep$")
-# ax2.set_ylabel("$Energy$")
+sns.kdeplot(fduration,fill=True,linewidth=1, ax=ax1)
+# sns.kdeplot(fduration,fill=True,common_norm=False, palette="crest",
+#    alpha=.5, linewidth=0, ax=ax1)
+
+ax1.set_xlabel("$Fall~time \mathrm[steps]$")
+ax1.set_ylabel("A.U.")
+
+fig,ax2 = plt.subplots(figsize=figsize/25.4,constrained_layout=True,dpi=ppi)
+ax2.plot(time,Qcurrent[:-1],'.-')
+
+ax2.set_xlabel("$\mathrm[timesteps]$")
+ax2.set_ylabel("Dust Current")
 
 
 
