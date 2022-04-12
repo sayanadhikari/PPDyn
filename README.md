@@ -4,6 +4,7 @@
 [![DOI](https://zenodo.org/badge/349242730.svg)](https://zenodo.org/badge/latestdoi/349242730)
 [![Documentation Status](https://readthedocs.org/projects/ppdyn/badge/?version=latest)](https://ppdyn.readthedocs.io/en/latest/?badge=latest)
 [![PyPI Version](https://img.shields.io/pypi/v/ppdyn.svg)](https://pypi.org/project/PPDyn/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sayanadhikari/PPDyn/main)
 
 A python code to simulate plasma particles using Molecular Dynamics Algorithm. [Numba JIT compiler](https://numba.pydata.org/) for Python has been implemented for faster performance.
 
@@ -12,10 +13,10 @@ A detailed documentation can be found at https://ppdyn.readthedocs.io/.
 <!-- <video src="assets/videos/Plasma Particle Dynamics using Molecular Dynamics Method.mp4" poster="assets/images/ppdyn_poster.png" width="320" height="200" controls preload></video> -->
 
 Example:
+
+![PPDyn Example](ppdyn_norm.gif)
 <!--[![PPDyn Example]()](https://user-images.githubusercontent.com/11753189/114286735-b5f26900-9a61-11eb-86ba-76ee295d6448.mp4)-->
-
-
-[![PPDyn Example](http://img.youtube.com/vi/qvQRUX-rSrQ/0.jpg)](https://www.youtube.com/embed/qvQRUX-rSrQ)
+<!--[![PPDyn Example](http://img.youtube.com/vi/qvQRUX-rSrQ/0.jpg)](https://www.youtube.com/embed/qvQRUX-rSrQ)-->
 
 
 ## Problem
@@ -24,6 +25,8 @@ Example:
 ## Contributors
 - [Sayan Adhikari](https://github.com/sayanadhikari), UiO, Norway. [@sayanadhikari](https://twitter.com/sayanadhikari)
 - [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA.
+- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India
+- [Rupali Paul](https://github.com/rupali-paul), IPR, India
 
 ## Installation
 ### Prerequisites
@@ -32,6 +35,29 @@ Example:
 3. [git](https://git-scm.com/)
 
 ### Procedure
+#### Using Anaconda/Miniconda (Preferred)
+First make a clone of the master branch using the following command
+```shell
+git clone https://github.com/sayanadhikari/PPDyn.git
+```
+Then enter inside the *PPDyn* directory
+```shell
+cd PPDyn
+```
+Now create a conda environment using the given *environment.yml* file
+```shell
+conda env create -f environment.yml
+```
+Activate the conda environment
+```shell
+conda activate ppdyn
+```
+*Usage*
+
+Upon successful compilation, run the code using following command
+```shell
+python ppdyn.py -i input.ini
+```
 #### Using PyPI
 ```bash
 pip install PPDyn
@@ -80,7 +106,7 @@ Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ 
 ; @file		input.ini
 ; @brief	PPDyn inputfile.
 ;
-scope = default
+;scope = default
 
 [simbox]
 Lx  = 10.0    ; System length in X
@@ -88,7 +114,7 @@ Ly  = 10.0    ; System length in Y
 Lz  = 10.0    ; System length in Z
 
 [particles]
-N     = 700     ; Number of particles
+N     = 200     ; Number of particles
 Vxmax = 1.0     ; Maximum velocity in X
 Vymax = 1.0     ; Maximum velocity in Y
 Vzmax = 1.0     ; Maximum velocity in Z
@@ -101,13 +127,14 @@ k = 1.0
 btype = reflecting ; Type of boundary Options: periodic, reflecting
 
 [time]
-tmax  = 1000.0    ; Final time
+tmax  = 100.0    ; Final time
 dt    = 0.010   ; time step size
 
 [diagnostics]
 dumpPeriod  = 50    ; Data dump period
 dumpData    = True
-vtkData     = False
+vtkData     = True
+realTime    = True
 
 [options]
 parallelMode  = True  ;set to false to disable parallel

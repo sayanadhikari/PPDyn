@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Adhikari"
+  given-names: "Sayan"
+  orcid: "https://orcid.org/0000-0002-9316-3292"
+- family-names: "Mukherjee"
+  given-names: "Rupak"
+  orcid: "https://orcid.org/0000-0003-3955-7116"
+- family-names: "Mishra"
+  given-names: "Rinku"
+  orcid: "https://orcid.org/0000-0002-2426-9894"
+- family-names: "Paul"
+  given-names: "Rupali"
+  orcid: "https://orcid.org/0000-0002-4492-5553"
+title: "PPDyn"
+version: 1.0.0
+doi: 10.5281/zenodo.1234
+date-released: 2021-09-01
+url: "https://github.com/sayanadhikari/PPDyn"

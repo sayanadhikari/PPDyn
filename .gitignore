@@ -7,6 +7,7 @@ venv
 .bak
 *.mp4
 *.hdf5
+*.vtu
 .pytest_cache
 .coverage
 **.pyc
@@ -15,4 +16,10 @@ build
 dist
 docs/build
 .pypirc
+<<<<<<< HEAD
 data
+=======
+tests/*
+tests*
+data/*
+>>>>>>> main

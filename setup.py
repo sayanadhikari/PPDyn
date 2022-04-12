@@ -19,7 +19,7 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/sayanadhikari/PPDyn/issues",
     },
     packages=['PPDyn'],
-    install_requires=['numpy', 'scipy', 'ini-parser', 'numba', 'h5py', 'matplotlib'],
+    install_requires=['numpy', 'scipy', 'ini-parser', 'numba', 'h5py', 'matplotlib', 'dash', 'plotly','pandas'],
     package_data={'': ['input.ini']},
     license='MIT',
     classifiers=[

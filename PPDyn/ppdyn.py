@@ -19,14 +19,11 @@ import os
 from os.path import join as pjoin
 import ini
 import sys
-import argparse
+# import argparse
 
 ## User defined functions
 from PPDyn.thermostat import berendsen
 from PPDyn.diagn import configSpace,attributes
-
-
-
 
 
 def ppdyn(argv):
@@ -37,10 +34,10 @@ def ppdyn(argv):
     print("Input: Edit input.ini file to change the parameters for simulation")
     print("===================================================================")
     """ PPDyn main() function """
-    parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
-    parser.add_argument('-i','--input', default='input.ini', type=str, help='Input file name')
-    args        = parser.parse_args()
-    inputFile   = args.input
+    # parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
+    # parser.add_argument('-i','--input', default='input.ini', type=str, help='Input file name')
+    # args        = parser.parse_args()
+    # inputFile   = args.input
 
     params = ini.parse(open(argv).read())
     #========== Input Parameters ===========
@@ -83,7 +80,8 @@ def ppdyn(argv):
 
     vtkData     = bool(params['diagnostics']['vtkData'])
     realTime    = bool(params['diagnostics']['realTime'])
-
+    if os.path.exists(pjoin(path,'energy.txt')):
+        os.remove(pjoin(path,'energy.txt'))
     #========== Options ============
     parallelMode    = bool(params['options']['parallelMode'])
     if parallelMode:
@@ -125,9 +123,8 @@ def ppdyn(argv):
         from PPDyn.vtk_data import vtkwrite
         print('Writing VTK files for Paraview visualization ...')
         vtkwrite()
-    os.remove(pjoin(path,'energy.txt'))
     return "All done!!"
     #========== End of Time Loop ======
 
-if __name__== "__ppdyn__":
-	ppdyn(sys.argv[1:])
+# if __name__== "__ppdyn__":
+# 	ppdyn(sys.argv[1:])
