@@ -1,3 +1,4 @@
+![PPDyn Example](assets/ppdyn_logo.png)
 # PPDyn (Plasma Particle Dynamics)
 [![CI](https://github.com/sayanadhikari/PPDyn/actions/workflows/main.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/main.yml)
 [![build](https://github.com/sayanadhikari/PPDyn/actions/workflows/make.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/make.yml)
@@ -14,7 +15,7 @@ A detailed documentation can be found at https://ppdyn.readthedocs.io/.
 
 Example:
 
-![PPDyn Example](ppdyn_norm.gif)
+![PPDyn Example](assets/ppdyn_norm.gif)
 <!--[![PPDyn Example]()](https://user-images.githubusercontent.com/11753189/114286735-b5f26900-9a61-11eb-86ba-76ee295d6448.mp4)-->
 <!--[![PPDyn Example](http://img.youtube.com/vi/qvQRUX-rSrQ/0.jpg)](https://www.youtube.com/embed/qvQRUX-rSrQ)-->
 
