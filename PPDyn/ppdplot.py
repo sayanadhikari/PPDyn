@@ -81,6 +81,3 @@ def pyview(argv):
         print("You have not opted for showing or saving animation.")
 
     print("End of animation")
-
-if __name__== "__pyview__":
-	pyview(sys.argv[1:])

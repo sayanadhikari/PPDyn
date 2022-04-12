@@ -25,4 +25,9 @@ module list
 
 export HDF5_USE_FILE_LOCKING='FALSE'
 
-python ppdyn.py -i input.ini
+# conda env create -f environment.yml
+# conda activate ppdyn
+
+# pip install -r requirements.txt --user
+
+srun python ppdyn.py -i input.ini

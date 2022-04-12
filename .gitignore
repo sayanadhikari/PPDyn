@@ -2,11 +2,11 @@ _build
 .ipynb_checkpoints
 .DS_Store
 __pycache__/
-*.png
 venv
 .bak
 *.mp4
 *.hdf5
+*.vtu
 .pytest_cache
 .coverage
 **.pyc
