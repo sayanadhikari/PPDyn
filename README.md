@@ -26,8 +26,9 @@ Example:
 ## Contributors
 - [Sayan Adhikari](https://github.com/sayanadhikari), UiO, Norway. [@sayanadhikari](https://twitter.com/sayanadhikari)
 - [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA.
-- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India
-- [Rupali Paul](https://github.com/rupali-paul), IPR, India
+- [Gaute Holen](https://github.com/GauteHolen), UiO, Norway (See separate branch, [dust-exp])
+- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India (See separate branch, [dust-fall])
+- [Rupali Paul](https://github.com/rupali-paul), IPR, India (See separate branch, [dust-fall])
 
 ## Installation
 ### Prerequisites
@@ -110,35 +111,47 @@ Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ 
 ;scope = default
 
 [simbox]
-Lx  = 10.0    ; System length in X
-Ly  = 10.0    ; System length in Y
-Lz  = 10.0    ; System length in Z
+Lx  = 15.0    ; System length in X
+Ly  = 15.0    ; System length in Y
+Lz  = 20.0    ; System length in Z
 
 [particles]
-N     = 200     ; Number of particles
+N     = 1000 ; Number of particles
 Vxmax = 1.0     ; Maximum velocity in X
 Vymax = 1.0     ; Maximum velocity in Y
 Vzmax = 1.0     ; Maximum velocity in Z
-Temp  = 0.01   ;
+Temp  = 0.1     ;
+dist = True     ; Use distribution: True
+mean = 1  ; if dist = True
+stdDev = 0.2  ; if dist = True
 
 [screening]
-k = 1.0
+k = 0.0
+
+[gravity]
+g_0= 0.0063;    Reduced Earth's gravity
+
+[cutoff radius]
+rc = 1e-5
 
 [boundary]
-btype = reflecting ; Type of boundary Options: periodic, reflecting
+btype = mixed ; Type of boundary Options: periodic, reflecting, mixed
 
 [time]
-tmax  = 100.0    ; Final time
+tmax  = 10.0    ; Final time
 dt    = 0.010   ; time step size
 
 [diagnostics]
-dumpPeriod  = 50    ; Data dump period
+dumpPeriod  = 5    ; Data dump period
 dumpData    = True
 vtkData     = True
-realTime    = True
+realTime    = False
+
+[directory]
+dataDir = data #put runname here
 
 [options]
-parallelMode  = True  ;set to false to disable parallel
+parallelMode  = True ;True ;set to false to disable parallel
 ```
 ## Visualization
 For visualization, user either can use the python scripts available inside ``scripts`` directory or can write their own. After successful run the data will be available under ``data`` directory. Two different data formats are available at present. The complete dataset will available under the name particle.hdf5. For vtk visualization users can use ``.vtu`` files inside ``data/vtkdata``. [Paraview](https://www.paraview.org/) can be used to animate particle dynamics very easily. A sample video can be found [here](https://www.youtube.com/embed/qvQRUX-rSrQ).
