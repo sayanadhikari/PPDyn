@@ -164,9 +164,9 @@ def verlet_mixed(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
                 fx = xdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r) # + zdiff*g + Lz*g # zdiff/(r*r*r)
-                acc[i,0] += fx/M[i]
-                acc[i,1] += fy/M[i]
-                acc[i,2] += fz/M[i]
+                acc[i,0] += (fx + (f0*np.exp(-(X- config.X0))/config.lambda_c)  - config.mi*cofig.nu_d*vvel[i,0] )/M[i]
+                acc[i,1] += (fy + (f0*np.exp(-(X- config.Y0))/config.lambda_c)  - config.mi*cofig.nu_d*vvel[i,1] ) + /M[i]
+                acc[i,2] += (fz + (f0*np.exp(-(X- config.Z0))/config.lambda_c)  - config.mi*cofig.nu_d*vvel[i,2] )/M[i]
 
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0
