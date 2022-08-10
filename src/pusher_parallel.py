@@ -155,6 +155,7 @@ def verlet_mixed(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
         acc[i,0] = 0.0
         acc[i,1] = 0.0
         acc[i,2] = -(pos[i,2]+config.Lz)*config.g
+        f0 = 1e-13
         for j in range(config.N):
             if (i != j):
                 xdiff = ( pos[i,0]-pos[j,0] )
@@ -164,9 +165,12 @@ def verlet_mixed(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
                 fx = xdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r) # + zdiff*g + Lz*g # zdiff/(r*r*r)
-                acc[i,0] += (fx + (f0*np.exp(-(X- config.X0))/config.lambda_c)  - config.mi*cofig.nu_d*vvel[i,0] )/M[i]
-                acc[i,1] += (fy + (f0*np.exp(-(X- config.Y0))/config.lambda_c)  - config.mi*cofig.nu_d*vvel[i,1] ) + /M[i]
-                acc[i,2] += (fz + (f0*np.exp(-(X- config.Z0))/config.lambda_c)  - config.mi*cofig.nu_d*vvel[i,2] )/M[i]
+                acc[i,0] += (fx + (f0*np.exp(-(pos[i,0]- 152.32)/300)))/M[i]            #lambda_c/lambda_d =30
+                acc[i,1] += (fy + (f0*np.exp(-(pos[i,1]- 304.65)/300))) /M[i]
+                acc[i,2] += (fz + (f0*np.exp(-(pos[i,2]- 0.0)/300)))/M[i]
+                # acc[i,0] += fx /M[i]
+                # acc[i,1] += fy /M[i]
+                # acc[i,2] += fz /M[i]
 
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0

@@ -72,8 +72,8 @@ def main():
         M  = np.random.normal(loc=mean,scale=stdDev,size=config.N) #mass of particles (Gaussian)
         Q = M**(2/3) # charge of particles
     else:
-        M = np.ones(N)
-        Q = M
+        M = np.ones(config.N)
+        Q = -20000*M
 
     # #========= Boundary ==========
     # btype   = str(params['boundary']['btype']) # Type of boundary
