@@ -121,7 +121,7 @@ def initial_reflecting(Q,M):
         acc[i,0] = 0.0
         acc[i,1] = 0.0
         acc[i,2] = -(pos[i,2]+config.Lz)*config.g
-        f0 = 1e-13
+        f0 = 0.1
         for j in range(config.N):
             if (i != j):
                 xdiff = ( pos[i,0]-pos[j,0] )
@@ -134,7 +134,7 @@ def initial_reflecting(Q,M):
                 # acc[i,0] += fx/M[i]
                 # acc[i,1] += fy/M[i]
                 # acc[i,2] += fz/M[i]
-                acc[i,0] += (fx + (f0*np.exp(-(pos[i,0]- 152.32)/300)))/M[i]            #lambda_c/lambda_d =30
-                acc[i,1] += (fy + (f0*np.exp(-(pos[i,1]- 304.65)/300))) /M[i]
-                acc[i,2] += (fz + (f0*np.exp(-(pos[i,2]- 0.0)/300)))/M[i]
+                acc[i,0] += (fx + (f0*np.exp(-(pos[i,0]- 152.32)/30)))/M[i]            #lambda_c/lambda_d =30
+                acc[i,1] += (fy + (f0*np.exp(-(pos[i,1]- 304.65)/30))) /M[i]
+                acc[i,2] += (fz + (f0*np.exp(-(pos[i,2]- 0.0)/30)))/M[i]
     return pos,vvel,uvel,acc,time,data_num,fduration
