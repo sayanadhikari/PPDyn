@@ -60,16 +60,16 @@ def initial_periodic(Q,M):
                 ydiff = ( pos[i,1]-pos[j,1] ) - round((pos[i,1]-pos[j,1])/(2.0*config.Ly)) * 2.0*config.Ly
                 zdiff = ( pos[i,2]-pos[j,2] ) - round((pos[i,2]-pos[j,2])/(2.0*config.Lz)) * 2.0*config.Lz
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
-                r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
                 fx = xdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r) #+ zdiff*g + Lz*g  # zdiff/(r*r*r)
-                # acc[i,0] += fx/M[i]
-                # acc[i,1] += fy/M[i]
-                # acc[i,2] += fz/M[i]
-                acc[i,0] += (fx + (f0*np.exp(- r1 /30)))/M[i]            #lambda_c/lambda_d =30
-                acc[i,1] += (fy + (f0*np.exp(- r1 /30))) /M[i]
-                acc[i,2] += (fz + (f0*np.exp(- r1 /30)))/M[i]
+                acc[i,0] += fx/M[i]
+                acc[i,1] += fy/M[i]
+                acc[i,2] += fz/M[i]
+        r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
+        acc[i,0] += (f0*np.exp(- r1 /30))/M[i]            #lambda_c/lambda_d =30
+        acc[i,1] += (f0*np.exp(- r1 /30))/M[i]
+        acc[i,2] += (f0*np.exp(- r1 /30))/M[i]
     return pos,vvel,uvel,acc,time,data_num,fduration
 
 

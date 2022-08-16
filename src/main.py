@@ -73,7 +73,7 @@ def main():
         Q = M**(2/3) # charge of particles
     else:
         M = np.ones(config.N)
-        Q = -20000*M
+        Q = M
 
     # #========= Boundary ==========
     # btype   = str(params['boundary']['btype']) # Type of boundary
