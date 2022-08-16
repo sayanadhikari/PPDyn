@@ -53,18 +53,23 @@ def initial_periodic(Q,M):
         acc[i,:] = 0.0
         # acc[i,1] = 0.0
         # acc[i,2] = 0.0
+        f0 = 10
         for j in range(config.N):
             if (i != j):
                 xdiff = ( pos[i,0]-pos[j,0] ) - round((pos[i,0]-pos[j,0])/(2.0*config.Lx)) * 2.0*config.Lx
                 ydiff = ( pos[i,1]-pos[j,1] ) - round((pos[i,1]-pos[j,1])/(2.0*config.Ly)) * 2.0*config.Ly
                 zdiff = ( pos[i,2]-pos[j,2] ) - round((pos[i,2]-pos[j,2])/(2.0*config.Lz)) * 2.0*config.Lz
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
+                r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
                 fx = xdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r) #+ zdiff*g + Lz*g  # zdiff/(r*r*r)
-                acc[i,0] += fx/M[i]
-                acc[i,1] += fy/M[i]
-                acc[i,2] += fz/M[i]
+                # acc[i,0] += fx/M[i]
+                # acc[i,1] += fy/M[i]
+                # acc[i,2] += fz/M[i]
+                acc[i,0] += (fx + (f0*np.exp(- r1 /30)))/M[i]            #lambda_c/lambda_d =30
+                acc[i,1] += (fy + (f0*np.exp(- r1 /30))) /M[i]
+                acc[i,2] += (fz + (f0*np.exp(- r1 /30)))/M[i]
     return pos,vvel,uvel,acc,time,data_num,fduration
 
 
@@ -121,7 +126,6 @@ def initial_reflecting(Q,M):
         acc[i,0] = 0.0
         acc[i,1] = 0.0
         acc[i,2] = -(pos[i,2]+config.Lz)*config.g
-        f0 = 0.1
         for j in range(config.N):
             if (i != j):
                 xdiff = ( pos[i,0]-pos[j,0] )
@@ -131,10 +135,8 @@ def initial_reflecting(Q,M):
                 fx = xdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
                 fy = ydiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
                 fz = zdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r) # + zdiff*g + Lz*g # zdiff/(r*r*r)
-                # acc[i,0] += fx/M[i]
-                # acc[i,1] += fy/M[i]
-                # acc[i,2] += fz/M[i]
-                acc[i,0] += (fx + (f0*np.exp(-(pos[i,0]- 152.32)/30)))/M[i]            #lambda_c/lambda_d =30
-                acc[i,1] += (fy + (f0*np.exp(-(pos[i,1]- 304.65)/30))) /M[i]
-                acc[i,2] += (fz + (f0*np.exp(-(pos[i,2]- 0.0)/30)))/M[i]
+                acc[i,0] += fx/M[i]
+                acc[i,1] += fy/M[i]
+                acc[i,2] += fz/M[i]
+
     return pos,vvel,uvel,acc,time,data_num,fduration
