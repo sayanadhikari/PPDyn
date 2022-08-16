@@ -22,9 +22,7 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
 
     for i in prange(config.N):
         acc[i,:] = 0.0
-        # acc[i,0] = 0.0
-        # acc[i,1] = 0.0
-        # acc[i,2] = 0.0
+
         f0 = 10
         for j in range(config.N):
             if (i != j):
@@ -38,10 +36,11 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
                 acc[i,0] += fx/M[i]
                 acc[i,1] += fy/M[i]
                 acc[i,2] += fz/M[i]
+        # Dust Void feature
         r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
         acc[i,0] += ((f0*np.exp(- r1 /30))*(pos[i,0]/r1))/M[i]            #lambda_c/lambda_d =30
         acc[i,1] += ((f0*np.exp(- r1 /30))*(pos[i,1]/r1))/M[i]
-        acc[i,2] += ((f0*np.exp(- r1 /30))*(pos[i,2]/r1))/M[i] 
+        acc[i,2] += ((f0*np.exp(- r1 /30))*(pos[i,2]/r1))/M[i]
 
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0
