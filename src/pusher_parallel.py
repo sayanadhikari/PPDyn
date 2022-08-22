@@ -45,6 +45,11 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
         acc[i,1] += -(M[i]*config.nu*vvel[i,1])/M[i]
         acc[i,2] += -(M[i]*config.nu*vvel[i,2])/M[i]
 
+        #random kicks force
+        acc[i,0] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+        acc[i,1] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+        acc[i,2] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0
         # vvel[i,0] = uvel[i,0] + acc[i,0] * config.dt / 2.0

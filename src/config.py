@@ -31,6 +31,7 @@ f0      = float(params['particles']['f0'])
 k       = float(params['screening']['k'])
 lambda_c = float(params['screening']['lambda_c'])
 nu = float(params['neutral']['nu'])
+Tn = float(params['neutral']['Tn'])
 
 g       = float(params['gravity']['g_0'])
 rc      = float(params['cutoff radius']['rc'])

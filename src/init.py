@@ -75,6 +75,11 @@ def initial_periodic(Q,M):
         acc[i,1] += -(M[i]*config.nu*vvel[i,1])/M[i]
         acc[i,2] += -(M[i]*config.nu*vvel[i,2])/M[i]
 
+        #random kicks force
+        acc[i,0] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+        acc[i,1] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+        acc[i,2] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+
 
     return pos,vvel,uvel,acc,time,data_num,fduration
 
