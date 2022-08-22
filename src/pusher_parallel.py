@@ -22,8 +22,6 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
 
     for i in prange(config.N):
         acc[i,:] = 0.0
-
-        f0 = 10
         for j in range(config.N):
             if (i != j):
                 xdiff = ( pos[i,0]-pos[j,0] ) - round((pos[i,0]-pos[j,0])/(2.0*config.Lx)) * 2.0*config.Lx
@@ -38,9 +36,14 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
                 acc[i,2] += fz/M[i]
         # Dust Void feature
         r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
-        acc[i,0] += ((f0*np.exp(- r1 /30))*(pos[i,0]/r1))/M[i]            #lambda_c/lambda_d =30
-        acc[i,1] += ((f0*np.exp(- r1 /30))*(pos[i,1]/r1))/M[i]
-        acc[i,2] += ((f0*np.exp(- r1 /30))*(pos[i,2]/r1))/M[i]
+        acc[i,0] += ((config.f0*np.exp(- r1 /config.lambda_c))*(pos[i,0]/r1))/M[i]            #lambda_c/lambda_d =30
+        acc[i,1] += ((config.f0*np.exp(- r1 /config.lambda_c))*(pos[i,1]/r1))/M[i]
+        acc[i,2] += ((config.f0*np.exp(- r1 /config.lambda_c))*(pos[i,2]/r1))/M[i]
+
+        #neutral drag
+        acc[i,0] += -(M[i]*config.nu*vvel[i,0])/M[i]
+        acc[i,1] += -(M[i]*config.nu*vvel[i,1])/M[i]
+        acc[i,2] += -(M[i]*config.nu*vvel[i,2])/M[i]
 
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0

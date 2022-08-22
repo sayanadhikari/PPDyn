@@ -26,7 +26,11 @@ Vxmax   = float(params['particles']['Vxmax']) # Maximum velocity in X
 Vymax   = float(params['particles']['Vymax']) # Maximum velocity in Y
 Vzmax   = float(params['particles']['Vzmax']) # Maximum velocity in Z
 
+f0      = float(params['particles']['f0'])
+
 k       = float(params['screening']['k'])
+lambda_c = float(params['screening']['lambda_c'])
+nu = float(params['neutral']['nu'])
 
 g       = float(params['gravity']['g_0'])
 rc      = float(params['cutoff radius']['rc'])
