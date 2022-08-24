@@ -11,6 +11,7 @@ def initial_periodic(Q,M):
     uvel  = np.empty((config.N,3), dtype=np.float64)
     vvel  = np.empty((config.N,3), dtype=np.float64)
     acc   = np.empty((config.N,3), dtype=np.float64)
+    sv   = np.empty((config.N,3), dtype=np.float64)
     fduration = np.zeros(config.N, dtype=np.float32)
 
 
@@ -27,25 +28,32 @@ def initial_periodic(Q,M):
     pos[:,2] = np.random.random(config.N)*2.0*config.Lz - config.Lz
 
     # Maxwellian
-    vvel[:,0] = np.random.normal(0, config.Temp, config.N)
-    vvel[:,1] = np.random.normal(0, config.Temp, config.N)
-    vvel[:,2] = np.random.normal(0, config.Temp, config.N)
+    # vvel[:,0] = np.random.normal(0, config.Temp, config.N)
+    # vvel[:,1] = np.random.normal(0, config.Temp, config.N)
+    # vvel[:,2] = np.random.normal(0, config.Temp, config.N)
 
-    # for i in range(N):
-    #     x[i] = (random.random())*2.0*Lx - Lx
-    #     y[i] = (random.random())*2.0*Ly - Ly
-    #     z[i] = (random.random())*2.0*Lz - Lz
-    #     vx[i] = (random.random())*Vxmax - Vxmax/2.0
-    #     vy[i] = (random.random())*Vymax - Vymax/2.0
-    #     vz[i] = (random.random())*Vzmax - Vzmax/2.0
-    #     svx = svx + vx[i]
-    #     svy = svy + vy[i]
-    #     svz = svz + vz[i]
+    for i in range(config.N):
+        # x[i] = (random.random())*2.0*Lx - Lx
+        # y[i] = (random.random())*2.0*Ly - Ly
+        # z[i] = (random.random())*2.0*Lz - Lz
+        # vx[i] = (random.random())*Vxmax - Vxmax/2.0
+        # vy[i] = (random.random())*Vymax - Vymax/2.0
+        # vz[i] = (random.random())*Vzmax - Vzmax/2.0
+        # svx = svx + vx[i]
+        # svy = svy + vy[i]
+        # svz = svz + vz[i]
 
-    # for i in range(N):
-    #     vx[i] = vx[i] - svx/N
-    #     vy[i] = vy[i] - svy/N
-    #     vz[i] = vz[i] - svz/N
+        vvel[i,0] = (random.random())*config.Vxmax - config.Vxmax/2.0
+        vvel[i,1] = (random.random())*config.Vymax - config.Vymax/2.0
+        vvel[i,2] = (random.random())*config.Vzmax - config.Vzmax/2.0
+        sv[i,0] = sv[i,0] + vvel[i,0]
+        sv[i,1] = sv[i,1] + vvel[i,1]
+        sv[i,2] = sv[i,2] + vvel[i,2]
+
+    # for i in range(config.N):
+    #     vvel[i,0] = vvel[i,0] - sv[i,0]/config.N
+    #     vvel[i,1] = vvel[i,1] - sv[i,1]/config.N
+    #     vvel[i,2] = vvel[i,2] - sv[i,2]/config.N
 
     # acc = 0.0*acc
 
@@ -73,17 +81,21 @@ def initial_periodic(Q,M):
         acc[i,1] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,1]/r1)
         acc[i,2] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,2]/r1)
 
+
         #flow force
         acc[i,0] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
         acc[i,1] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
         acc[i,2] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
-
-
         #
         # #random kicks force
-        # acc[i,0] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
-        # acc[i,1] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
-        # acc[i,2] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+        acc[i,0] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        acc[i,1] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        acc[i,2] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+
+        #neutral drag force
+        acc[i,0] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,0])
+        acc[i,1] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,1])
+        acc[i,2] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,2])
 
 
     return pos,vvel,uvel,acc,time,data_num,fduration
