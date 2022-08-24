@@ -130,7 +130,7 @@ def main():
         Qcollect = 0.0 # Initialize Q_collect
         pos,vvel,uvel,acc,Q,KE,fduration,Qcollect = verlet(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect)
         #============  Thermostat =========================
-        # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
+        vvel = berendsen(t,vvel,KE)
         #============ Diagnostics Write ===================
         if config.dumpData:
             if t%config.dumpPeriod==0:

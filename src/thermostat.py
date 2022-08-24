@@ -1,17 +1,16 @@
 from numba import jit
 import numpy as np
-@jit(nopython=True)
-def berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax):
-    tau = 10.0*dt
-    scl = 1.0 #np.sqrt(1.0 + (dt/tau) * ((Temp/(2.0*KE/(3.0*float(N)) )) -1.0))
+import config
 
-    if (t <= tmax/2.0):
-        for i in range(N):
-            vx[i] = scl * vx[i]
-            vy[i] = scl * vy[i]
-            vz[i] = scl * vz[i]
+@jit(nopython=True)
+def berendsen(t,vvel,KE):
+    tau = 10.0*config.dt
+    scl = np.sqrt(1.0 + (config.dt/tau) * ((config.Temp/(2.0*KE/(3.0*float(config.N)) )) -1.0))
+
+    if (t <= config.tmax/2.0):
+        vvel[:,0] = scl * vvel[:,0]
+        vvel[:,1] = scl * vvel[:,1]
+        vvel[:,2] = scl * vvel[:,2]
     else:
-        vx[i] = vx[i]
-        vy[i] = vy[i]
-        vz[i] = vz[i]
-    return vx,vy,vz
+        None
+    return vvel

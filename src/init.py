@@ -11,7 +11,7 @@ def initial_periodic(Q,M):
     uvel  = np.empty((config.N,3), dtype=np.float64)
     vvel  = np.empty((config.N,3), dtype=np.float64)
     acc   = np.empty((config.N,3), dtype=np.float64)
-    sv   = np.empty((config.N,3), dtype=np.float64)
+    sv    = np.zeros((config.N,3), dtype=np.float64)
     fduration = np.zeros(config.N, dtype=np.float32)
 
 
@@ -32,7 +32,16 @@ def initial_periodic(Q,M):
     # vvel[:,1] = np.random.normal(0, config.Temp, config.N)
     # vvel[:,2] = np.random.normal(0, config.Temp, config.N)
 
-    for i in range(config.N):
+    # Random
+    vvel[:,0] = np.random.random(config.N)*config.Vxmax - config.Vxmax/2.0
+    vvel[:,1] = np.random.random(config.N)*config.Vymax - config.Vymax/2.0
+    vvel[:,2] = np.random.random(config.N)*config.Vzmax - config.Vzmax/2.0
+
+    sv[:,0] = sv[:,0] + vvel[:,0]
+    sv[:,1] = sv[:,1] + vvel[:,1]
+    sv[:,2] = sv[:,2] + vvel[:,2]
+
+    # for i in range(config.N):
         # x[i] = (random.random())*2.0*Lx - Lx
         # y[i] = (random.random())*2.0*Ly - Ly
         # z[i] = (random.random())*2.0*Lz - Lz
@@ -43,17 +52,17 @@ def initial_periodic(Q,M):
         # svy = svy + vy[i]
         # svz = svz + vz[i]
 
-        vvel[i,0] = (random.random())*config.Vxmax - config.Vxmax/2.0
-        vvel[i,1] = (random.random())*config.Vymax - config.Vymax/2.0
-        vvel[i,2] = (random.random())*config.Vzmax - config.Vzmax/2.0
-        sv[i,0] = sv[i,0] + vvel[i,0]
-        sv[i,1] = sv[i,1] + vvel[i,1]
-        sv[i,2] = sv[i,2] + vvel[i,2]
+        # vvel[i,0] = (random.random())*config.Vxmax - config.Vxmax/2.0
+        # vvel[i,1] = (random.random())*config.Vymax - config.Vymax/2.0
+        # vvel[i,2] = (random.random())*config.Vzmax - config.Vzmax/2.0
+        # sv[i,0] = sv[i,0] + vvel[i,0]
+        # sv[i,1] = sv[i,1] + vvel[i,1]
+        # sv[i,2] = sv[i,2] + vvel[i,2]
 
     # for i in range(config.N):
-    #     vvel[i,0] = vvel[i,0] - sv[i,0]/config.N
-    #     vvel[i,1] = vvel[i,1] - sv[i,1]/config.N
-    #     vvel[i,2] = vvel[i,2] - sv[i,2]/config.N
+    vvel[:,0] = vvel[:,0] - sv[:,0]/config.N
+    vvel[:,1] = vvel[:,1] - sv[:,1]/config.N
+    vvel[:,2] = vvel[:,2] - sv[:,2]/config.N
 
     # acc = 0.0*acc
 
