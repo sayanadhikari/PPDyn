@@ -27,11 +27,19 @@ Vymax   = float(params['particles']['Vymax']) # Maximum velocity in Y
 Vzmax   = float(params['particles']['Vzmax']) # Maximum velocity in Z
 
 f0      = float(params['particles']['f0'])
+f_flow  = float(params['particles']['f_flow'])
+KB      = float(params['constant']['KB'])
+
+Td      = float(params['dust']['Td'])
+md      = float(params['dust']['md'])
 
 k       = float(params['screening']['k'])
 lambda_c = float(params['screening']['lambda_c'])
-nu = float(params['neutral']['nu'])
-Tn = float(params['neutral']['Tn'])
+Gamma    = float(params['screening']['Gamma'])
+a    = float(params['screening']['a'])
+
+nu      = float(params['neutral']['nu'])
+Tn      = float(params['neutral']['Tn'])
 
 g       = float(params['gravity']['g_0'])
 rc      = float(params['cutoff radius']['rc'])

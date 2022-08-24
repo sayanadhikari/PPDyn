@@ -28,27 +28,34 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
                 ydiff = ( pos[i,1]-pos[j,1] ) - round((pos[i,1]-pos[j,1])/(2.0*config.Ly)) * 2.0*config.Ly
                 zdiff = ( pos[i,2]-pos[j,2] ) - round((pos[i,2]-pos[j,2])/(2.0*config.Lz)) * 2.0*config.Lz
                 r = np.sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff)
-                fx = xdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # xdiff/(r*r*r)
-                fy = ydiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r)    # ydiff/(r*r*r)
-                fz = zdiff*(1+config.k*r)*np.exp(-config.k*r)*(Q[i]*Q[j])/(r*r*r) #+ zdiff*g + Lz*g  # zdiff/(r*r*r)
-                acc[i,0] += fx/M[i]
-                acc[i,1] += fy/M[i]
-                acc[i,2] += fz/M[i]
-        # Dust Void feature
+                fx = xdiff*(1+config.k*r)*np.exp(-config.k*r)/(r*r*r)    # xdiff/(r*r*r)
+                fy = ydiff*(1+config.k*r)*np.exp(-config.k*r)/(r*r*r)    # ydiff/(r*r*r)
+                fz = zdiff*(1+config.k*r)*np.exp(-config.k*r)/(r*r*r)    #+ zdiff*g + Lz*g  # zdiff/(r*r*r)
+                acc[i,0] += fx
+                acc[i,1] += fy
+                acc[i,2] += fz
+
+
+        #repuslive force
         r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
-        acc[i,0] += ((config.f0*np.exp(- r1 /config.lambda_c))*(pos[i,0]/r1))/M[i]            #lambda_c/lambda_d =30
-        acc[i,1] += ((config.f0*np.exp(- r1 /config.lambda_c))*(pos[i,1]/r1))/M[i]
-        acc[i,2] += ((config.f0*np.exp(- r1 /config.lambda_c))*(pos[i,2]/r1))/M[i]
+        acc[i,0] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,0]/r1)          #lambda_c/lambda_d =30
+        acc[i,1] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,1]/r1)
+        acc[i,2] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,2]/r1)
 
-        #neutral drag
-        acc[i,0] += -(M[i]*config.nu*vvel[i,0])/M[i]
-        acc[i,1] += -(M[i]*config.nu*vvel[i,1])/M[i]
-        acc[i,2] += -(M[i]*config.nu*vvel[i,2])/M[i]
+        #flow force
+        acc[i,0] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
+        acc[i,1] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
+        acc[i,2] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
+        #
+        # #random kicks force
+        acc[i,0] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        acc[i,1] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        acc[i,2] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
 
-        #random kicks force
-        acc[i,0] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
-        acc[i,1] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
-        acc[i,2] += (np.sqrt(config.Tn*config.nu/config.dt))/M[i]
+        #neutral drag force
+        acc[i,0] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,0])
+        acc[i,1] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,1])
+        acc[i,2] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,2])
 
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0
