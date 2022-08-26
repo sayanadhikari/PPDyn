@@ -37,6 +37,7 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
 
 
         #repuslive force
+        # if t<=int(config.Nt/4):
         r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
         acc[i,0] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,0]/r1)          #lambda_c/lambda_d =30
         acc[i,1] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,1]/r1)
