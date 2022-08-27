@@ -2,7 +2,7 @@ import numpy as np
 from os.path import join as pjoin
 import config
 
-def configSpace(f,dsetE,dsetQ,t,pos,vvel,KE,Qcollect):
+def configSpace(f,dsetE,t,pos,vvel,KE):
 
     f["/%d"%int(t)+"/position/x"] = pos[:,0]
     f["/%d"%int(t)+"/position/y"] = pos[:,1]
@@ -14,9 +14,6 @@ def configSpace(f,dsetE,dsetQ,t,pos,vvel,KE,Qcollect):
 
     dsetE.resize(dsetE.shape[0]+1, axis=0)
     dsetE[-1:] = KE
-
-    dsetQ.resize(dsetQ.shape[0]+1, axis=0)
-    dsetQ[-1:] = Qcollect
 
     with open(pjoin(config.dataDir,'energy.txt'),"ab") as f:
         np.savetxt(f, np.column_stack([t, KE]))
@@ -32,10 +29,4 @@ def attributes(f):
     f.attrs["Lx"] = config.Lx
     f.attrs["Ly"] = config.Ly
     f.attrs["Lz"] = config.Lz
-    return 0
-
-def dustDiagn(f,fduration):
-
-    f["/fall_duration"] = fduration
-    # f["/%d"%int(t)+"/energy"] = KE
     return 0

@@ -3,19 +3,14 @@ import numpy as np
 import config
 
 @jit(nopython=True, parallel=True)
-def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
+def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE):
     for i in prange(config.N):
         uvel[i,:] = vvel[i,:] + acc[i,:] * config.dt/2.0
-        # uvel[i,0] = vvel[i,0] + acc[i,0] * config.dt/2.0
-        # uvel[i,1] = vvel[i,1] + acc[i,1] * config.dt/2.0
-        # uvel[i,2] = vvel[i,2] + acc[i,2] * config.dt/2.0
+
         pos[i,0] = pos[i,0] + uvel[i,0] * config.dt
         pos[i,1] = pos[i,1] + uvel[i,1] * config.dt
         pos[i,2] = pos[i,2] + uvel[i,2] * config.dt
-        # r1 = np.sqrt((pos[i,0]*pos[i,0] )+ ( pos[i,1]*pos[i,1]) + (pos[i,2]*pos[i,2]))
-        # pos[i,0] -= (int(r1/config.Lx))*pos[i,0]*2.0    # Periodic Boundary Condition
-        # pos[i,1] -= (int(r1/config.Ly))*pos[i,1]*2.0    # Periodic Boundary Condition
-        # pos[i,2] -= (int(r1/config.Lz))*pos[i,2]*2.0    # Periodic Boundary Condition
+
         pos[i,0] = pos[i,0] - (int(pos[i,0]/config.Lx)) * 2.0 * config.Lx      # Periodic Boundary Condition
         pos[i,1] = pos[i,1] - (int(pos[i,1]/config.Ly)) * 2.0 * config.Ly      # Periodic Boundary Condition
         pos[i,2] = pos[i,2] - (int(pos[i,2]/config.Lz)) * 2.0 * config.Lz      # Periodic Boundary Condition
@@ -64,7 +59,7 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
         # vvel[i,1] = uvel[i,1] + acc[i,1] * config.dt / 2.0
         # vvel[i,2] = uvel[i,2] + acc[i,2] * config.dt / 2.0
         KE += ((vvel[i,0]*vvel[i,0]) + (vvel[i,1]*vvel[i,1]) + (vvel[i,2]*vvel[i,2]) ) / 2.0
-    return pos,vvel,uvel,acc,Q,KE,fduration,Qcollect
+    return pos,vvel,uvel,acc,Q,KE
 
 @jit(nopython=True, parallel=True)
 def verlet_reflecting(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):
