@@ -122,22 +122,22 @@ def main():
         #     print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
     timer.task('Step: Initialization')
-    pos,vvel,uvel,acc,time,data_num,fduration = initial(Q,M)
+    pos,vvel,uvel,acc,time,data_num,fdist = initial(Q,M)
     #========= Time Loop =========
     timer.task('Step: Time Solution')
     for t in range(len(time)):
         KE = 0.0   # Reset KE
-        pos,vvel,uvel,acc,Q,KE = verlet(t,pos,vvel,uvel,acc,Q,M,KE)
+        pos,vvel,uvel,acc,Q,KE,fdist = verlet(t,pos,vvel,uvel,acc,Q,M,KE,fdist)
         #============  Thermostat =========================
         vvel = berendsen(t,vvel,KE)
         #============ Diagnostics Write ===================
         if config.dumpData:
             if t%config.dumpPeriod==0:
-                diagn.configSpace(f,dsetE,t,pos,vvel,KE)
+                diagn.configSpace(f,dsetE,t,pos,vvel,KE,fdist)
                 print('TimeSteps = %d'%int(t)+' of %d'%config.Nt+' Energy: %e'%KE)
 
     timer.task('Step: Diagnostics')
-    # diagn.dustDiagn(f,fduration)
+
     if config.vtkData:
         from vtk_data import vtkwrite
         print('Writing VTK files for Paraview visualization ...')

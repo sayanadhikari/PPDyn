@@ -3,7 +3,13 @@ import numpy as np
 import config
 
 @jit(nopython=True, parallel=True)
-def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE):
+def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fdist):
+    F_col = np.zeros(config.N, dtype=np.float32)
+    F_rep = np.zeros(config.N, dtype=np.float32)
+    F_flow = np.zeros(config.N, dtype=np.float32)
+    F_rand = np.zeros(config.N, dtype=np.float32)
+    F_ndrag = np.zeros(config.N, dtype=np.float32)
+
     for i in prange(config.N):
         uvel[i,:] = vvel[i,:] + acc[i,:] * config.dt/2.0
 
@@ -30,6 +36,7 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE):
                 acc[i,1] += fy
                 acc[i,2] += fz
 
+        F_col[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2)
 
         #repuslive force
         # if t<=int(config.Nt/4):
@@ -37,29 +44,37 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE):
         acc[i,0] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,0]/r1)          #lambda_c/lambda_d =30
         acc[i,1] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,1]/r1)
         acc[i,2] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,2]/r1)
-
+        #
+        F_rep[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - F_col[i]
         #flow force
         # acc[i,0] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
         acc[i,1] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
         # acc[i,2] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
+        F_flow[i] = acc[i,1]*M[i] - (F_col[i] + F_rep[i])
         #
         # #random kicks force
         acc[i,0] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
         acc[i,1] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
         acc[i,2] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        #
+        F_rand[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - (F_col[i] + F_rep[i] + F_flow[i])
 
         #neutral drag force
         acc[i,0] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,0])
         acc[i,1] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,1])
         acc[i,2] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,2])
+        #
+        F_ndrag[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - (F_col[i] + F_rep[i] + F_flow[i] + F_rand[i])
 
+        fdist[i,:] = np.array([F_col[i],F_rep[i],F_flow[i],F_rand[i],F_ndrag[i]])
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0
         # vvel[i,0] = uvel[i,0] + acc[i,0] * config.dt / 2.0
         # vvel[i,1] = uvel[i,1] + acc[i,1] * config.dt / 2.0
         # vvel[i,2] = uvel[i,2] + acc[i,2] * config.dt / 2.0
         KE += ((vvel[i,0]*vvel[i,0]) + (vvel[i,1]*vvel[i,1]) + (vvel[i,2]*vvel[i,2]) ) / 2.0
-    return pos,vvel,uvel,acc,Q,KE
+
+    return pos,vvel,uvel,acc,Q,KE,fdist
 
 @jit(nopython=True, parallel=True)
 def verlet_reflecting(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect):

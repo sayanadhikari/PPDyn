@@ -12,7 +12,7 @@ def initial_periodic(Q,M):
     vvel  = np.empty((config.N,3), dtype=np.float64)
     acc   = np.empty((config.N,3), dtype=np.float64)
     sv    = np.zeros((config.N,3), dtype=np.float64)
-    fduration = np.zeros(config.N, dtype=np.float32)
+    fdist = np.zeros((config.N,5), dtype=np.float64)
 
 
     # svx  = 0.0  # velocity sum correction term in X
@@ -107,7 +107,7 @@ def initial_periodic(Q,M):
         acc[i,2] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,2])
 
 
-    return pos,vvel,uvel,acc,time,data_num,fduration
+    return pos,vvel,uvel,acc,time,data_num,fdist
 
 
 @jit(nopython=True)
