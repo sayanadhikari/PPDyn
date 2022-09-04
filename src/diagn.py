@@ -27,7 +27,7 @@ def configSpace(f,dsetE,t,pos,vvel,KE,fdist):
 def attributes(f):
     f.attrs["dp"] = config.dumpPeriod
     f.attrs["dt"] = config.dt
-    f.attrs["Nt"] = int(config.tmax/(config.dt*config.dumpPeriod))
+    f.attrs["Nt"] = int(config.tmax/(config.dt))
     f.attrs["N"]  = config.N
     f.attrs["tmax"] = config.tmax
     f.attrs["Lx"] = config.Lx

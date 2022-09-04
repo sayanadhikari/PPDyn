@@ -25,13 +25,14 @@ Lz = h5.attrs["Lz"]
 N = h5.attrs["N"]
 
 dp   = h5.attrs["dp"]
-Nt   = h5.attrs["Nt"]
+Nt   = dp*h5.attrs["Nt"]
 
 
-data_num = np.arange(start=0, stop=Nt, step=1, dtype=int)
+data_num = np.arange(start=0, stop=Nt, step=dp, dtype=int)
 
 time = data_num*dp
-i = 500
+i = len(data_num)-1
+
 x = h5["/%d"%data_num[i]+"/position/x"]
 y = h5["/%d"%data_num[i]+"/position/y"]
 z = h5["/%d"%data_num[i]+"/position/z"]

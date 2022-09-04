@@ -46,12 +46,12 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fdist):
         acc[i,2] += (((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*(pos[i,2]/r1)
         #
         F_rep[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - F_col[i]
-        #flow force
+        # flow force
         # acc[i,0] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
         acc[i,1] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
         # acc[i,2] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
         F_flow[i] = acc[i,1]*M[i] - (F_col[i] + F_rep[i])
-        #
+
         # #random kicks force
         acc[i,0] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
         acc[i,1] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
