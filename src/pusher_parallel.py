@@ -23,7 +23,6 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fdist):
 
     for i in prange(config.N):
         acc[i,:] = 0.0
-        w0 = (config.nu)/6
         for j in range(config.N):
             if (i != j):
                 xdiff = ( pos[i,0]-pos[j,0] ) - round((pos[i,0]-pos[j,0])/(2.0*config.Lx)) * 2.0*config.Lx
@@ -37,7 +36,7 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fdist):
                 acc[i,1] += fy
                 acc[i,2] += fz
 
-        F_col[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2)
+        # F_col[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2)
 
         #repuslive force
         # if t<=int(config.Nt/4):
@@ -48,34 +47,35 @@ def verlet_periodic(t,pos,vvel,uvel,acc,Q,M,KE,fdist):
 
 
         #repuslive force time dependent
-        acc[i,0] +=((((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*np.sin(w0*config.dt))*(pos[i,0]/r1)          #lambda_c/lambda_d =30
-        acc[i,1] += ((((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*np.sin(w0*config.dt))*(pos[i,1]/r1)
-        acc[i,2] += ((((config.f0*config.a)/(config.KB*config.Td*config.Gamma))*np.exp(- r1 /config.lambda_c))*np.sin(w0*config.dt))*(pos[i,2]/r1)
+        acc[i,0] += (((config.f0*config.forceFactor)*np.exp(- r1 /config.lambda_c))*np.sin(config.w0*config.dt))*(pos[i,0]/r1)          #lambda_c/lambda_d =30
+        acc[i,1] += (((config.f0*config.forceFactor)*np.exp(- r1 /config.lambda_c))*np.sin(config.w0*config.dt))*(pos[i,1]/r1)
+        acc[i,2] += (((config.f0*config.forceFactor)*np.exp(- r1 /config.lambda_c))*np.sin(config.w0*config.dt))*(pos[i,2]/r1)
 
-        F_rep[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - F_col[i]
+        # F_rep[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - F_col[i]
 
-        
+
         # flow force
-        # acc[i,0] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
-        acc[i,1] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
-        # acc[i,2] += (config.a/(config.Td*config.KB*config.Gamma))*config.f_flow
-        F_flow[i] = acc[i,1]*M[i] - (F_col[i] + F_rep[i])
+        # acc[i,0] += config.forceFactor*config.f_flow
+        acc[i,1] += config.forceFactor*config.f_flow
+        # acc[i,2] += config.forceFactor*config.f_flow
+        # F_flow[i] = acc[i,1]*M[i] - (F_col[i] + F_rep[i])
 
         # #random kicks force
-        acc[i,0] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
-        acc[i,1] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
-        acc[i,2] += (config.a/(config.KB*config.Td*config.Gamma))*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        acc[i,0] += config.forceFactor*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        acc[i,1] += config.forceFactor*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
+        acc[i,2] += config.forceFactor*np.sqrt((config.KB*config.Tn*config.md*config.nu)/config.dt)
         #
-        F_rand[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - (F_col[i] + F_rep[i] + F_flow[i])
+        # F_rand[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - (F_col[i] + F_rep[i] + F_flow[i])
 
         #neutral drag force
-        acc[i,0] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,0])
-        acc[i,1] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,1])
-        acc[i,2] += -(config.a/(config.KB*config.Td*config.Gamma))*(config.md*config.nu*vvel[i,2])
+        acc[i,0] += -config.forceFactor*(config.md*config.nu*vvel[i,0])
+        acc[i,1] += -config.forceFactor*(config.md*config.nu*vvel[i,1])
+        acc[i,2] += -config.forceFactor*(config.md*config.nu*vvel[i,2])
         #
-        F_ndrag[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - (F_col[i] + F_rep[i] + F_flow[i] + F_rand[i])
+        # F_ndrag[i] = np.sqrt((acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2 + (acc[i,0]*M[i])**2) - (F_col[i] + F_rep[i] + F_flow[i] + F_rand[i])
+        #
+        # fdist[i,:] = np.array([F_col[i],F_rep[i],F_flow[i],F_rand[i],F_ndrag[i]])
 
-        fdist[i,:] = np.array([F_col[i],F_rep[i],F_flow[i],F_rand[i],F_ndrag[i]])
     for i in prange(config.N):
         vvel[i,:] = uvel[i,:] + acc[i,:] * config.dt / 2.0
         # vvel[i,0] = uvel[i,0] + acc[i,0] * config.dt / 2.0
