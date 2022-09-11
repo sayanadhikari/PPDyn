@@ -67,6 +67,8 @@ vtkData     = bool(params['diagnostics']['vtkData'])
 realTime    = bool(params['diagnostics']['realTime'])
 #========== Options ============
 parallelMode    = bool(params['options']['parallelMode'])
-
+#====== Additional =======
 forceFactor = (a/(KB*Td*Gamma))
 w0 = nu/6
+dumpNt = round(Nt/dumpPeriod)
+#=========================

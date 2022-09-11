@@ -22,6 +22,9 @@ file_name = "particle"#"rhoNeutral" #"P"
 
 h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
 
+dataforce = h5["/force"]
+datapos = h5["/position"]
+
 Lx = h5.attrs["Lx"]
 Ly = h5.attrs["Ly"]
 Lz = h5.attrs["Lz"]
@@ -41,13 +44,13 @@ posx = np.zeros((len(data_num),N), dtype=np.float64)
 posy = np.zeros((len(data_num),N), dtype=np.float64)
 
 for i in range(len(data_num)):
-    F_col[i,:] = h5["/%d"%data_num[i]+"/F_col"]
-    F_rep[i,:] = h5["/%d"%data_num[i]+"/F_rep"]
-    F_flow[i,:] = h5["/%d"%data_num[i]+"/F_flow"]
-    F_rand[i,:] = h5["/%d"%data_num[i]+"/F_rand"]
-    F_ndrag[i,:] = h5["/%d"%data_num[i]+"/F_ndrag"]
-    posx[i,:] = h5["/%d"%data_num[i]+"/position/x"]
-    posy[i,:] = h5["/%d"%data_num[i]+"/position/y"]
+    F_col[i,:] = dataforce[i,:,0] #h5["/%d"%data_num[i]+"/F_col"]
+    F_rep[i,:] = dataforce[i,:,1] #h5["/%d"%data_num[i]+"/F_rep"]
+    F_flow[i,:] = dataforce[i,:,2] #h5["/%d"%data_num[i]+"/F_flow"]
+    F_rand[i,:] = dataforce[i,:,3] #h5["/%d"%data_num[i]+"/F_rand"]
+    F_ndrag[i,:] = dataforce[i,:,4] #h5["/%d"%data_num[i]+"/F_ndrag"]
+    posx[i,:] = datapos[i,:,0] #h5["/%d"%data_num[i]+"/position/x"]
+    posy[i,:] = datapos[i,:,1] #h5["/%d"%data_num[i]+"/position/y"]
 
 time = data_num*dp
 

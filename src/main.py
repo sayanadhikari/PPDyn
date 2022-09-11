@@ -90,6 +90,9 @@ def main():
     if config.dumpData:
         diagn.attributes(f)
         dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
+        dsetPart = f.create_dataset("position", (config.dumpNt, config.N, 3), dtype='float64', compression="gzip", compression_opts=9)
+        dsetVel = f.create_dataset("velocity", (config.dumpNt, config.N, 3), dtype='float64', compression="gzip", compression_opts=9)
+        dsetForce = f.create_dataset("force", (config.dumpNt, config.N, 5), dtype='float64', compression="gzip", compression_opts=9)
         # dsetQ = f.create_dataset('Qcollect', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
 
     # vtkData     = bool(params['diagnostics']['vtkData'])
@@ -133,7 +136,7 @@ def main():
         #============ Diagnostics Write ===================
         if config.dumpData:
             if t%config.dumpPeriod==0:
-                diagn.configSpace(f,dsetE,t,pos,vvel,KE,fdist)
+                diagn.configSpace(dsetE,dsetPart,dsetVel,dsetForce,t,pos,vvel,KE,fdist)
                 print('TimeSteps = %d'%int(t)+' of %d'%config.Nt+' Energy: %e'%KE)
 
     timer.task('Step: Diagnostics')

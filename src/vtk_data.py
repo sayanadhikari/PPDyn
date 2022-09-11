@@ -19,11 +19,13 @@ def vtkwrite(path):
 
     data_num = np.arange(start=0, stop=Nt, step=dp, dtype=int)
 
+    datapos = h5["/position"]
+
     for i in range(len(data_num)):
-        datax = h5["/%d"%data_num[i]+"/position/x"]
-        datay = h5["/%d"%data_num[i]+"/position/y"]
-        dataz = h5["/%d"%data_num[i]+"/position/z"]
-        datax = np.array(datax)
-        datay = np.array(datay)
-        dataz = np.array(dataz)
+        # datax = h5["/%d"%data_num[i]+"/position/x"]
+        # datay = h5["/%d"%data_num[i]+"/position/y"]
+        # dataz = h5["/%d"%data_num[i]+"/position/z"]
+        datax = np.array(datapos[i,:,0])
+        datay = np.array(datapos[i,:,1])
+        dataz = np.array(datapos[i,:,2])
         pointsToVTK(pjoin(path,'vtkdata','points_%d'%i), datax, datay, dataz)

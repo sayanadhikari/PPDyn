@@ -17,6 +17,8 @@ except:
 file_name = "particle"#"rhoNeutral" #"P"
 
 h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
+datapos = h5["/position"]
+datavel = h5["/velocity"]
 
 Lx = h5.attrs["Lx"]
 Ly = h5.attrs["Ly"]
@@ -33,19 +35,20 @@ data_num = np.arange(start=0, stop=Nt, step=1, dtype=int)
 
 time = data_num*dp
 i = 1000
-x = h5["/%d"%data_num[i]+"/position/x"]
-y = h5["/%d"%data_num[i]+"/position/y"]
-z = h5["/%d"%data_num[i]+"/position/z"]
+x = datapos[i,:,0] #h5["/%d"%data_num[i]+"/position/x"]
+y = datapos[i,:,1] #h5["/%d"%data_num[i]+"/position/y"]
+z = datapos[i,:,2] #h5["/%d"%data_num[i]+"/position/z"]
 x = np.array(x)
 y = np.array(y)
 z = np.array(z)
 
-vx = h5["/%d"%data_num[i]+"/velocity/vx"]
-vy = h5["/%d"%data_num[i]+"/velocity/vy"]
-vz = h5["/%d"%data_num[i]+"/velocity/vz"]
+vx = datavel[i,:,0] #h5["/%d"%data_num[i]+"/velocity/vx"]
+vy = datavel[i,:,1] #h5["/%d"%data_num[i]+"/velocity/vy"]
+vz = datavel[i,:,2] #h5["/%d"%data_num[i]+"/velocity/vz"]
 vx = np.array(vx)
 vy = np.array(vy)
 vz = np.array(vz)
+
 print(len(x))
 with open(pjoin(DIR,'velocity.vti'), 'a') as file:
     file.write('{0:s}\n'.format("<VTKFile type=\"ImageData\">"))
