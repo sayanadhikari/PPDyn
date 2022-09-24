@@ -27,8 +27,7 @@ Example:
 - [Sayan Adhikari](https://github.com/sayanadhikari), UiO, Norway. [@sayanadhikari](https://twitter.com/sayanadhikari)
 - [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA.
 - [Gaute Holen](https://github.com/GauteHolen), UiO, Norway (See separate branch, [dust-exp])
-- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India (See separate branch, [dust-fall])
-- [Rupali Paul](https://github.com/rupali-paul), IPR, India (See separate branch, [dust-fall])
+- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India (See separate branch, [dust-void])
 
 ## Installation
 ### Prerequisites
