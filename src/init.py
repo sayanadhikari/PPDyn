@@ -11,7 +11,7 @@ def initial_periodic(Q,M):
     uvel  = np.empty((config.N,3), dtype=np.float64)
     vvel  = np.empty((config.N,3), dtype=np.float64)
     acc   = np.empty((config.N,3), dtype=np.float64)
-    fduration = np.zeros(config.N, dtype=np.float32)
+    sv    = np.zeros((config.N,3), dtype=np.float64)
 
 
     # svx  = 0.0  # velocity sum correction term in X
@@ -27,32 +27,28 @@ def initial_periodic(Q,M):
     pos[:,2] = np.random.random(config.N)*2.0*config.Lz - config.Lz
 
     # Maxwellian
-    vvel[:,0] = np.random.normal(0, config.Temp, config.N)
-    vvel[:,1] = np.random.normal(0, config.Temp, config.N)
-    vvel[:,2] = np.random.normal(0, config.Temp, config.N)
+    if config.maxwell_load:
+        vvel[:,0] = np.random.normal(0, config.Temp, config.N)
+        vvel[:,1] = np.random.normal(0, config.Temp, config.N)
+        vvel[:,2] = np.random.normal(0, config.Temp, config.N)
+    # Random
+    else:
+        vvel[:,0] = np.random.random(config.N)*config.Vxmax - config.Vxmax/2.0
+        vvel[:,1] = np.random.random(config.N)*config.Vymax - config.Vymax/2.0
+        vvel[:,2] = np.random.random(config.N)*config.Vzmax - config.Vzmax/2.0
 
-    # for i in range(N):
-    #     x[i] = (random.random())*2.0*Lx - Lx
-    #     y[i] = (random.random())*2.0*Ly - Ly
-    #     z[i] = (random.random())*2.0*Lz - Lz
-    #     vx[i] = (random.random())*Vxmax - Vxmax/2.0
-    #     vy[i] = (random.random())*Vymax - Vymax/2.0
-    #     vz[i] = (random.random())*Vzmax - Vzmax/2.0
-    #     svx = svx + vx[i]
-    #     svy = svy + vy[i]
-    #     svz = svz + vz[i]
+        sv[:,0] = sv[:,0] + vvel[:,0]
+        sv[:,1] = sv[:,1] + vvel[:,1]
+        sv[:,2] = sv[:,2] + vvel[:,2]
 
-    # for i in range(N):
-    #     vx[i] = vx[i] - svx/N
-    #     vy[i] = vy[i] - svy/N
-    #     vz[i] = vz[i] - svz/N
+        vvel[:,0] = vvel[:,0] - sv[:,0]/config.N
+        vvel[:,1] = vvel[:,1] - sv[:,1]/config.N
+        vvel[:,2] = vvel[:,2] - sv[:,2]/config.N
 
     # acc = 0.0*acc
 
     for i in range(config.N):
         acc[i,:] = 0.0
-        # acc[i,1] = 0.0
-        # acc[i,2] = 0.0
         for j in range(config.N):
             if (i != j):
                 xdiff = ( pos[i,0]-pos[j,0] ) - round((pos[i,0]-pos[j,0])/(2.0*config.Lx)) * 2.0*config.Lx
@@ -65,7 +61,7 @@ def initial_periodic(Q,M):
                 acc[i,0] += fx/M[i]
                 acc[i,1] += fy/M[i]
                 acc[i,2] += fz/M[i]
-    return pos,vvel,uvel,acc,time,data_num,fduration
+    return pos,vvel,uvel,acc,time,data_num
 
 
 @jit(nopython=True)
@@ -75,7 +71,8 @@ def initial_reflecting(Q,M):
     uvel  = np.empty((config.N,3), dtype=np.float64)
     vvel  = np.empty((config.N,3), dtype=np.float64)
     acc   = np.empty((config.N,3), dtype=np.float64)
-    fduration = np.zeros(config.N, dtype=np.float32)
+    sv    = np.zeros((config.N,3), dtype=np.float64)
+
 
     # svx  = 0.0  # velocity sum correction term in X
     # svy  = 0.0  # velocity sum correction term in Y
@@ -83,39 +80,30 @@ def initial_reflecting(Q,M):
 
     ###### Initialize time array and data dump array ######
     time  = np.linspace(0,config.tmax,config.Nt)
-    data_num = np.arange(start=0, stop=config.Nt, step=config.dumpPeriod, dtype=np.int32)
+    data_num = np.arange(start=0, stop=config.Nt, step=config.dumpPeriod, dtype=np.int64)
 
-    # for i in range(N):
-    #     x[i] = (random.random())*2.0*Lx - Lx
-    #     y[i] = (random.random())*2.0*Ly - Ly
-    #     z[i] =  Lz #(random.random())*2.0*Lz - Lz
-    #     vx[i] = (random.random())*Vxmax - Vxmax/2.0
-    #     vy[i] = (random.random())*Vymax - Vymax/2.0
-    #     vz[i] = (random.random())*Vzmax - Vzmax/2.0
-    #     svx = svx + vx[i]
-    #     svy = svy + vy[i]
-    #     svz = svz + vz[i]
     pos[:,0] = np.random.random(config.N)*2.0*config.Lx - config.Lx
     pos[:,1] = np.random.random(config.N)*2.0*config.Ly - config.Ly
-    pos[:,2] = np.ones(config.N)*config.Lz #np.random.random(N)*2.0*Lz - Lz
-
-    # Random velocity
-    # vx = np.random.random(N)*Vxmax - Vxmax/2.0
-    # vy = np.random.random(N)*Vymax - Vymax/2.0
-    # vz = np.random.random(N)*Vzmax - Vzmax/2.0
+    pos[:,2] = np.random.random(config.N)*2.0*config.Lz - config.Lz
 
     # Maxwellian
-    vvel[:,0] = np.random.normal(0, config.Temp, config.N)
-    vvel[:,1] = np.random.normal(0, config.Temp, config.N)
-    vvel[:,2] = np.random.normal(0, config.Temp, config.N)
+    if config.maxwell_load:
+        vvel[:,0] = np.random.normal(0, config.Temp, config.N)
+        vvel[:,1] = np.random.normal(0, config.Temp, config.N)
+        vvel[:,2] = np.random.normal(0, config.Temp, config.N)
+    # Random
+    else:
+        vvel[:,0] = np.random.random(config.N)*config.Vxmax - config.Vxmax/2.0
+        vvel[:,1] = np.random.random(config.N)*config.Vymax - config.Vymax/2.0
+        vvel[:,2] = np.random.random(config.N)*config.Vzmax - config.Vzmax/2.0
 
-    # svx = svx + np.sum(vx)
-    # svy = svy + np.sum(vy)
-    # svz = svz + np.sum(vz)
-    #
-    # vx = vx - svx/N
-    # vy = vy - svy/N
-    # vz = vz - svz/N
+        sv[:,0] = sv[:,0] + vvel[:,0]
+        sv[:,1] = sv[:,1] + vvel[:,1]
+        sv[:,2] = sv[:,2] + vvel[:,2]
+
+        vvel[:,0] = vvel[:,0] - sv[:,0]/config.N
+        vvel[:,1] = vvel[:,1] - sv[:,1]/config.N
+        vvel[:,2] = vvel[:,2] - sv[:,2]/config.N
 
     for i in range(config.N):
         acc[i,0] = 0.0
@@ -133,4 +121,4 @@ def initial_reflecting(Q,M):
                 acc[i,0] += fx/M[i]
                 acc[i,1] += fy/M[i]
                 acc[i,2] += fz/M[i]
-    return pos,vvel,uvel,acc,time,data_num,fduration
+    return pos,vvel,uvel,acc,time,data_num

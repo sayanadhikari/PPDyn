@@ -21,6 +21,7 @@ import ini
 import sys
 import argparse
 from tasktimer import TaskTimer
+import shutil
 
 ## User defined functions
 from thermostat import berendsen
@@ -44,23 +45,18 @@ def main():
     else:
         M = np.ones(N)
         Q = M
-
-    # #========= Boundary ==========
-    # btype   = str(params['boundary']['btype']) # Type of boundary
-    #
-    # #========= Diagnostics =======
-    # dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
-    # pathName    = str(params['directory']['path'])
-    # path = pjoin(config.dataDir)
-    # path        = "data/"  # DO NOT CHANGE THE PATH
-    if  os.path.exists(config.dataDir)== False:
-        os.mkdir(config.dataDir)
+    #======== Diagnostics and data management =======
+    # if  os.path.exists(config.dataDir)== False:
+    #     os.rmdir(config.dataDir)
+    shutil.rmtree(config.dataDir, ignore_errors=True)
+    os.mkdir(config.dataDir)
     # dumpData    = bool(params['diagnostics']['dumpData'])
     f  = h5py.File(pjoin(config.dataDir,"particle.hdf5"),"w")
     if config.dumpData:
         diagn.attributes(f)
         dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
-        dsetQ = f.create_dataset('Qcollect', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
+        dsetPart = f.create_dataset("position", (config.dumpNt, config.N, 3), dtype='float64', compression="gzip", compression_opts=9)
+        dsetVel = f.create_dataset("velocity", (config.dumpNt, config.N, 3), dtype='float64', compression="gzip", compression_opts=9)
 
     # vtkData     = bool(params['diagnostics']['vtkData'])
     # realTime    = bool(params['diagnostics']['realTime'])
@@ -75,10 +71,6 @@ def main():
             from pusher_parallel import verlet_reflecting as verlet
             from init import initial_reflecting as initial
             print("Running in Parallel Mode (Reflecting boundary)")
-        elif config.btype == 'mixed':
-            from pusher_parallel import verlet_mixed as verlet
-            from init import initial_reflecting as initial
-            print("Running in Parallel Mode (Mixed boundary)")
     else:
         print("Serial version not supported anymore!!\nChange parallelMode  = True")
         exit()
@@ -92,23 +84,22 @@ def main():
         #     print("Running in Serial Mode (Reflecting boundary)")
     #========= Initialize ========
     timer.task('Step: Initialization')
-    pos,vvel,uvel,acc,time,data_num,fduration = initial(Q,M)
+    pos,vvel,uvel,acc,time,data_num = initial(Q,M)
     #========= Time Loop =========
     timer.task('Step: Time Solution')
     for t in range(len(time)):
         KE = 0.0   # Reset KE
-        Qcollect = 0.0 # Initialize Q_collect
-        pos,vvel,uvel,acc,Q,KE,fduration,Qcollect = verlet(t,pos,vvel,uvel,acc,Q,M,KE,fduration,Qcollect)
+
+        pos,vvel,uvel,acc,Q,KE = verlet(t,pos,vvel,uvel,acc,Q,M,KE)
         #============  Thermostat =========================
-        # vx,vy,vz = berendsen(vx,vy,vz,dt,Temp,KE,N,t,tmax)
+        # vvel = berendsen(t,vvel,KE)
         #============ Diagnostics Write ===================
         if config.dumpData:
             if t%config.dumpPeriod==0:
-                diagn.configSpace(f,dsetE,dsetQ,t,pos,vvel,KE,Qcollect)
+                diagn.configSpace(dsetE,dsetPart,dsetVel,t,pos,vvel,KE)
                 print('TimeSteps = %d'%int(t)+' of %d'%config.Nt+' Energy: %e'%KE)
 
     timer.task('Step: Diagnostics')
-    diagn.dustDiagn(f,fduration)
     if config.vtkData:
         from vtk_data import vtkwrite
         print('Writing VTK files for Paraview visualization ...')

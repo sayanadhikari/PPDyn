@@ -34,12 +34,14 @@ Nt   = h5.attrs["Nt"]
 
 data_num = np.arange(start=0, stop=Nt, step=dp, dtype=int)
 
+datapos = h5["/position"]
+
 if (show_anim == True):
     def animate(i):
         # file=DIR+'/data%d'%data_num[i]+'.dat'
-        datax = h5["/%d"%data_num[i]+"/position/x"]
-        datay = h5["/%d"%data_num[i]+"/position/y"]
-        dataz = h5["/%d"%data_num[i]+"/position/z"]
+        datax = np.array(datapos[i,:,0])
+        datay = np.array(datapos[i,:,1])
+        dataz = np.array(datapos[i,:,2])
         ax1.cla()
         img1 = ax1.scatter(datax,datay,dataz,marker='o',color='b',alpha=1.0,s=10)
         ax1.set_title('TimeSteps = %d'%(i*dp)+'\n Phase Space')

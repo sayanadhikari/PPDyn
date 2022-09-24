@@ -17,6 +17,9 @@ except:
 file_name = "particle"#"rhoNeutral" #"P"
 
 h5 = h5py.File(pjoin(DIR,file_name+'.hdf5'),'r')
+datapos = h5["/position"]
+datavel = h5["/velocity"]
+
 
 Lx = h5.attrs["Lx"]
 Ly = h5.attrs["Ly"]
@@ -28,14 +31,28 @@ dp   = h5.attrs["dp"]
 Nt   = h5.attrs["Nt"]
 
 
-data_num = np.arange(start=0, stop=Nt, step=1, dtype=int)
+data_num = np.arange(start=0, stop=Nt, step=dp, dtype=int)
 
 time = data_num*dp
-energy = h5["/energy"]
-energy = 3*(np.array(energy[:-1]))/N
+i = len(data_num)-1
+
+x = datapos[i,:,0] #h5["/%d"%data_num[i]+"/position/x"]
+y = datapos[i,:,1] #h5["/%d"%data_num[i]+"/position/y"]
+z = datapos[i,:,2] #h5["/%d"%data_num[i]+"/position/z"]
+x = np.array(x)
+y = np.array(y)
+z = np.array(z)
+
+vx = datavel[i,:,0] #h5["/%d"%data_num[i]+"/velocity/vx"]
+vy = datavel[i,:,1] #h5["/%d"%data_num[i]+"/velocity/vy"]
+vz = datavel[i,:,2] #h5["/%d"%data_num[i]+"/velocity/vz"]
+vx = np.array(vx)
+vy = np.array(vy)
+vz = np.array(vz)
 
 #### FIG SIZE CALC ############
-figsize = np.array([77,77/1.618]) #Figure size in mm
+# figsize = np.array([77,77/1.618]) #Figure size in mm
+figsize = np.array([100,100/1.618]) #Figure size in mm
 dpi = 300                         #Print resolution
 ppi = np.sqrt(1920**2+1200**2)/24 #Screen resolution
 #########################
@@ -46,17 +63,19 @@ mp.rc('axes', labelsize=14)
 mp.rc('xtick', labelsize=14)
 mp.rc('ytick', labelsize=14)
 mp.rc('legend', fontsize=14)
+#
+fig,ax = plt.subplots(1,1,figsize=figsize/25.4,constrained_layout=True,dpi=ppi)
 
-fig,ax1 = plt.subplots(1,1,figsize=figsize/25.4,constrained_layout=True,dpi=ppi)
-ax1.plot(time[10:],energy[10:])
-ax1.set_xlabel("$timestep$")
-ax1.set_ylabel("$Energy$")
+## Uncomment for 3D
+# ax = plt.figure().add_subplot(projection='3d')
+# ax.quiver(x, y, vx, vy, normalize=False)
+ax.quiver(x, y, vx, vy) #2D
+
+ax.set_xlabel("$x$")
+ax.set_ylabel("$y$")
 
 # ax2.plot(N,energy[10:])
 # ax2.set_xlabel("$timestep$")
 # ax2.set_ylabel("$Energy$")
-
-
-
 
 plt.show()

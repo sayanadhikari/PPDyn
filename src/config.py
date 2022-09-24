@@ -25,6 +25,7 @@ N       = int(params['particles']['N'])    # Number of particles
 Vxmax   = float(params['particles']['Vxmax']) # Maximum velocity in X
 Vymax   = float(params['particles']['Vymax']) # Maximum velocity in Y
 Vzmax   = float(params['particles']['Vzmax']) # Maximum velocity in Z
+maxwell_load = bool(params['particles']['maxwell_load']) # Maximum velocity in Z
 
 k       = float(params['screening']['k'])
 
@@ -54,3 +55,6 @@ vtkData     = bool(params['diagnostics']['vtkData'])
 realTime    = bool(params['diagnostics']['realTime'])
 #========== Options ============
 parallelMode    = bool(params['options']['parallelMode'])
+
+#====== Additional =======
+dumpNt = round(Nt/dumpPeriod)
