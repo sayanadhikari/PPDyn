@@ -48,6 +48,7 @@ btype   = str(params['boundary']['btype']) # Type of boundary
 #========= Diagnostics =======
 dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
 dataDir    = str(params['directory']['dataDir'])
+picDir    = str(params['directory']['picDir'])
 
 dumpData    = bool(params['diagnostics']['dumpData'])
 
@@ -55,6 +56,8 @@ vtkData     = bool(params['diagnostics']['vtkData'])
 realTime    = bool(params['diagnostics']['realTime'])
 #========== Options ============
 parallelMode    = bool(params['options']['parallelMode'])
+PIC_data = bool(params['options']['PIC_data'])
+object_data = bool(params['options']['object_data'])
 
 #====== Additional =======
 dumpNt = round(Nt/dumpPeriod)

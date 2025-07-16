@@ -1,18 +1,79 @@
 from numba import jit
 import numpy as np
 import random
+import h5py
+import shutil
+import os
 
 import config
 
+
+def copy_pic_data():
+    # Ensure destination directory exists
+    destination_dir = 'PIC_data'
+    os.makedirs(destination_dir, exist_ok=True)
+
+    # Define source files
+    source_files = [
+        os.path.join(config.picDir, 'E.grid.h5'),
+        os.path.join(config.picDir, 'object.grid.h5')
+    ]
+
+    # Copy each file
+    for src in source_files:
+        if os.path.isfile(src):
+            shutil.copy(src, destination_dir)
+            print(f"Copied {src} to {destination_dir}")
+        else:
+            print(f"Warning: Source file does not exist: {src}")
+
+
+def load_pic_field():
+    # ------------------------------------------------------------------
+    # Load PIC field from HDF5
+    # ------------------------------------------------------------------
+    with h5py.File("PIC_data/E.grid.h5", "r") as f:
+        denorm = f.attrs["Axis denormalization factor"][0]
+        # 3D grid fields
+        Ex = f["/n=100.0"][:, :, :, 0]
+        Ey = f["/n=100.0"][:, :, :, 1]
+        Ez = f["/n=100.0"][:, :, :, 2]
+
+        # Ey = f["/Ey"][:]
+        # Ez = f["/Ez"][:]
+        # # grid coordinates
+        xg = np.arange(Ex.shape[0])*denorm
+        yg = np.arange(Ey.shape[1])*denorm
+        zg = np.arange(Ez.shape[2])*denorm
+    return xg, yg, zg, Ex, Ey, Ez
+
+def load_object_grid():
+    """
+    Load the object mask and its axis denormalization factor from HDF5.
+    Returns:
+      xg_obj, yg_obj, zg_obj: 1D arrays of grid coordinates
+      obj_mask     : 3D uint8 array where 1=inside object, 0=outside
+    """
+    with h5py.File('PIC_data/object.grid.h5', 'r') as f:
+        dset = f['Object']              # dataset holding binary mask
+        obj_mask    = dset[:].astype(np.uint8)
+        axis_denorm = f.attrs['Axis denormalization factor'][0]
+        # The object grid is assumed cubic, so all axes have the same shape
+        nx, ny, nz = obj_mask.shape
+        # map object grid [0, axis_denorm*nx) onto MD domain [-Lx, +Lx)
+        xg_obj = np.arange(nx) * axis_denorm - config.Lx
+        yg_obj = np.arange(ny) * axis_denorm - config.Ly
+        zg_obj = np.arange(nz) * axis_denorm - config.Lz
+    return xg_obj, yg_obj, zg_obj, obj_mask
+
 @jit(nopython=True)
-def initial_periodic(Q,M):
+def initial_periodic(Q, M, xg_obj, yg_obj, zg_obj, obj_mask):
     random.seed(99999999)
     pos   = np.empty((config.N,3), dtype=np.float64)
     uvel  = np.empty((config.N,3), dtype=np.float64)
     vvel  = np.empty((config.N,3), dtype=np.float64)
     acc   = np.empty((config.N,3), dtype=np.float64)
     sv    = np.zeros((config.N,3), dtype=np.float64)
-
 
     # svx  = 0.0  # velocity sum correction term in X
     # svy  = 0.0  # velocity sum correction term in Y
@@ -21,10 +82,32 @@ def initial_periodic(Q,M):
     ###### Initialize time array and data dump array ######
     time  = np.linspace(0,config.tmax,config.Nt)
     data_num = np.arange(start=0, stop=config.Nt, step=config.dumpPeriod, dtype=np.int64)
-
-    pos[:,0] = np.random.random(config.N)*2.0*config.Lx - config.Lx
-    pos[:,1] = np.random.random(config.N)*2.0*config.Ly - config.Ly
-    pos[:,2] = np.random.random(config.N)*2.0*config.Lz - config.Lz
+    # initialize positions avoiding object geometry
+    dx = xg_obj[1] - xg_obj[0]
+    dy = yg_obj[1] - yg_obj[0]
+    dz = zg_obj[1] - zg_obj[0]
+    for i in range(config.N):
+        placed = False
+        while not placed:
+            px = np.random.random() * 2.0 * config.Lx - config.Lx
+            py = np.random.random() * 2.0 * config.Ly - config.Ly
+            pz = np.random.random() * 2.0 * config.Lz - config.Lz
+            # compute mask indices
+            ix = int(round((px - xg_obj[0]) / dx))
+            iy = int(round((py - yg_obj[0]) / dy))
+            iz = int(round((pz - zg_obj[0]) / dz))
+            # clamp
+            if ix < 0: ix = 0
+            elif ix >= obj_mask.shape[0]: ix = obj_mask.shape[0]-1
+            if iy < 0: iy = 0
+            elif iy >= obj_mask.shape[1]: iy = obj_mask.shape[1]-1
+            if iz < 0: iz = 0
+            elif iz >= obj_mask.shape[2]: iz = obj_mask.shape[2]-1
+            if obj_mask[ix, iy, iz] == 0:
+                pos[i,0] = px
+                pos[i,1] = py
+                pos[i,2] = pz
+                placed = True
 
     # Maxwellian
     if config.maxwell_load:

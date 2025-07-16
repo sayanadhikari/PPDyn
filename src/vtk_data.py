@@ -1,3 +1,4 @@
+from init import load_object_grid
 import numpy as np
 from pyevtk.hl import pointsToVTK
 from os.path import join as pjoin
@@ -8,6 +9,14 @@ def vtkwrite(path):
     file_name = "particle"#"rhoNeutral" #"P"
     if os.path.exists(pjoin(path,'vtkdata')) == False:
         os.mkdir(pjoin(path,'vtkdata'))
+        # write object geometry as VTK points
+        xg_obj, yg_obj, zg_obj, obj_mask = load_object_grid()
+        # find object voxels
+        ix, iy, iz = np.where(obj_mask == 1)
+        xs = xg_obj[ix]
+        ys = yg_obj[iy]
+        zs = zg_obj[iz]
+        pointsToVTK(pjoin(path, 'vtkdata', 'object'), xs, ys, zs)
     h5 = h5py.File(pjoin(path,file_name+'.hdf5'),'r')
 
     Lx = h5.attrs["Lx"]
