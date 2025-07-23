@@ -34,13 +34,35 @@ def load_pic_field():
     # ------------------------------------------------------------------
     with h5py.File("PIC_data/E.grid.h5", "r") as f:
         denorm = f.attrs["Axis denormalization factor"][0]
-        # 3D grid fields
-        Ex = f["/n=100.0"][:, :, :, 0]
-        Ey = f["/n=100.0"][:, :, :, 1]
-        Ez = f["/n=100.0"][:, :, :, 2]
+        # Get the last n entry (sorted by key)
+        keys = sorted(f.keys())
+        last_key = keys[-1]
+        Ex = f[last_key][:, :, :, 0]
+        Ey = f[last_key][:, :, :, 1]
+        Ez = f[last_key][:, :, :, 2]
 
         # Ey = f["/Ey"][:]
         # Ez = f["/Ez"][:]
+        
+        # Normalize PIC electric field by selected method: 'mean' or 'max'
+        E_mag = np.sqrt(Ex**2 + Ey**2 + Ez**2)
+        norm_method = getattr(config, 'E_norm_method', 'mean')
+        if norm_method == 'max':
+            E0 = np.max(E_mag)
+        elif norm_method == 'norm':
+            # Birdsall normalization: E0 = k_B * Te / (e * lambda_D)
+            kb = 1.380649e-23   # J/K
+            qe = 1.602176634e-19  # C
+            Te = 2900.0*11604.525    # electron temperature in K
+            Te_J = kb * Te
+            lambda_D = denorm
+            E0 = Te_J / (qe * lambda_D)
+        else:
+            E0 = np.mean(E_mag)
+        Ex /= E0
+        Ey /= E0
+        Ez /= E0
+
         # # grid coordinates
         xg = np.arange(Ex.shape[0])*denorm
         yg = np.arange(Ey.shape[1])*denorm

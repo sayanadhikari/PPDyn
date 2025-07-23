@@ -37,10 +37,13 @@ tmax    = float(params['time']['tmax'])  # Final time
 dt      = float(params['time']['dt']) # time step size
 Nt      = round(tmax/dt) #number of time steps
 
-dist    = bool(params['particles']['dist'])
+dist = str(params['particles']['dist'])   # Now can be 'gaussian' or 'uniform_radius'
 
 mean = float(params['particles']['mean'])
 stdDev = float(params['particles']['stdDev'])
+density = float(params['particles'].get('density', 1.0))  # default density 1
+r_min = float(params['particles'].get('r_min', 0.0))      # default to 0
+r_max = float(params['particles'].get('r_max', 0.0))      # default to 0
 
 #========= Boundary ==========
 btype   = str(params['boundary']['btype']) # Type of boundary
@@ -61,3 +64,7 @@ object_data = bool(params['options']['object_data'])
 
 #====== Additional =======
 dumpNt = round(Nt/dumpPeriod)
+
+# Electric field normalization method: 'mean' or 'max'
+E_norm_method = str(params['options'].get('E_norm_method', 'mean'))
+

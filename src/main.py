@@ -38,14 +38,54 @@ def main():
     timer.task('Step: Reading Variables')
 
     #========= Charge and Mass distribution ========
-    if config.dist:
+    # if config.dist == 'gaussian':
+    #     mean = config.mean
+    #     stdDev = config.stdDev
+    #     radii = np.random.normal(loc=mean, scale=stdDev, size=config.N)
+    #     M  = np.random.normal(loc=mean,scale=stdDev,size=config.N) #mass of particles (Gaussian)
+    #     Q = M**(2/3) # charge of particles
+    # else:
+    #     M = np.ones(N)
+    #     Q = M
+
+    #========= Charge and Mass distribution ========
+    if config.dist == 'gaussian':
+        # Gaussian distribution of particle radii
         mean = config.mean
         stdDev = config.stdDev
-        M  = np.random.normal(loc=mean,scale=stdDev,size=config.N) #mass of particles (Gaussian)
-        Q = M**(2/3) # charge of particles
+        # radii drawn from a normal distribution
+        radii = np.random.normal(loc=mean, scale=stdDev, size=config.N)
+        # normalize radii to unit mean to maintain earlier normalization
+        radii_mean = np.mean(radii)
+        radii /= radii_mean
+        # compute mass from radii (assumes density provided in config)
+        density = config.density
+        M = density * (4.0/3.0) * np.pi * radii**3
+        # Q = M ** (2/3)  # charge proportional to volume^(2/3), i.e., surface area (commented out)
+        # normalize masses to unit mean to maintain earlier normalization
+        M_mean = np.mean(M)
+        M /= M_mean
+        # adjust charge accordingly if Q was computed before normalization
+        Q = M ** (2/3)
+    elif config.dist == 'uniform_radius':
+        # Uniform distribution of radius between r_min and r_max
+        radii = np.random.uniform(low=config.r_min, high=config.r_max, size=config.N)
+        # normalize radii to unit mean to maintain earlier normalization
+        radii_mean = np.mean(radii)
+        radii /= radii_mean
+        density = config.density
+        M = density * (4.0/3.0) * np.pi * radii ** 3
+        # Q = M ** (2/3)   # Or Q = 4 * np.pi * radii**2 if you want Q ∝ surface area (commented out)
+        # normalize masses to unit mean to maintain earlier normalization
+        M_mean = np.mean(M)
+        M /= M_mean
+        # adjust charge accordingly if Q was computed before normalization
+        Q = M ** (2/3)
     else:
-        M = np.ones(N)
+        M = np.ones(config.N)
         Q = M
+
+
     #======== Diagnostics and data management =======
     # if  os.path.exists(config.dataDir)== False:
     #     os.rmdir(config.dataDir)
@@ -58,6 +98,8 @@ def main():
         dsetE = f.create_dataset('energy', (1,), maxshape=(None,), dtype='float64', chunks=(1,))
         dsetPart = f.create_dataset("position", (config.dumpNt, config.N, 3), dtype='float64', compression="gzip", compression_opts=9)
         dsetVel = f.create_dataset("velocity", (config.dumpNt, config.N, 3), dtype='float64', compression="gzip", compression_opts=9)
+        # store particle radii for VTK export
+        f.create_dataset('radius', data=radii)
 
     # vtkData     = bool(params['diagnostics']['vtkData'])
     # realTime    = bool(params['diagnostics']['realTime'])
@@ -115,10 +157,11 @@ def main():
                 xg, yg, zg, Ex, Ey, Ez
             )
 
-        # Compute total kinetic energy in a serial loop to avoid race conditions
+        # Compute total kinetic energy including particle mass in a serial loop to avoid race conditions
         KE = 0.0
+        # compute kinetic energy including particle mass
         for i in range(config.N):
-            KE += 0.5 * (vvel[i,0]**2 + vvel[i,1]**2 + vvel[i,2]**2)
+            KE += 0.5 * M[i] * (vvel[i,0]**2 + vvel[i,1]**2 + vvel[i,2]**2)
         #============  Thermostat =========================
         # vvel = berendsen(t,vvel,KE)
         #============ Diagnostics Write ===================
