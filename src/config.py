@@ -52,7 +52,8 @@ btype   = str(params['boundary']['btype']) # Type of boundary
 #========= Diagnostics =======
 dumpPeriod  = int(params['diagnostics']['dumpPeriod'])
 dataDir    = str(params['directory']['dataDir'])
-picDir    = str(params['directory']['picDir'])
+# picDir    = str(params['directory']['picDir'])
+picDir = os.path.abspath(os.path.expanduser(str(params['directory']['picDir'])))
 
 dumpData    = bool(params['diagnostics']['dumpData'])
 
@@ -71,7 +72,8 @@ E_norm_method = str(params['options'].get('E_norm_method', 'mean'))
 
 
 # PINC coupling
-with h5py.File("PIC_data/E.grid.h5", "r") as f:
+file_path = os.path.join(picDir, "E.grid.h5")
+with h5py.File(file_path, "r") as f:
     denorm = f.attrs["Axis denormalization factor"][0]
     # Get the last n entry (sorted by key)
     keys = sorted(f.keys())
