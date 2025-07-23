@@ -27,16 +27,20 @@ def copy_pic_data():
         else:
             print(f"Warning: Source file does not exist: {src}")
 
-
 def load_pic_field():
     # ------------------------------------------------------------------
     # Load PIC field from HDF5
     # ------------------------------------------------------------------
-    with h5py.File("PIC_data/E.grid.h5", "r") as f:
+    file_path = os.path.join(config.picDir, "E.grid.h5")
+    with h5py.File(file_path, "r") as f:
         denorm = f.attrs["Axis denormalization factor"][0]
         # Get the last n entry (sorted by key)
         keys = sorted(f.keys())
         last_key = keys[-1]
+        # grid_shape = f[last_key].shape
+        # config.Lx = 0.5 * grid_shape[0] * denorm
+        # config.Ly = 0.5 * grid_shape[1] * denorm
+        # config.Lz = 0.5 * grid_shape[2] * denorm
         Ex = f[last_key][:, :, :, 0]
         Ey = f[last_key][:, :, :, 1]
         Ez = f[last_key][:, :, :, 2]
@@ -76,7 +80,8 @@ def load_object_grid():
       xg_obj, yg_obj, zg_obj: 1D arrays of grid coordinates
       obj_mask     : 3D uint8 array where 1=inside object, 0=outside
     """
-    with h5py.File('PIC_data/object.grid.h5', 'r') as f:
+    file_path = os.path.join(config.picDir, "object.grid.h5")
+    with h5py.File(file_path, 'r') as f:
         dset = f['Object']              # dataset holding binary mask
         obj_mask    = dset[:].astype(np.uint8)
         axis_denorm = f.attrs['Axis denormalization factor'][0]

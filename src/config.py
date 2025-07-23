@@ -5,6 +5,7 @@ from os.path import join as pjoin
 import sys
 import os
 import argparse
+import h5py
 
 
 parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
@@ -67,4 +68,16 @@ dumpNt = round(Nt/dumpPeriod)
 
 # Electric field normalization method: 'mean' or 'max'
 E_norm_method = str(params['options'].get('E_norm_method', 'mean'))
+
+
+# PINC coupling
+with h5py.File("PIC_data/E.grid.h5", "r") as f:
+    denorm = f.attrs["Axis denormalization factor"][0]
+    # Get the last n entry (sorted by key)
+    keys = sorted(f.keys())
+    last_key = keys[-1]
+    grid_shape = f[last_key].shape
+    Lx = 0.5 * grid_shape[0] * denorm
+    Ly = 0.5 * grid_shape[1] * denorm
+    Lz = 0.5 * grid_shape[2] * denorm
 
