@@ -13,6 +13,15 @@ def copy_pic_data():
     destination_dir = 'PIC_data'
     os.makedirs(destination_dir, exist_ok=True)
 
+    # Normalize paths to handle relative/absolute paths correctly
+    pic_dir_abs = os.path.abspath(os.path.expanduser(config.picDir))
+    dest_dir_abs = os.path.abspath(destination_dir)
+
+    # Check if source and destination are the same
+    if pic_dir_abs == dest_dir_abs:
+        print(f"Source directory ({config.picDir}) is same as destination ({destination_dir}), skipping copy")
+        return
+
     # Define source files
     source_files = [
         os.path.join(config.picDir, 'E.grid.h5'),
@@ -21,6 +30,15 @@ def copy_pic_data():
 
     # Copy each file
     for src in source_files:
+        src_abs = os.path.abspath(os.path.expanduser(src))
+        dst = os.path.join(destination_dir, os.path.basename(src))
+        dst_abs = os.path.abspath(dst)
+
+        # Skip if source and destination are the same file
+        if src_abs == dst_abs:
+            print(f"Skipping {os.path.basename(src)} (already in destination)")
+            continue
+
         if os.path.isfile(src):
             shutil.copy(src, destination_dir)
             print(f"Copied {src} to {destination_dir}")
@@ -47,7 +65,20 @@ def load_pic_field():
 
         # Ey = f["/Ey"][:]
         # Ez = f["/Ez"][:]
-        
+
+        # Check for NaN/Inf values before normalization
+        if np.any(np.isnan(Ex)) or np.any(np.isnan(Ey)) or np.any(np.isnan(Ez)):
+            print("Warning: NaN values detected in electric field from file, cleaning...")
+            Ex = np.nan_to_num(Ex, nan=0.0)
+            Ey = np.nan_to_num(Ey, nan=0.0)
+            Ez = np.nan_to_num(Ez, nan=0.0)
+
+        if np.any(np.isinf(Ex)) or np.any(np.isinf(Ey)) or np.any(np.isinf(Ez)):
+            print("Warning: Inf values detected in electric field from file, cleaning...")
+            Ex = np.nan_to_num(Ex, posinf=0.0, neginf=0.0)
+            Ey = np.nan_to_num(Ey, posinf=0.0, neginf=0.0)
+            Ez = np.nan_to_num(Ez, posinf=0.0, neginf=0.0)
+
         # Normalize PIC electric field by selected method: 'mean' or 'max'
         E_mag = np.sqrt(Ex**2 + Ey**2 + Ez**2)
         norm_method = getattr(config, 'E_norm_method', 'mean')
@@ -63,9 +94,22 @@ def load_pic_field():
             E0 = Te_J / (qe * lambda_D)
         else:
             E0 = np.mean(E_mag)
+
+        # Avoid division by zero
+        if E0 == 0.0 or np.isnan(E0) or np.isinf(E0):
+            print(f"Warning: E0 normalization factor is invalid ({E0}), using E0=1.0")
+            E0 = 1.0
+
         Ex /= E0
         Ey /= E0
         Ez /= E0
+
+        # Final check after normalization
+        if np.any(np.isnan(Ex)) or np.any(np.isnan(Ey)) or np.any(np.isnan(Ez)):
+            print("Error: NaN values in electric field after normalization!")
+            Ex = np.nan_to_num(Ex, nan=0.0)
+            Ey = np.nan_to_num(Ey, nan=0.0)
+            Ez = np.nan_to_num(Ez, nan=0.0)
 
         # # grid coordinates
         xg = np.arange(Ex.shape[0])*denorm
@@ -108,7 +152,7 @@ def initial_periodic(Q, M, xg_obj, yg_obj, zg_obj, obj_mask):
 
     ###### Initialize time array and data dump array ######
     time  = np.linspace(0,config.tmax,config.Nt)
-    data_num = np.arange(start=0, stop=config.Nt, step=config.dumpPeriod, dtype=np.int64)
+    data_num = np.arange(0, config.Nt, config.dumpPeriod).astype(np.int64)
     # initialize positions avoiding object geometry
     dx = xg_obj[1] - xg_obj[0]
     dy = yg_obj[1] - yg_obj[0]
@@ -190,7 +234,7 @@ def initial_reflecting(Q,M):
 
     ###### Initialize time array and data dump array ######
     time  = np.linspace(0,config.tmax,config.Nt)
-    data_num = np.arange(start=0, stop=config.Nt, step=config.dumpPeriod, dtype=np.int64)
+    data_num = np.arange(0, config.Nt, config.dumpPeriod).astype(np.int64)
 
     pos[:,0] = np.random.random(config.N)*2.0*config.Lx - config.Lx
     pos[:,1] = np.random.random(config.N)*2.0*config.Ly - config.Ly

@@ -2,10 +2,12 @@ import numpy as np
 from os.path import join as pjoin
 import config
 
-def configSpace(dsetE,dsetPart,dsetVel,t,pos,vvel,KE):
+def configSpace(dsetE,dsetPart,dsetVel,t,pos,vvel,KE,particle_status=None):
 
     dsetE.resize(dsetE.shape[0]+1, axis=0)
     dsetE[-1:] = KE
+    # Save ALL particles (including absorbed/attached) - the particle_status array will indicate their state
+    # This preserves all particle data for all timesteps
     dsetPart[int(t/config.dumpPeriod),:,:] = pos
     dsetVel[int(t/config.dumpPeriod),:,:]  = vvel
 

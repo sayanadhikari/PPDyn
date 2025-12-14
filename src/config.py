@@ -63,6 +63,7 @@ realTime    = bool(params['diagnostics']['realTime'])
 parallelMode    = bool(params['options']['parallelMode'])
 PIC_data = bool(params['options']['PIC_data'])
 object_data = bool(params['options']['object_data'])
+use_mesh_directly = bool(params['options'].get('use_mesh_directly', False))
 
 #====== Additional =======
 dumpNt = round(Nt/dumpPeriod)
@@ -70,6 +71,23 @@ dumpNt = round(Nt/dumpPeriod)
 # Electric field normalization method: 'mean' or 'max'
 E_norm_method = str(params['options'].get('E_norm_method', 'mean'))
 
+
+#========== Object Interaction Parameters ===========
+if 'object_interaction' in params:
+    absorb_prob = float(params['object_interaction'].get('absorb_prob', 0.3))
+    reflect_prob = float(params['object_interaction'].get('reflect_prob', 0.5))
+    attach_prob = float(params['object_interaction'].get('attach_prob', 0.2))
+    # Normalize probabilities to ensure they sum to 1.0
+    total_prob = absorb_prob + reflect_prob + attach_prob
+    if total_prob > 0:
+        absorb_prob /= total_prob
+        reflect_prob /= total_prob
+        attach_prob /= total_prob
+else:
+    # Default values
+    absorb_prob = 0.3
+    reflect_prob = 0.5
+    attach_prob = 0.2
 
 # PINC coupling
 file_path = os.path.join(picDir, "E.grid.h5")
