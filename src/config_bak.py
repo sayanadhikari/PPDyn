@@ -6,13 +6,6 @@ import sys
 import os
 import argparse
 import h5py
-import math
-
-
-# ---- Physical constants ----
-eps0 = 8.8541878128e-12
-kb   = 1.380649e-23
-qe   = 1.602176634e-19
 
 
 parser = argparse.ArgumentParser(description='Plasma Particle Dynamics (PPDyn)')
@@ -71,30 +64,11 @@ parallelMode    = bool(params['options']['parallelMode'])
 PIC_data = bool(params['options']['PIC_data'])
 object_data = bool(params['options']['object_data'])
 
-
 #====== Additional =======
 dumpNt = round(Nt/dumpPeriod)
 
 # Electric field normalization method: 'mean' or 'max'
-E_norm_method = str(params['options'].get('E_norm_method', 'aOmega'))
-#  E_norm_method = str(params['options'].get('E_norm_method', 'aOmega'))
-
-
-# ========= Normalization (MD units: length=a, time=1/Omega_pd) =========
-# Read user-provided reference scales (kept physical, SI) from [normalization]
-# Define safe namespace for eval
-safe_globals = {
-    "q_e": qe,
-    "qe": qe,
-    "eps0": eps0,
-    "kb": kb,
-    "zd": float(params['normalization'].get('zd', 1.0)),  # default to 1.0 if missing
-    "math": math
-}
-
-# Compute a from number density if not provided: a = (3/(4π n))^(1/3), n = N / V
-# Compute a from number density
-a = 1.0
+E_norm_method = str(params['options'].get('E_norm_method', 'mean'))
 
 
 # PINC coupling
@@ -105,40 +79,6 @@ with h5py.File(file_path, "r") as f:
     keys = sorted(f.keys())
     last_key = keys[-1]
     grid_shape = f[last_key].shape
-    Nx, Ny, Nz = grid_shape[:3]
-    V_SI = Nx*Ny*Nz*denorm**3
-    n = N/V_SI
-    a = 3/(4*np.pi*n)**(1/3)
-    dx_a = denorm/a
-    Lx = 0.5 * grid_shape[0] * dx_a
-    Ly = 0.5 * grid_shape[1] * dx_a
-    Lz = 0.5 * grid_shape[2] * dx_a
-
-lambda_D = denorm
-kappa = a / lambda_D
-k     = kappa 
-
-print(Nx, Ny, Nz, lambda_D,a, dx_a, Lx,k)
-# ========= Normalization (MD units: length=a, time=1/Omega_pd) =========
-# Read user-provided reference scales (SI) from [normalization]
-Qref = eval(params['normalization']['Qref'], safe_globals)
-mref    = float(params['normalization']['mref'])
-# print("Qref=",Qref)
-# print("mref=",mref)
-
-# Dust plasma frequency and derived scales (used only to build dimensionless groups)
-Omega_pd = (Qref**2 / (4.0*np.pi*eps0*mref*a**3))**0.5
-print("Omega_pd=",Omega_pd)
-
-# Field and gravity normalization factors for PIC and g (E* and g*)
-Escale_a = (4.0*np.pi*eps0*a*a) / Qref                 # E* = Escale_a * E(SI)
-gstar    = (4.0*np.pi*eps0*mref*a*a / Qref**2) * g     # g*  = g / (a Omega_pd^2)
-# E_sheath = float(params['gravity'].get('E_sheath', gstar))  # default: balance gravity
-# gstar    =  g/ (a * Omega_pd*Omega_pd)
-# print("Escale=",Escale_a)
-# print("gstar=", gstar)
-# print("Esheath=", E_sheath)
-
-# Electron temperature in eV → J
-Te_eV = float(params['normalization'].get('Te_eV', 1.0))
-Te_J = Te_eV * qe
+    Lx = 0.5 * grid_shape[0] * denorm
+    Ly = 0.5 * grid_shape[1] * denorm
+    Lz = 0.5 * grid_shape[2] * denorm

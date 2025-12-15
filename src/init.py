@@ -48,30 +48,38 @@ def load_pic_field():
         # Ey = f["/Ey"][:]
         # Ez = f["/Ez"][:]
         
-        # Normalize PIC electric field by selected method: 'mean' or 'max'
-        E_mag = np.sqrt(Ex**2 + Ey**2 + Ez**2)
-        norm_method = getattr(config, 'E_norm_method', 'mean')
-        if norm_method == 'max':
+        # Normalize PIC electric field by selected method: 'aOmega' or 'max'
+        norm_method = getattr(config, 'E_norm_method', 'aOmega')
+        print("E_norm_method:", norm_method)
+    
+        # E_mag = np.sqrt(Ex**2 + Ey**2 + Ez**2)
+           # # grid coordinates
+        dx = config.dx_a
+        xg = np.arange(Ex.shape[0])*  dx - config.Lx
+        yg = np.arange(Ey.shape[1])*  dx  - config.Ly
+        zg = np.arange(Ez.shape[2])*  dx   - config.Lz
+        # norm_method = getattr(config, 'E_norm_method', 'mean')
+        # if norm_method == 'max':
+        if norm_method == 'aOmega':
+            Ex *= config.Escale_a
+            Ey *= config.Escale_a
+            Ez *= config.Escale_a
+        elif norm_method == 'max':
+            E_mag = np.sqrt(Ex**2 + Ey**2 + Ez**2)
             E0 = np.max(E_mag)
-        elif norm_method == 'norm':
-            # Birdsall normalization: E0 = k_B * Te / (e * lambda_D)
-            kb = 1.380649e-23   # J/K
-            qe = 1.602176634e-19  # C
-            Te = 2900.0*11604.525    # electron temperature in K
-            Te_J = kb * Te
-            lambda_D = denorm
-            E0 = Te_J / (qe * lambda_D)
-        else:
-            E0 = np.mean(E_mag)
-        Ex /= E0
-        Ey /= E0
-        Ez /= E0
+            if E0 != 0:
+                Ex /=E0; Ey /=E0; Ez /=E0
+        # elif norm_method == 'norm':
+        #     # Birdsall normalization: E0 = k_B * Te / (e * lambda_D)
+        #     if config.lambda_D_SI > 0 and (config.Te_J > 0):  # J/K
+        #         E0 = config.Te_J / (config.qe * config.lambda_D_SI)
+        # else:
+        #     E_mag = np.sqrt(Ex**2 + Ey**2 + Ez**2)
+        #     E0 = np.mean(E_mag)
+        #     if E0 != 0:
+        #         Ex /= E0; Ey /= E0; Ez /= E0
 
-        # # grid coordinates
-        xg = np.arange(Ex.shape[0])*denorm
-        yg = np.arange(Ey.shape[1])*denorm
-        zg = np.arange(Ez.shape[2])*denorm
-    return xg, yg, zg, Ex, Ey, Ez
+        return xg, yg, zg, Ex, Ey, Ez
 
 def load_object_grid():
     """
@@ -80,19 +88,36 @@ def load_object_grid():
       xg_obj, yg_obj, zg_obj: 1D arrays of grid coordinates
       obj_mask     : 3D uint8 array where 1=inside object, 0=outside
     """
+    # file_path = os.path.join(config.picDir, "object.grid.h5")
+    # with h5py.File(file_path, 'r') as f:
+    #     dset = f['Object']              # dataset holding binary mask
+    #     obj_mask    = dset[:].astype(np.uint8)
+    #     axis_denorm = f.attrs['Axis denormalization factor'][0]
+    #     # The object grid is assumed cubic, so all axes have the same shape
+    #     nx, ny, nz = obj_mask.shape
+    #     # map object grid [0, axis_denorm*nx) onto MD domain [-Lx, +Lx)
+    #     xg_obj = np.arange(nx) * axis_denorm - config.Lx
+    #     yg_obj = np.arange(ny) * axis_denorm - config.Ly
+    #     zg_obj = np.arange(nz) * axis_denorm - config.Lz
+    # return xg_obj, yg_obj, zg_obj, obj_mask
+
     file_path = os.path.join(config.picDir, "object.grid.h5")
     with h5py.File(file_path, 'r') as f:
         dset = f['Object']              # dataset holding binary mask
         obj_mask    = dset[:].astype(np.uint8)
         axis_denorm = f.attrs['Axis denormalization factor'][0]
-        # The object grid is assumed cubic, so all axes have the same shape
+            # The object grid is assumed cubic, so all axes have the same shape
         nx, ny, nz = obj_mask.shape
-        # map object grid [0, axis_denorm*nx) onto MD domain [-Lx, +Lx)
-        xg_obj = np.arange(nx) * axis_denorm - config.Lx
-        yg_obj = np.arange(ny) * axis_denorm - config.Ly
-        zg_obj = np.arange(nz) * axis_denorm - config.Lz
+        dx_obj = axis_denorm/config.a
+            # map object grid [0, axis_denorm*nx) onto MD domain [-Lx, +Lx)
+        # xg_obj = np.arange(nx) * axis_denorm - config.Lx
+        # yg_obj = np.arange(ny) * axis_denorm - config.Ly
+        # zg_obj = np.arange(nz) * axis_denorm - config.Lz
+        xg_obj = np.arange(nx) * dx_obj- config.Lx
+        yg_obj = np.arange(ny) * dx_obj - config.Ly
+        zg_obj = np.arange(nz) * dx_obj - config.Lz
     return xg_obj, yg_obj, zg_obj, obj_mask
-
+    
 @jit(nopython=True)
 def initial_periodic(Q, M, xg_obj, yg_obj, zg_obj, obj_mask):
     random.seed(99999999)

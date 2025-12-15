@@ -30,9 +30,6 @@ import config
 from init import load_object_grid, copy_pic_data
 
 
-Omega_pd = config.Omega_pd
-Escale_a = config.Escale_a
-
 path        = "data/"
 
 def main():
@@ -66,46 +63,24 @@ def main():
         M = density * (4.0/3.0) * np.pi * radii**3
         # Q = M ** (2/3)  # charge proportional to volume^(2/3), i.e., surface area (commented out)
         # normalize masses to unit mean to maintain earlier normalization
-        # M_mean = np.mean(M)
-        # M /= M_mean
-        M /= config.mref
+        M_mean = np.mean(M)
+        M /= M_mean
         # adjust charge accordingly if Q was computed before normalization
         Q = M ** (2/3)
-                # dimensionless charges relative to Qref: set mean(Q_dim)/Qref -> 1
-        Q_mean = np.mean(Q)
-        if Q_mean != 0.0:
-            Q /= Q_mean
     elif config.dist == 'uniform_radius':
         # Uniform distribution of radius between r_min and r_max
-        radii_SI = np.random.uniform(low=config.r_min, high=config.r_max, size=config.N)
-        # print("Raw radii min/max:", np.min(radii), np.max(radii))
-        # print("radii=", radii)
+        radii = np.random.uniform(low=config.r_min, high=config.r_max, size=config.N)
         # normalize radii to unit mean to maintain earlier normalization
-        # radii_mean = np.mean(radii)
-        # radii /= radii_mean
-        radii = radii_SI/config.a
-        # print("Normalized radii min/max:", np.min(radii), np.max(radii))
-        M_SI = config.density * (4.0/3.0) * np.pi * (radii_SI) ** 3
-        # print('M1=', M)
-        M = M_SI/config.mref
-        # print('M=', M)
-        # print('radii= ',radii)
-        # print(config.a)
-        # print('M_initial= ', M)
+        radii_mean = np.mean(radii)
+        radii /= radii_mean
+        density = config.density
+        M = density * (4.0/3.0) * np.pi * radii ** 3
         # Q = M ** (2/3)   # Or Q = 4 * np.pi * radii**2 if you want Q ∝ surface area (commented out)
         # normalize masses to unit mean to maintain earlier normalization
-        # M_mean = np.mean(M)
-        # M /= M_mean
-        
-        # print('M2 = ',M)
+        M_mean = np.mean(M)
+        M /= M_mean
         # adjust charge accordingly if Q was computed before normalization
         Q = M ** (2/3)
-        # Q = Q/config.Qref
-        # print('Q = ',Q)
-                # dimensionless charges relative to Qref: set mean(Q_dim)/Qref -> 1
-        Q_mean = np.mean(Q)
-        if Q_mean != 0.0:
-            Q /= Q_mean
     else:
         M = np.ones(config.N)
         Q = M

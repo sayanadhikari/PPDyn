@@ -100,14 +100,6 @@ def verlet_periodic(t, pos, vvel, uvel, acc, Q, M,
         acc[i, 1] = 0.0
         acc[i, 2] = 0.0
 
-
- # reset forces + gravity
-    for i in prange(config.N):
-        acc[i, 0] = 0.0
-        acc[i, 1] = 0.0
-        acc[i, 2] = -config.gstar   # constant dimensionless gravity (no accumulation)
-        # acc[i,2] += config.E_sheath * Q[i]/M[i]   # sheath up
-
     # Coulomb / Yukawa forces
     for i in prange(config.N):
         for j in range(config.N):
@@ -139,9 +131,6 @@ def verlet_periodic(t, pos, vvel, uvel, acc, Q, M,
         acc[i, 0] += Q[i] * Ex_p / M[i]
         acc[i, 1] += Q[i] * Ey_p / M[i]
         acc[i, 2] += Q[i] * Ez_p / M[i]
-
-
-
 
     # final half-kick
     for i in prange(config.N):
