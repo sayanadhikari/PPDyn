@@ -12,6 +12,7 @@ from scipy.sparse.linalg import spsolve, cg, gmres
 from scipy.interpolate import griddata
 import sys
 import time
+import threading
 
 # Try to import tqdm for progress bars
 try:
@@ -277,21 +278,68 @@ class FieldSolver:
         print("  Solving linear system...", end="", flush=True)
         solve_start = time.time()
 
+        # Progress indicator for long-running solves
+        progress_active = [True]
+        def show_progress(solver_type=""):
+            """Show elapsed time updates during solve"""
+            base_msg = f"  Solving linear system... ({solver_type})" if solver_type else "  Solving linear system..."
+            while progress_active[0]:
+                time.sleep(2)  # Update every 2 seconds
+                if progress_active[0]:
+                    elapsed = time.time() - solve_start
+                    if elapsed < 60:
+                        print(f"\r{base_msg} [elapsed: {elapsed:.1f}s]", end="", flush=True)
+                    else:
+                        mins = int(elapsed // 60)
+                        secs = int(elapsed % 60)
+                        print(f"\r{base_msg} [elapsed: {mins}m {secs}s]", end="", flush=True)
+
         if use_iterative and n_total > 50000:
             # Use iterative solver for large systems (faster, less memory)
-            print(" (using iterative CG solver)")
-            phi_flat, info = cg(A, rhs, tol=tol, maxiter=max_iter)
-            if info != 0:
-                print(f"    Warning: CG solver did not converge (info={info})")
+            solver_type = "iterative CG solver"
+            progress_thread = threading.Thread(target=show_progress, args=(solver_type,), daemon=True)
+            progress_thread.start()
+            try:
+                phi_flat, info = cg(A, rhs, tol=tol, maxiter=max_iter)
+                progress_active[0] = False
+                if info != 0:
+                    print(f"\n    Warning: CG solver did not converge (info={info}), falling back to direct solver...")
+                    progress_active[0] = True
+                    solve_start = time.time()  # Reset timer for direct solver
+                    solver_type = "direct solver (fallback)"
+                    progress_thread = threading.Thread(target=show_progress, args=(solver_type,), daemon=True)
+                    progress_thread.start()
+                    # Fallback to direct solver if CG fails
+                    phi_flat = spsolve(A, rhs)
+                    progress_active[0] = False
+            except KeyboardInterrupt:
+                progress_active[0] = False
+                raise
         else:
             # Use direct solver for smaller systems
-            print(" (using direct solver)")
-            phi_flat = spsolve(A, rhs)
+            solver_type = "direct solver"
+            progress_thread = threading.Thread(target=show_progress, args=(solver_type,), daemon=True)
+            progress_thread.start()
+            try:
+                phi_flat = spsolve(A, rhs)
+                progress_active[0] = False
+            except KeyboardInterrupt:
+                progress_active[0] = False
+                raise
 
         solve_time = time.time() - solve_start
-        print(f"  Solved in {solve_time:.2f} seconds")
+        # Clear progress line and show final time
+        print(f"\r  Solving linear system... done ({solve_time:.1f}s)                    ", flush=True)
 
         phi = phi_flat.reshape((self.nx, self.ny, self.nz))
+
+        # Validate solution
+        phi_max = np.max(np.abs(phi))
+        phi_mean = np.mean(np.abs(phi))
+        if phi_max > 1e10 * self.V_float:
+            print(f"    Warning: Potential values are extremely large (max={phi_max:.2e} V)")
+            print(f"      This suggests the solver may have failed. Expected range: ~{self.V_float} V")
+
         total_time = time.time() - start_time
         print(f"  Total solve time: {total_time:.2f} seconds")
 
@@ -322,7 +370,10 @@ class FieldSolver:
             print(f"\n    Warning: Clipping {clipped_count} field values ({100*clipped_count/len(E_mag.flatten()):.1f}%)")
             print(f"      Max field: {E_max_actual:.2e} V/m -> {max_E:.2e} V/m")
             print(f"      Mean field: {E_mean_actual:.2e} V/m")
-            scale = np.where(E_mag > max_E, max_E / E_mag, 1.0)
+            # Avoid divide by zero: only scale where E_mag > max_E and E_mag > 0
+            scale = np.ones_like(E_mag)
+            mask = (E_mag > max_E) & (E_mag > 0)
+            scale[mask] = max_E / E_mag[mask]
             Ex = Ex * scale
             Ey = Ey * scale
             Ez = Ez * scale
