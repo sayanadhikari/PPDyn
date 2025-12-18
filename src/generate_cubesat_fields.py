@@ -15,7 +15,8 @@ import ini
 import os
 from os.path import join as pjoin
 
-from cubesat_generator import CubesatGenerator
+from cubstat_generator1 import RealisticCubesatGenerator as CubesatGenerator
+# from cubstat_generator import CubesatGenerator
 from geometry_to_grid import GeometryToGrid
 from field_solver import FieldSolver
 from hdf5_exporter import HDF5Exporter
@@ -128,19 +129,30 @@ def main():
 
     # Generate geometry and keep Gmsh open
     import gmsh
-    generator = CubesatGenerator(size, wing_config, wing_length)
-    volumes = generator.generate(
-        include_antenna=include_antenna,
-        mesh_size=mesh_size
+    
+    # Map wing_config: "standard" -> "body_mounted", keep "none" and "deployed" as-is
+    wing_config_mapped = wing_config
+    if wing_config == "standard":
+        wing_config_mapped = "body_mounted"
+    
+    generator = CubesatGenerator(
+        size=size,
+        wing_config=wing_config_mapped,
+        wing_length=wing_length,
+        include_antenna=include_antenna
     )
+    volumes = generator.generate(mesh_size=mesh_size)
 
-    # Get bounding box
-    bbox = generator.get_bounding_box()
+    # Calculate bounding box from generator dimensions
+    wx, wy, wz = generator.wx, generator.wy, generator.wz
+    wing_extent = wing_length if wing_config_mapped != "none" else 0
+    bbox = (-wx/2 - wing_extent, -wy/2 - wing_extent, -wz/2,
+            wx/2 + wing_extent, wy/2 + wing_extent, wz/2)
     print(f"Bounding box: {bbox}")
 
     # Save mesh file (optional, for visualization)
     mesh_file = pjoin(output_dir, 'cubesat.msh')
-    gmsh.write(mesh_file)
+    generator.save(mesh_file)
     print(f"Mesh saved to {mesh_file}")
 
     # Step 2: Convert geometry to regular grid
