@@ -13,8 +13,10 @@ authors:
 - family-names: "Paul"
   given-names: "Rupali"
   orcid: "https://orcid.org/0000-0002-4492-5553"
-title: "PPDyn"
-version: 1.0.0
-doi: 10.5281/zenodo.1234
-date-released: 2021-09-01
+- family-names: "Holen"
+  given-names: "Gaute"
+title: "PPDyn: Plasma Particle Dynamics"
+version: 2.0.0
+date-released: 2026-10-18
 url: "https://github.com/sayanadhikari/PPDyn"
+license: MIT

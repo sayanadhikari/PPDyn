@@ -1,169 +1,164 @@
-![PPDyn Example](assets/ppdyn_logo.png)
-# PPDyn (Plasma Particle Dynamics)
-[![CI](https://github.com/sayanadhikari/PPDyn/actions/workflows/main.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/main.yml)
-[![build](https://github.com/sayanadhikari/PPDyn/actions/workflows/make.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/make.yml)
-[![DOI](https://zenodo.org/badge/349242730.svg)](https://zenodo.org/badge/latestdoi/349242730)
+<p align="center"><img src="assets/ppdyn_logo.png" alt="PPDyn" width="420"></p>
+
+# PPDyn: Plasma Particle Dynamics
+
+[![CI](https://github.com/sayanadhikari/PPDyn/actions/workflows/ci.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/ppdyn/badge/?version=latest)](https://ppdyn.readthedocs.io/en/latest/?badge=latest)
 [![PyPI Version](https://img.shields.io/pypi/v/ppdyn.svg)](https://pypi.org/project/PPDyn/)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sayanadhikari/PPDyn/main)
+[![DOI](https://zenodo.org/badge/349242730.svg)](https://zenodo.org/badge/latestdoi/349242730)
 
-A python code to simulate plasma particles using Molecular Dynamics Algorithm. [Numba JIT compiler](https://numba.pydata.org/) for Python has been implemented for faster performance.
+Parallel molecular dynamics for dusty (complex) plasmas and charged micro-debris. Grains interact through a screened Coulomb (Yukawa) potential and feel gravity, electric fields, ion drag, neutral drag and thermal noise, solid objects and absorbing walls. Numba compiles the kernels to multithreaded machine code; a linked-cell list makes the cost scale linearly with the number of particles.
 
-A detailed documentation can be found at https://ppdyn.readthedocs.io/.
+**Version 2** merges every former development branch (dust fall, dust voids, dust clouds in microgravity, debris around spacecraft) into one code. You choose the physics in the input file. The previous code is kept on the [`legacy`](https://github.com/sayanadhikari/PPDyn/tree/legacy) branch.
 
-<!-- <video src="assets/videos/Plasma Particle Dynamics using Molecular Dynamics Method.mp4" poster="assets/images/ppdyn_poster.png" width="320" height="200" controls preload></video> -->
+<p align="center"><img src="docs/media/gallery.png" alt="Example results" width="100%"></p>
 
-Example:
+## Install
 
-![PPDyn Example](assets/ppdyn_norm.gif)
-<!--[![PPDyn Example]()](https://user-images.githubusercontent.com/11753189/114286735-b5f26900-9a61-11eb-86ba-76ee295d6448.mp4)-->
-<!--[![PPDyn Example](http://img.youtube.com/vi/qvQRUX-rSrQ/0.jpg)](https://www.youtube.com/embed/qvQRUX-rSrQ)-->
-
-
-## Problem
-<!--Rayleigh Problem = gas between 2 plates ([Alexander & Garcia, 1997](https://doi.org/10.1063/1.168619)) -->
-
-## Contributors
-- [Sayan Adhikari](https://github.com/sayanadhikari), UiO, Norway. [@sayanadhikari](https://twitter.com/sayanadhikari)
-- [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA.
-- [Gaute Holen](https://github.com/GauteHolen), UiO, Norway (See separate branch, [dust-exp])
-- [Rinku Mishra](https://github.com/rinku-mishra), IPR, India (See separate branch, [dust-void])
-
-## Installation
-### Prerequisites
-1. [GNU Make](https://www.gnu.org/software/make/)
-2. [python3 or higher](https://www.python.org/download/releases/3.0/)
-3. [git](https://git-scm.com/)
-
-### Procedure
-#### Using Anaconda/Miniconda (Preferred)
-First make a clone of the master branch using the following command
-```shell
-git clone https://github.com/sayanadhikari/PPDyn.git
-```
-Then enter inside the *PPDyn* directory
-```shell
-cd PPDyn
-```
-Now create a conda environment using the given *environment.yml* file
-```shell
-conda env create -f environment.yml
-```
-Activate the conda environment
-```shell
-conda activate ppdyn
-```
-*Usage*
-
-Upon successful compilation, run the code using following command
-```shell
-python ppdyn.py -i input.ini
-```
-#### Using PyPI
 ```bash
-pip install PPDyn
+pip install ppdyn                 # core
+pip install "ppdyn[all]"          # plus the interactive 3D viewer and the AMG field solver
 ```
-*Usage*
 
-Download the input template to your working directory
-```shell
-wget https://raw.githubusercontent.com/sayanadhikari/PPDyn/main/input.ini
+or from a clone with `pip install -e ".[dev]"`. Python 3.9 or newer; no compiler needed.
+
+## Quick start
+
+```bash
+ppdyn init yukawa_crystal                 # copy a ready-to-run example
+cd yukawa_crystal
+ppdyn run input.toml --report             # run, then write figures and an HTML report
+ppdyn view output/yukawa_crystal.h5       # interactive 3D viewer with a time slider
 ```
-Now, either create a python script in your working directory or use your python console
-```python
-from PPDyn import ppdyn
-from PPDyn.ppdplot import animate
-import time
 
-start = time.time()
-ppdyn(input)
-end = time.time()
-print("Elapsed (after compilation) = %s"%(end - start)+" seconds")
-animate()
-```
-#### Using GNU Make
-First make a clone of the master branch using the following command
-```shell
-git clone https://github.com/sayanadhikari/PPDyn.git
-```
-Then enter inside the *PPDyn* directory
-```shell
-cd PPDyn
-```
-Now complile and built the *PPDyn* code
-```shell
-make all
-```
-*Usage*
+A complete input file is short and readable, and unknown or misspelt keys are rejected with a suggestion:
 
-Upon successful compilation, run the code using following command
-```shell
-ppdyn -i input.ini
-```
-## Parameter Setup
-Edit the _input.ini_ and run the code again. The basic structure of _input.ini_ is provided below,
-```ini
-;
-; @file		input.ini
-; @brief	PPDyn inputfile.
-;
-;scope = default
+```toml
+[domain]
+box = [24.36, 24.36, 24.36]          # reduced units: a, 1/omega0, Q0, m0
 
-[simbox]
-Lx  = 15.0    ; System length in X
-Ly  = 15.0    ; System length in Y
-Lz  = 20.0    ; System length in Z
+[[species]]
+count = 3456
+[species.placement]
+region = "lattice"
+lattice = "bcc"
+[species.velocity]
+temperature = 0.0025                  # T = 1/Gamma, Gamma = 400
 
-[particles]
-N     = 1000 ; Number of particles
-Vxmax = 1.0     ; Maximum velocity in X
-Vymax = 1.0     ; Maximum velocity in Y
-Vzmax = 1.0     ; Maximum velocity in Z
-Temp  = 0.1     ;
-dist = True     ; Use distribution: True
-mean = 1  ; if dist = True
-stdDev = 0.2  ; if dist = True
+[interaction]
+kappa = 1.0
 
-[screening]
-k = 0.0
-
-[gravity]
-g_0= 0.0063;    Reduced Earth's gravity
-
-[cutoff radius]
-rc = 1e-5
-
-[boundary]
-btype = mixed ; Type of boundary Options: periodic, reflecting, mixed
+[thermostat]
+type = "langevin"
+temperature = 0.01                    # heat to Gamma = 100: the crystal melts
+gamma = 0.1
 
 [time]
-tmax  = 10.0    ; Final time
-dt    = 0.010   ; time step size
-
-[diagnostics]
-dumpPeriod  = 5    ; Data dump period
-dumpData    = True
-vtkData     = True
-realTime    = False
-
-[directory]
-dataDir = data #put runname here
-
-[options]
-parallelMode  = True ;True ;set to false to disable parallel
+dt = 0.05
+t_end = 150.0
 ```
-## Visualization
-For visualization, user either can use the python scripts available inside ``scripts`` directory or can write their own. After successful run the data will be available under ``data`` directory. Two different data formats are available at present. The complete dataset will available under the name particle.hdf5. For vtk visualization users can use ``.vtu`` files inside ``data/vtkdata``. [Paraview](https://www.paraview.org/) can be used to animate particle dynamics very easily. A sample video can be found [here](https://www.youtube.com/embed/qvQRUX-rSrQ).
 
+Set `units.system = "SI"` to give every quantity in SI units (metres, seconds, kelvin, coulomb, pascal, V/m) and let PPDyn do the normalisation.
 
-## Contributing
-We welcome contributions to this project.
+## What it can simulate
 
-1. Fork it.
-2. Create your feature branch (```git checkout -b my-new-feature```).
-3. Commit your changes (```git commit -am 'Add some feature'```).
-4. Push to the branch (```git push origin my-new-feature```).
-5. Create new Pull Request.
+| feature | input |
+|---|---|
+| Yukawa or Coulomb interactions, automatic cutoff, linked cells or direct sum | `[interaction]` |
+| Several species; fixed, normal, lognormal, uniform, binary or bimodal grain sizes; mass from density; charge ∝ r<sup>p</sup> or from surface potential | `[[species]]` |
+| Loading in a box, sphere, shell, plane, bcc/fcc/sc lattice or from a file; Maxwellian, uniform or drifting velocities | `[species.placement]`, `[species.velocity]` |
+| Periodic, reflecting, absorbing (stick or remove, optional charge neutralisation) or open walls, per face; spherical chambers | `[boundary]`, `[domain]` |
+| Gravity, uniform and linear (sheath) E-fields, harmonic traps, constant ion-flow force | `[forces.*]` |
+| Radial void force with optional time modulation | `[forces.void]` |
+| Tabulated radial force or field profiles (measured or digitised data) | `[[forces.radial_table]]` |
+| 3D electric field from PINC output or PPDyn's own field solver, trilinear interpolation | `[field]` |
+| Solid objects (box, sphere, cylinder, CubeSat 1U to 6U with wings and antenna) that reflect or absorb | `[[objects]]` |
+| Screened-Poisson field solver around charged objects | `ppdyn field`, `[field_solver]` |
+| Epstein or constant neutral drag with exact Langevin thermal noise, Langevin or Berendsen thermostats | `[neutrals]`, `[thermostat]` |
+| Hard-sphere contact collisions with restitution | `[collisions]` |
+| Bit-exact checkpoint and restart | `run.restart`, `--restart` |
+
+Every key is documented in the [input reference](docs/source/input_reference.md), which is generated from the code so it cannot drift out of date.
+
+## Examples
+
+`ppdyn init` lists them; each reproduces the physics of one former branch. Details and results are in [docs/source/examples.md](docs/source/examples.md).
+
+| example | former branch | what you see |
+|---|---|---|
+| `yukawa_crystal` | `main` | a bcc Yukawa crystal heated through its melting point |
+| `dust_fall` | `dust-fall` | charged grains fall through argon onto an absorbing, neutralising electrode; large grains land first |
+| `dust_void` | `dust-void` | a monolayer dust crystal with an ion-drag void and ion flow |
+| `dust_cloud` | `dust-exp` | a microgravity cloud of two grain sizes forms a void and segregates into two shells under tabulated electric and ion-drag forces |
+| `debris_cubesat` | `debris`, `debris_dynamics` | charged micro-debris attracted to a charged 3U CubeSat; deposits outline the body and solar wings |
+
+## Output and post-processing
+
+Each run writes one HDF5 file with snapshots, a per-step history (energies, temperature per axis, particle counts, collected charge) and the full input text, plus a live `history.csv`. ParaView opens the accompanying `.xdmf` file directly.
+
+```bash
+ppdyn plot run.h5 report          # every figure and an index.html
+ppdyn plot run.h5 rdf             # history, snapshot, rdf, vdf, msd, profiles, absorption
+ppdyn movie run.h5 --view xz      # mp4 (or gif without ffmpeg)
+ppdyn view run.h5                 # standalone interactive HTML
+ppdyn export run.h5 vtk           # also csv, xdmf
+ppdyn watch output/               # live plot while running
+```
+
+From Python:
+
+```python
+from ppdyn.post import Run, rdf, msd
+with Run("output/yukawa_crystal.h5") as r:
+    r_, g = rdf(r.position(-1), r.L, r.periodic)
+```
+
+## Performance
+
+Time per step for a Yukawa system (κ = 1, a = 1 density) on two CPU cores; the legacy timings use the old `main` pusher on the same machine.
+
+| particles | PPDyn 1.x (O(N²)) | PPDyn 2 (linked cells) | speed-up |
+|---:|---:|---:|---:|
+| 2 000 | 43 ms | 19 ms | 2.3× |
+| 10 000 | 1.25 s | 70 ms | 18× |
+| 30 000 | 11.1 s | 0.20 s | 56× |
+| 464 000 (dust-exp size) | ≈ 44 min (extrapolated) | ≈ 3.1 s (extrapolated) | ≈ 850× |
+
+Throughput grows with the core count; run `ppdyn bench` to measure your machine.
+
+## Validation
+
+The test suite (`pytest -q`, 35 tests) checks, among others:
+
+* cell-list forces equal the direct sum to 10⁻¹⁰, including thin non-periodic slabs;
+* NVE energy error 3×10⁻⁶ that falls 3.9× when dt is halved (second order);
+* a Langevin gas reaches its target temperature within 2 %;
+* free fall onto an absorbing floor lands at √(2h/g) to within one step, and the charge is collected;
+* specular reflection from spheres, boxes and cylinders, and elastic head-on collisions;
+* the field solver against the analytic screened sphere φ = V R/r e<sup>−(r−R)/λ</sup>;
+* SI and reduced-unit runs of the same system give identical trajectories;
+* restart from a checkpoint reproduces an uninterrupted run bit for bit;
+* legacy inputs from every branch convert and run.
+
+The numerical methods, units and the legacy bugs that were fixed on the way are described in [docs/source/numerics.md](docs/source/numerics.md).
+
+## Coming from PPDyn 1.x
+
+```bash
+ppdyn convert input.ini     # writes input.toml with NOTE comments for every judgement call
+```
+
+See [docs/source/migration.md](docs/source/migration.md) for where each branch's features went and the behaviour changes to be aware of.
+
+## Contributors
+
+* [Sayan Adhikari](https://github.com/sayanadhikari), IFE, Norway
+* [Rupak Mukherjee](https://github.com/RupakMukherjee), PPPL, USA
+* [Gaute Holen](https://github.com/GauteHolen), UiO, Norway (dust clouds, size distributions)
+* [Rinku Mishra](https://github.com/rinku-mishra), IPR, India (dust voids, debris dynamics)
+
+Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). If you use PPDyn, please cite it using [CITATION.cff](CITATION.cff).
 
 ## License
-Released under the [MIT license](LICENSE).
+
+MIT, see [LICENSE](LICENSE).
