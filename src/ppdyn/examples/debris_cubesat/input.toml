@@ -1,0 +1,72 @@
+# Charged micro-debris drifting onto a charged CubeSat (debris branches physics)
+#
+# A 3U CubeSat with deployed solar wings sits at -10 V in a plasma with a 5 cm
+# Debye length. The screened electrostatic field around it is solved on a grid
+# the first time you run (or with `ppdyn field input.toml`) and saved to
+# field.h5. Photo-charged debris grains (+2 V) drift towards the spacecraft,
+# are attracted and focused by its field, and stick where they hit. Impact
+# times and the struck object are stored in the output (final/absorb_time,
+# final/hit_object). To use a PINC field instead, set [field] file to the
+# PINC E.grid.h5 and format = "pinc".
+
+[run]
+name = "debris_cubesat"
+
+[units]
+system = "SI"
+
+[domain]
+box = [0.6, 0.6, 0.6]
+
+[boundary]
+x = "open"
+y = "open"
+z = "open"
+
+[[objects]]
+type = "cubesat"
+cubesat_size = "3U"
+wings = "deployed"
+wing_length = 0.2
+antenna = true
+action = "absorb"
+potential = -10.0
+
+[field]
+file = "field.h5"
+outside = "zero"
+
+[field_solver]
+grid = [72, 72, 72]
+debye_length = 0.05
+output = "field.h5"
+
+[[species]]
+name = "debris"
+count = 3000
+density = 2700.0                      # aluminium
+[species.radius]
+distribution = "lognormal"
+mean = 5.0e-6
+std = 0.4
+[species.charge]
+model = "potential"
+potential = 2.0
+[species.placement]
+region = "box"
+center = [0.0, 0.0, 0.22]
+size = [0.5, 0.5, 0.12]
+[species.velocity]
+distribution = "zero"
+drift = [0.0, 0.0, -0.03]
+
+[interaction]
+debye_length = 0.05
+
+[time]
+dt = 5.0e-3
+t_end = 15.0
+
+[output]
+every = 30
+quantities = ["position", "velocity", "state"]

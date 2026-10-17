@@ -1,0 +1,68 @@
+# Microgravity dust cloud with binary grain sizes and an ion-drag void (dust-exp branch physics)
+#
+# Two grain populations (3.45 and 3.55 um) are confined in a spherical chamber
+# by a tabulated radial electric force and pushed outward near the centre by
+# a tabulated ion-drag force (digitised profiles from the dust-exp branch;
+# the tables assume their radius column was in cm). Epstein drag in 30 Pa argon.
+# The electric force scales with grain charge (~ r), ion drag with r^2,
+# which separates the two sizes radially. Raise count towards the original
+# 464000 particles on a cluster node.
+
+[run]
+name = "dust_cloud"
+
+[units]
+system = "SI"
+
+[domain]
+shape = "sphere"
+radius = 0.0185
+
+[boundary]
+sphere = "reflecting"
+
+[[species]]
+name = "grains"
+count = 20000
+density = 1510.0
+reference_radius = 3.5e-6
+[species.radius]
+distribution = "binary"
+values = [3.45e-6, 3.55e-6]
+weights = [0.5, 0.5]
+[species.charge]
+model = "power"
+value = 1.602e-15                     # 1e4 e at the reference radius
+exponent = 1.0
+[species.placement]
+region = "shell"
+r_min = 0.012
+r_max = 0.015
+[species.velocity]
+temperature = 300.0
+
+[interaction]
+debye_length = 3.0e-4
+
+[neutrals]
+drag = "epstein"
+pressure = 30.0
+temperature = 300.0
+
+[[forces.radial_table]]
+file = "E_force.csv"
+kind = "force"
+scale_with = "radius"
+
+[[forces.radial_table]]
+file = "iondrag_force.csv"
+kind = "force"
+scale_with = "radius2"
+
+[time]
+dt = 1.0e-3
+t_end = 2.0
+
+[output]
+every = 50
+quantities = ["position", "velocity"]

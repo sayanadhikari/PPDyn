@@ -1,0 +1,53 @@
+# Quasi-2D dust crystal with a central void driven by ion drag (dust-void branch physics)
+#
+# A thin dust layer is held by a harmonic (sheath-like) vertical confinement.
+# A radial ion-drag force F = A exp(-r/lambda) pushes grains away from the
+# centre and opens a void; a weak ion-flow force along y and neutral Langevin
+# damping complete the dust-void model. Set [forces.void] modulation/omega
+# for a breathing (time-modulated) void.
+
+[run]
+name = "dust_void"
+
+[domain]
+box = [120.0, 120.0, 6.0]
+
+[boundary]
+x = "periodic"
+y = "periodic"
+z = "reflecting"
+
+[[species]]
+count = 5000
+[species.placement]
+region = "box"
+size = [120.0, 120.0, 0.5]
+[species.velocity]
+temperature = 0.01
+
+[interaction]
+kappa = 0.5
+
+[neutrals]
+drag = "constant"
+gamma = 0.5
+temperature = 0.01                    # Gamma = 100
+
+[forces.harmonic]
+omega2 = [0.0, 0.0, 1.0]
+
+[forces.void]
+amplitude = 2.0
+decay_length = 8.0
+cylindrical = true
+scale_with = "none"
+
+[forces.constant]
+F = [0.0, 0.002, 0.0]
+
+[time]
+dt = 0.02
+t_end = 100.0
+
+[output]
+every = 100

@@ -1,6 +1,50 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "PPDyn"
+dynamic = ["version"]
+description = "Plasma Particle Dynamics: parallel molecular dynamics of dusty plasmas and charged debris"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "Sayan Adhikari", email = "sayan.adhikari@ife.no" }]
+keywords = ["molecular dynamics", "dusty plasma", "complex plasma", "yukawa", "numba", "space debris"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Physics",
 ]
-build-backend = "setuptools.build_meta"
+dependencies = [
+  "numpy>=1.22",
+  "numba>=0.57",
+  "h5py>=3.6",
+  "scipy>=1.9",
+  "matplotlib>=3.5",
+  "tomli>=1.1; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+viz = ["plotly>=5"]
+fast = ["pyamg>=5"]
+dev = ["pytest>=7", "plotly>=5", "pyamg>=5"]
+all = ["plotly>=5", "pyamg>=5"]
+
+[project.scripts]
+ppdyn = "ppdyn.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sayanadhikari/PPDyn"
+Documentation = "https://ppdyn.readthedocs.io"
+Issues = "https://github.com/sayanadhikari/PPDyn/issues"
+
+[tool.hatch.version]
+path = "src/ppdyn/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ppdyn"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

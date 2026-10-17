@@ -1,0 +1,61 @@
+# Charged grains falling through argon onto an absorbing electrode (dust-fall branch physics)
+#
+# Polydisperse melamine grains are released from the top of the box, fall
+# under gravity against Epstein drag, repel each other through the Debye-screened
+# Coulomb force, and stick to the floor, where they lose their charge.
+# Terminal speed v = g / gamma grows with radius, so large grains land first:
+# see the absorption-time vs radius figure from `ppdyn plot ... absorption`.
+
+[run]
+name = "dust_fall"
+
+[units]
+system = "SI"
+
+[domain]
+box = [0.01, 0.01, 0.01]              # 1 cm cube
+
+[boundary]
+x = "periodic"
+y = "periodic"
+z = ["absorbing", "reflecting"]
+on_absorb = "stick"
+neutralize = true
+
+[[species]]
+name = "melamine"
+count = 2000
+density = 1510.0                      # kg/m^3
+[species.radius]
+distribution = "normal"
+mean = 4.0e-6
+std = 0.6e-6
+min = 1.0e-6
+[species.charge]
+model = "potential"
+potential = -2.0                      # V, OML-like Q = 4 pi eps0 r phi
+[species.placement]
+region = "plane"
+axis = "z"
+position = 0.0049
+[species.velocity]
+temperature = 300.0
+
+[interaction]
+debye_length = 3.0e-4
+
+[neutrals]
+drag = "epstein"
+pressure = 10.0                       # Pa argon
+temperature = 300.0
+
+[forces.gravity]
+g = [0.0, 0.0, -9.81]
+
+[time]
+dt = 1.0e-4
+t_end = 0.07
+
+[output]
+every = 25
+quantities = ["position", "velocity", "charge", "state"]
