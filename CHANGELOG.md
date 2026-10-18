@@ -18,7 +18,7 @@ Complete rewrite. One code on `main` replaces the feature branches; the former `
 * Contact collisions with restitution (race-free).
 * Single HDF5 output with XDMF for ParaView, live CSV history, VTK/CSV export, bit-exact checkpoints and restart.
 * Post-processing: g(r) (3D and monolayer), MSD and diffusion, velocity distributions, density profiles, absorption statistics, HTML report, movies, interactive 3D viewer.
-* `ppdyn` command line tool, `ppdyn convert` for legacy input files, five examples, 35 tests, CI on Linux, macOS and Windows.
+* `ppdyn` command line tool, `ppdyn convert` for legacy input files, five examples, 47 tests, CI on Linux, macOS and Windows.
 
 ### Fixed (relative to 1.x and the branches)
 * Boolean input flags were always true (`bool("False")`).
