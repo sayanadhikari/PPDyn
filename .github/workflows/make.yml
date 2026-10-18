@@ -1,28 +1,34 @@
-name: Python package on linux (Conda)
+name: Legacy smoke test (PPDyn 1.x)
 
-on: [push]
+# The 1.x code is archived on this branch. It needs the dependency versions it
+# was written against: numba 0.53 (newer numba rejects np.arange keywords used
+# in src/init.py) and therefore Python 3.9 and numpy 1.20.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  build-linux:
+  smoke:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
-      run: |
-        conda env update --file environment.yml --name base
-    - name: test
-      run: |
-        python ppdyn.py -i input.ini
-
-    
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: Install the 2021 dependency set
+        run: |
+          python -m pip install "setuptools<70" "numpy==1.20.2" "numba==0.53.1" "scipy<1.8" "h5py<3.7" \
+                                "matplotlib<3.6" pyevtk ini-parser "frmt>=2,<3"
+          # tasktimer 1.0.4 no longer builds (invalid requirement string in its setup.py);
+          # it is a single module, so take it from the released sdist
+          curl -sSL https://files.pythonhosted.org/packages/31/8d/6722accfd312e52e71cb061457215ed864f5c3c3eed9ad90e3b744868ca1/tasktimer-1.0.4.tar.gz | tar xz
+          cp tasktimer-1.0.4/tasktimer.py src/
+      - name: Short run (200 particles, t = 0.5)
+        env:
+          MPLBACKEND: Agg
+        run: |
+          sed -e 's/^tmax .*/tmax  = 0.5/' -e 's/^N .*/N     = 200/' input.ini > smoke.ini
+          python ppdyn.py -i smoke.ini
+          python -c "import h5py; f = h5py.File('data/particle.hdf5'); assert {'energy', 'position', 'velocity'} <= set(f); print('ok', list(f))"
