@@ -1,20 +1,97 @@
 name: Release to PyPI
 
+# Publishing a GitHub release tagged vX.Y.Z builds the sdist and wheel, checks
+# that the tag matches ppdyn.__version__, tests the wheel, uploads to PyPI with
+# trusted publishing (no token stored in GitHub) and attaches the files to the
+# release. "Run workflow" (manual) publishes the same build to TestPyPI instead.
+#
+# One-time setup on pypi.org (and test.pypi.org for the manual run):
+#   project PPDyn -> Settings -> Publishing -> add a GitHub publisher with
+#   owner sayanadhikari, repository PPDyn, workflow release.yml, environment pypi
+#   (testpypi for TestPyPI).
+
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install build
-      - run: python -m build
+      - name: Build
+        run: |
+          python -m pip install build twine
+          python -m build
+          twine check --strict dist/*
+      - name: Tag matches package version
+        if: github.event_name == 'release'
+        run: |
+          v=$(python -c "import re; print(re.search(r'__version__ = \"(.+)\"', open('src/ppdyn/__init__.py').read()).group(1))")
+          tag="${GITHUB_REF_NAME#v}"
+          echo "package $v, tag $tag"
+          test "$v" = "$tag"
+      - name: Test the wheel
+        run: |
+          python -m venv /tmp/w
+          /tmp/w/bin/pip install dist/*.whl pytest
+          /tmp/w/bin/ppdyn --version
+          cd /tmp && /tmp/w/bin/ppdyn init yukawa_crystal ex && /tmp/w/bin/ppdyn run ex/input.toml --set time.steps=20 -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi:
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/PPDyn/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    if: github.event_name == 'release'
+    needs: pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Attach files to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+
+  testpypi:
+    if: github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/PPDyn/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/

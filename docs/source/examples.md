@@ -8,7 +8,7 @@ The quantitative result of each example in one figure:
 
 ![Example results](../media/gallery.png)
 
-The 3D renders and animations on this page are made by `docs/media/render/render_all.py` (needs `pip install "ppdyn[render]"`).
+The 3D renders and animations on this page are made by `ppdyn render <run>.h5 --gallery <dir>` (needs `pip install "ppdyn[render]"`); `docs/media/render/render_all.py` runs and renders all five examples.
 
 ## yukawa_crystal (former `main`)
 

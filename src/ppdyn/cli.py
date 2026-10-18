@@ -177,6 +177,53 @@ def cmd_movie(a):
     return 0
 
 
+def cmd_render(a):
+    from .post.analysis import Run
+    try:
+        from .post import render
+    except ImportError as exc:  # pragma: no cover
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    with Run(a.file) as r:
+        if a.gallery:
+            for p in render.gallery(r, a.gallery, field_file=a.field):
+                print(p)
+            return 0
+        opts = {}
+        preset, name = render.preset_for(r)
+        if preset and a.preset != "none":
+            opts.update({k: v for k, v in preset["look"].items() if k not in ("title", "subtitle")})
+            if a.titles:
+                opts.update({k: preset["look"][k] for k in ("title", "subtitle") if k in preset["look"]})
+        for key in ("color", "cut", "trails", "azimuth", "elevation", "distance", "view_angle"):
+            v = getattr(a, key)
+            if v is not None:
+                opts[key] = v
+        if a.radius is not None:
+            opts["radius"] = a.radius
+        if a.clim:
+            opts["clim"] = tuple(a.clim)
+        if a.sheath:
+            opts["sheath"] = tuple(a.sheath)
+        if a.title is not None:
+            opts["title"] = a.title
+        if a.subtitle is not None:
+            opts["subtitle"] = a.subtitle.replace("\\n", "\n")
+        if a.size:
+            w, h = (int(v) for v in a.size.lower().split("x"))
+            opts["size"] = (w, h)
+        if a.movie:
+            opts.pop("title", None); opts.pop("subtitle", None)
+            still_size = opts.pop("size", None)
+            size = still_size if a.size else (1000, 640)
+            print(render.movie(r, a.movie, every=a.every, orbit=a.orbit, fps=a.fps, width=a.width, size=size,
+                               field_file=a.field, **opts))
+            return 0
+        out = a.output or os.path.splitext(a.file)[0] + "_render.png"
+        print(render.snapshot(r, out, frame=a.frame, time=a.time, field_file=a.field, **opts))
+    return 0
+
+
 def cmd_view(a):
     from .post.analysis import Run
     from .post.viewer import viewer_html
@@ -369,6 +416,36 @@ def build_parser():
     s.add_argument("--frames", type=int, default=300)
     s.add_argument("--si", action="store_true")
     s.set_defaults(fn=cmd_movie)
+
+    s = sub.add_parser("render", help="publication-quality 3D render (PNG) or animation (GIF/MP4) with PyVista",
+                       description="Ray-traced-looking 3D renders of a run: shaded grains, trails, walls, objects "
+                                   "and sheath isosurfaces. Runs of the bundled examples use their gallery look "
+                                   "unless --preset none; every option below overrides it.")
+    s.add_argument("file")
+    s.add_argument("-o", "--output", help="PNG file (default <file>_render.png)")
+    s.add_argument("--movie", metavar="OUT", help="write an animation instead (.gif, or .mp4 with ffmpeg)")
+    s.add_argument("--gallery", metavar="DIR", help="write the README images of a bundled example into DIR")
+    s.add_argument("-k", "--frame", type=int, default=-1)
+    s.add_argument("-t", "--time", type=float, help="snapshot nearest to this time (s for SI runs, 1/omega0 otherwise)")
+    s.add_argument("-c", "--color", choices=["speed", "radius", "species", "displacement", "outward", "charge", "state", "z", "none"])
+    s.add_argument("--clim", type=float, nargs=2, metavar=("LO", "HI"))
+    s.add_argument("--radius", type=float, help="display radius of the grains in a (default: automatic)")
+    s.add_argument("--cut", choices=["quadrant", "half"], help="cut the particle cloud open towards the camera")
+    s.add_argument("--trails", type=int, help="draw trajectories over the last N snapshots")
+    s.add_argument("--sheath", type=float, nargs="+", metavar="V", help="potential isosurfaces (V) from the field file")
+    s.add_argument("--field", help="field file (default: [field] file of the run's input)")
+    s.add_argument("--azimuth", type=float); s.add_argument("--elevation", type=float)
+    s.add_argument("--distance", type=float, help="camera distance in units of the largest box side")
+    s.add_argument("--view-angle", dest="view_angle", type=float)
+    s.add_argument("--size", help="image size WxH in pixels, e.g. 1600x1000")
+    s.add_argument("--title"); s.add_argument("--subtitle", help="{time}, {n} and {name} are filled in")
+    s.add_argument("--titles", action="store_true", help="use the preset's title and subtitle")
+    s.add_argument("--preset", default="auto", choices=["auto", "none"])
+    s.add_argument("--every", type=int, default=1, help="movie: use every N-th snapshot")
+    s.add_argument("--orbit", type=float, default=0.0, help="movie: camera turns this many degrees")
+    s.add_argument("--fps", type=int, default=12)
+    s.add_argument("--width", type=int, default=500, help="movie: GIF width in pixels")
+    s.set_defaults(fn=cmd_render)
 
     s = sub.add_parser("view", help="interactive 3D HTML viewer with a time slider")
     s.add_argument("file")

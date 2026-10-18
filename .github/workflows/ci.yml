@@ -30,6 +30,30 @@ jobs:
           ppdyn init yukawa_crystal ex
           ppdyn run ex/input.toml --set time.steps=20 -q --report
 
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: pyvista/setup-headless-display-action@v3
+      - name: Install
+        run: python -m pip install -e ".[dev,render]"
+      - name: Render tests
+        run: pytest -q -m render
+      - name: Render an example
+        run: |
+          ppdyn init dust_void ex
+          ppdyn run ex/input.toml --set time.steps=200 -q
+          ppdyn render ex/output/dust_void.h5 -o ex/void.png --size 800x500
+          ppdyn render ex/output/dust_void.h5 --movie ex/void.gif --every 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: render-example
+          path: ex/void.*
+
   docs:
     runs-on: ubuntu-latest
     steps:

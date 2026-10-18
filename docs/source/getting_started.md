@@ -37,6 +37,8 @@ ppdyn view output/yukawa_crystal.h5   # interactive 3D viewer in the browser
 | `ppdyn plot run.h5 [all\|report\|history\|snapshot\|rdf\|vdf\|msd\|profiles\|absorption]` | figures |
 | `ppdyn movie run.h5 --view xz -c charge` | mp4 (ffmpeg) or gif |
 | `ppdyn view run.h5` | self-contained interactive HTML viewer with a time slider |
+| `ppdyn render run.h5 [--movie out.gif] [-c radius] [--cut quadrant] [--trails 16]` | shaded 3D render or animation (`pip install "ppdyn[render]"`) |
+| `ppdyn render run.h5 --gallery media/` | the gallery images of a bundled example |
 | `ppdyn export run.h5 vtk\|csv\|xdmf` | ParaView/VisIt/CSV export |
 | `ppdyn info run.h5` | summary of an output file |
 | `ppdyn watch output/` | live energy and temperature plot while a run is going |
@@ -57,6 +59,11 @@ sim, path = ppdyn.run(cfg)
 with Run(path) as r:
     r_, g = rdf(r.position(-1), r.L, r.periodic)
     T = r.history["temperature"]
+
+    from ppdyn.post import render                  # needs ppdyn[render]
+    render.snapshot(r, "last.png", color="displacement", size=(1600, 1000))
+    render.compare(r, "before_after.png", frames=(0, -1), color="displacement")
+    render.movie(r, "run.gif", every=2, orbit=60)
 ```
 
 ## Parameter sweeps and clusters

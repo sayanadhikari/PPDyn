@@ -1,21 +1,27 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-fancy-pypi-readme>=22.5"]
 build-backend = "hatchling.build"
 
 [project]
 name = "PPDyn"
-dynamic = ["version"]
+dynamic = ["version", "readme"]
 description = "Plasma Particle Dynamics: parallel molecular dynamics of dusty plasmas and charged debris"
-readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
 authors = [{ name = "Sayan Adhikari", email = "sayan.adhikari@ife.no" }]
 keywords = ["molecular dynamics", "dusty plasma", "complex plasma", "yukawa", "numba", "space debris"]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering :: Physics",
+  "Topic :: Scientific/Engineering :: Visualization",
 ]
 dependencies = [
   "numpy>=1.22",
@@ -29,9 +35,9 @@ dependencies = [
 [project.optional-dependencies]
 viz = ["plotly>=5"]
 fast = ["pyamg>=5"]
-render = ["pyvista>=0.43", "scipy>=1.9", "cairosvg>=2.5", "fonttools>=4"]
+render = ["pyvista>=0.43", "pillow>=9"]
 dev = ["pytest>=7", "plotly>=5", "pyamg>=5"]
-all = ["plotly>=5", "pyamg>=5"]
+all = ["plotly>=5", "pyamg>=5", "pyvista>=0.43", "pillow>=9"]
 
 [project.scripts]
 ppdyn = "ppdyn.cli:main"
@@ -40,6 +46,7 @@ ppdyn = "ppdyn.cli:main"
 Homepage = "https://github.com/sayanadhikari/PPDyn"
 Documentation = "https://ppdyn.readthedocs.io"
 Issues = "https://github.com/sayanadhikari/PPDyn/issues"
+Changelog = "https://github.com/sayanadhikari/PPDyn/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "src/ppdyn/__init__.py"
@@ -47,5 +54,26 @@ path = "src/ppdyn/__init__.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/ppdyn"]
 
+[tool.hatch.build.targets.sdist]
+include = ["src/ppdyn", "tests", "README.md", "CHANGELOG.md", "LICENSE", "CITATION.cff", "pyproject.toml"]
+
+# PyPI shows the README without the repository, so relative links and images
+# are made absolute when the package is built (the README itself stays relative).
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '(src|srcset)="((?:docs|assets)/[^"]+)"'
+replacement = '\1="https://raw.githubusercontent.com/sayanadhikari/PPDyn/main/\2"'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\(((?!https?://|#)[^)\s]+)\)'
+replacement = '](https://github.com/sayanadhikari/PPDyn/blob/main/\1)'
+
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["render: 3D rendering tests (need PyVista and an offscreen OpenGL context)"]

@@ -70,7 +70,7 @@ Every picture below comes from one of the bundled examples, run as shipped (`ppd
 </tr>
 </table>
 
-The renders use PyVista; `python docs/media/render/render_all.py --prepare runs && python docs/media/render/render_all.py runs` reproduces all of them. Quantitative results for each example (radial distribution functions, landing times, radial profiles) are in [docs/source/examples.md](docs/source/examples.md).
+Every image and animation here is made by PPDyn's own post-processing: `ppdyn render <run>.h5 --gallery docs/media` writes the set for one example, and `python docs/media/render/render_all.py runs` runs all five examples and renders them. Quantitative results for each example (radial distribution functions, landing times, radial profiles) are in [docs/source/examples.md](docs/source/examples.md).
 
 ## Install
 
@@ -160,6 +160,7 @@ ppdyn plot run.h5 report          # every figure and an index.html
 ppdyn plot run.h5 rdf             # history, snapshot, rdf, vdf, msd, profiles, absorption
 ppdyn movie run.h5 --view xz      # mp4 (or gif without ffmpeg)
 ppdyn view run.h5                 # standalone interactive HTML
+ppdyn render run.h5               # shaded 3D render (PNG), see below
 ppdyn export run.h5 vtk           # also csv, xdmf
 ppdyn watch output/               # live plot while running
 ```
@@ -171,6 +172,21 @@ from ppdyn.post import Run, rdf, msd
 with Run("output/yukawa_crystal.h5") as r:
     r_, g = rdf(r.position(-1), r.L, r.periodic)
 ```
+
+### 3D renders and animations
+
+`ppdyn render` (needs `pip install "ppdyn[render]"`) draws a run the way the gallery does: shaded grains, trajectories, absorbing walls, objects such as the CubeSat and potential isosurfaces from the field file. Everything is read back from the output file, so no extra setup is needed. Runs of the bundled examples start from their gallery look; every option overrides it.
+
+```bash
+ppdyn render run.h5                                   # last snapshot -> run_render.png
+ppdyn render run.h5 -t 0.044 -c radius --trails 16    # snapshot nearest 44 ms, coloured by grain size
+ppdyn render run.h5 --cut quadrant --azimuth -40      # cut the cloud open towards the camera
+ppdyn render run.h5 -c state --sheath -1.5 -0.35      # deposited vs drifting, sheath isosurfaces in volts
+ppdyn render run.h5 --movie run.gif --orbit 90        # animation with a turning camera (.mp4 with ffmpeg)
+ppdyn render run.h5 --gallery media/                  # the README images of a bundled example
+```
+
+Colours: `speed`, `radius` (a legend for up to four sizes), `species`, `displacement` (from the first snapshot, through periodic images), `outward` (radial push), `charge`, `state` (drifting or deposited) and `z`. The same is available from Python as `ppdyn.post.render.snapshot`, `compare` and `movie`. Headless machines render offscreen through EGL or OSMesa; on a Linux CI runner without a GPU use a virtual display (see the `render` job in `.github/workflows/ci.yml`).
 
 ## Performance
 

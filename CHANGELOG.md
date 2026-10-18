@@ -6,7 +6,8 @@ Complete rewrite. One code on `main` replaces the feature branches; the former `
 
 ### Added
 * New logo (`docs/logo/make_logo.py`, SVG with outlined text plus PNG, light, dark and icon variants).
-* 3D gallery: PyVista renders and animations of all five examples, reproducible with `docs/media/render/render_all.py` and the `render` extra.
+* `ppdyn render` and `ppdyn.post.render`: shaded 3D renders, side-by-side comparisons and GIF/MP4 animations with trails, cut-aways, walls, objects and sheath isosurfaces, all read back from the output file; presets reproduce the gallery of every bundled example (`--gallery`). Optional `render` extra.
+* 3D gallery in the README, generated entirely by `ppdyn render`.
 * TOML input with strict validation, typo suggestions and a generated input reference; SI or reduced units.
 * Linked-cell Yukawa forces with cell-ordered data (O(N), 18x faster at 10^4 and 56x at 3x10^4 particles on two cores).
 * BAOAB Langevin integrator: neutral drag (constant or Epstein) with exact thermal noise; Langevin and Berendsen thermostats.
