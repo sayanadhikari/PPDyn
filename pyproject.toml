@@ -29,6 +29,7 @@ dependencies = [
 [project.optional-dependencies]
 viz = ["plotly>=5"]
 fast = ["pyamg>=5"]
+render = ["pyvista>=0.43", "scipy>=1.9", "cairosvg>=2.5", "fonttools>=4"]
 dev = ["pytest>=7", "plotly>=5", "pyamg>=5"]
 all = ["plotly>=5", "pyamg>=5"]
 

@@ -1,17 +1,76 @@
-<p align="center"><img src="assets/ppdyn_logo.png" alt="PPDyn" width="420"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/ppdyn_logo_on_dark.png">
+    <img src="docs/logo/ppdyn_logo.png" alt="PPDyn" width="640">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://github.com/sayanadhikari/PPDyn/actions/workflows/ci.yml"><img src="https://github.com/sayanadhikari/PPDyn/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://ppdyn.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/ppdyn/badge/?version=latest" alt="Documentation"></a>
+  <a href="https://pypi.org/project/PPDyn/"><img src="https://img.shields.io/pypi/v/ppdyn.svg" alt="PyPI"></a>
+  <a href="https://zenodo.org/badge/latestdoi/349242730"><img src="https://zenodo.org/badge/349242730.svg" alt="DOI"></a>
+</p>
+
+<p align="center">
+  <b>Parallel molecular dynamics for dusty plasmas and charged micro-debris</b><br>
+  Yukawa interactions in O(N) &nbsp;·&nbsp; gravity, E-fields, ion and neutral drag &nbsp;·&nbsp; absorbing walls and spacecraft &nbsp;·&nbsp;
+  grain size distributions &nbsp;·&nbsp; one input file &nbsp;·&nbsp; <code>pip install</code>
+</p>
+
+<p align="center">
+  <img src="docs/media/hero_dust_cloud.png" alt="Binary dust cloud in microgravity" width="860"><br>
+  <em>20 000 grains of two sizes in a microgravity plasma chamber, cut open. Electric confinement and ion drag
+  balance at a radius that depends on the grain size, so the cloud forms a central void and separates into two shells:
+  3.45 µm grains on the inside, 3.55 µm grains on the outside (example <code>dust_cloud</code>).</em>
+</p>
 
 # PPDyn: Plasma Particle Dynamics
 
-[![CI](https://github.com/sayanadhikari/PPDyn/actions/workflows/ci.yml/badge.svg)](https://github.com/sayanadhikari/PPDyn/actions/workflows/ci.yml)
-[![Documentation Status](https://readthedocs.org/projects/ppdyn/badge/?version=latest)](https://ppdyn.readthedocs.io/en/latest/?badge=latest)
-[![PyPI Version](https://img.shields.io/pypi/v/ppdyn.svg)](https://pypi.org/project/PPDyn/)
-[![DOI](https://zenodo.org/badge/349242730.svg)](https://zenodo.org/badge/latestdoi/349242730)
-
-Parallel molecular dynamics for dusty (complex) plasmas and charged micro-debris. Grains interact through a screened Coulomb (Yukawa) potential and feel gravity, electric fields, ion drag, neutral drag and thermal noise, solid objects and absorbing walls. Numba compiles the kernels to multithreaded machine code; a linked-cell list makes the cost scale linearly with the number of particles.
+PPDyn simulates dusty (complex) plasmas and charged micro-debris. Grains interact through a screened Coulomb (Yukawa) potential and feel gravity, electric fields, ion drag, neutral drag and thermal noise, solid objects and absorbing walls. Numba compiles the kernels to multithreaded machine code, and a linked-cell list makes the cost grow linearly with the number of particles.
 
 **Version 2** merges every former development branch (dust fall, dust voids, dust clouds in microgravity, debris around spacecraft) into one code. You choose the physics in the input file. The previous code is kept on the [`legacy`](https://github.com/sayanadhikari/PPDyn/tree/legacy) branch.
 
-<p align="center"><img src="docs/media/gallery.png" alt="Example results" width="100%"></p>
+## Contents
+
+* [Gallery](#gallery)
+* [Install](#install)
+* [Quick start](#quick-start)
+* [What it can simulate](#what-it-can-simulate)
+* [Examples](#examples)
+* [Output and post-processing](#output-and-post-processing)
+* [Performance](#performance)
+* [Validation](#validation)
+* [Coming from PPDyn 1.x](#coming-from-ppdyn-1x)
+
+## Gallery
+
+Every picture below comes from one of the bundled examples, run as shipped (`ppdyn init <example>`).
+
+<table>
+<tr>
+<td width="50%"><img src="docs/media/crystal_melting.gif" alt="bcc crystal melting"><br><em><b>yukawa_crystal.</b> A bcc Yukawa crystal at Γ = 400 heated to Γ = 100: the lattice melts. Colour shows how far each grain has wandered from its lattice site.</em></td>
+<td width="50%"><img src="docs/media/dust_void.gif" alt="void opening"><br><em><b>dust_void.</b> An ion-drag force opens a void in a dust monolayer. Colour shows how far each grain has been pushed outward.</em></td>
+</tr>
+<tr>
+<td><img src="docs/media/dust_fall.gif" alt="dust falling onto an electrode"><br><em><b>dust_fall.</b> 2000 charged melamine grains fall through 10 Pa argon onto an absorbing electrode. Terminal speed grows with radius, so the large (orange) grains land first.</em></td>
+<td><img src="docs/media/debris_cubesat.gif" alt="debris on a CubeSat"><br><em><b>debris_cubesat.</b> Positively charged aluminium debris drifts onto a −10 V 3U CubeSat. The sheath field focuses the grains onto the body and solar wings, where they stick (orange).</em></td>
+</tr>
+</table>
+
+<p align="center">
+  <img src="docs/media/crystal_melting.png" alt="crystal before and after melting" width="860"><br>
+  <em>The same crystal before and after heating: lattice channels at t = 0, a strongly coupled liquid at t = 150 ω₀⁻¹.</em>
+</p>
+
+<table>
+<tr>
+<td width="50%"><img src="docs/media/debris_cubesat.png" alt="debris on a CubeSat"><br><em>CubeSat with deployed wings and antenna mast; the translucent shells are the −1.5 V and −0.35 V surfaces of the screened sheath potential computed by <code>ppdyn field</code>.</em></td>
+<td width="50%"><img src="docs/media/dust_void.png" alt="dust void"><br><em>The fully opened void, about 15 a in radius, with the compressed ring of displaced grains around it.</em></td>
+</tr>
+</table>
+
+The renders use PyVista; `python docs/media/render/render_all.py --prepare runs && python docs/media/render/render_all.py runs` reproduces all of them. Quantitative results for each example (radial distribution functions, landing times, radial profiles) are in [docs/source/examples.md](docs/source/examples.md).
 
 ## Install
 
