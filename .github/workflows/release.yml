@@ -5,6 +5,7 @@ name: Release to PyPI
 # (no token stored in GitHub) and creates the GitHub release with the matching
 # CHANGELOG section and the files attached:
 #     git tag -a v2.0.1 -m "PPDyn 2.0.1" && git push origin v2.0.1
+# or create a release with a new tag in the GitHub UI (the files are then added to it).
 # "Run workflow" (manual) publishes the same build to TestPyPI instead.
 #
 # One-time setup on pypi.org (and test.pypi.org for the manual run):
@@ -83,8 +84,13 @@ jobs:
           v="${GITHUB_REF_NAME#v}"
           awk -v v="$v" '$0 ~ "^## "v" " {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
           printf '\n### Install\n\n```bash\npip install --upgrade ppdyn\npip install "ppdyn[render]"   # with 3D renders and animations\n```\n' >> notes.md
-          gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --title "PPDyn $v" \
-            --notes-file notes.md --verify-tag
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            # release made in the GitHub UI (which also pushed the tag): keep its text, add the files
+            gh release upload "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --title "PPDyn $v" \
+              --notes-file notes.md --verify-tag
+          fi
 
   testpypi:
     if: github.event_name == 'workflow_dispatch'
